@@ -144,20 +144,69 @@
         <p class="comparison-note">The categories are intentionally simple. A protocol can be useful outside its typical fit, but every launch should be tested against the exact implementation and services your users will rely on.</p>
       </section>
 
-      <section class="callout">
-        <div>
-          <p class="eyebrow">How the models differ</p>
-          <h2>The same Bitcoin block can carry very different promises.</h2>
-          <p>A protocol is the shared reading rule that turns a Bitcoin transaction into a token event. In an inscription-first model, the protocol reads a token instruction from an inscription. In the Bitcoin Stamps model, it decodes and checks a dedicated transaction format. In an output-first model, it routes balances through transaction outputs. In a programmable model, it interprets application code. In op-drop, it checks a small canonical token record and the Taproot proof that committed to it.</p>
-          <div class="proof-map" aria-label="Comparison of token state models">
-            <article><span>Inscriptions</span><strong>BRC-20, CBRC-20, TAP, Block-20, DUST-20</strong><p>Token meaning is read from an inscription convention and its compatible indexer.</p></article>
-            <article><span>Satoshi-backed outputs</span><strong>ARC-20</strong><p>Each token unit is represented by a satoshi, so compatible tools follow UTXO ownership.</p></article>
-            <article><span>Bitcoin Stamps</span><strong>SRC-20</strong><p>A Stamps-compatible indexer decodes and validates the SRC-20 transaction format.</p></article>
-            <article><span>OP_RETURN</span><strong>OP-20, Runes, Mezcal</strong><p>Token instructions are carried in transaction output data, each with its own grammar.</p></article>
-            <article><span>Programs</span><strong>Alkanes</strong><p>Application-specific logic determines the result.</p></article>
-            <article><span>Taproot proof</span><strong>op-drop</strong><p>A canonical token record is checked against its OP_DROP commitment.</p></article>
+      <section class="model-atlas" aria-labelledby="model-atlas-title">
+        <div class="model-atlas__intro">
+          <div>
+            <p class="eyebrow">How the models differ</p>
+            <h2 id="model-atlas-title">One Bitcoin block. <em>Six ways to give it meaning.</em></h2>
+            <p>A protocol is the shared reading rule that turns a confirmed Bitcoin transaction into a token event. The transaction is the same. What changes is where the instruction lives, how compatible software follows state, and what each verifier must prove before it treats that instruction as meaningful.</p>
           </div>
+          <aside class="model-atlas__thesis" aria-label="How to compare token protocols">
+            <span class="model-atlas__thesis-label">One confirmed transaction</span>
+            <strong>Different protocols, different promises.</strong>
+            <p>Compare the carrier, the state rule, and the verification path before you compare a ticker.</p>
+            <div class="model-atlas__legend" aria-label="Comparison lenses">
+              <span>Carrier</span>
+              <span>State rule</span>
+              <span>Proof path</span>
+            </div>
+          </aside>
         </div>
+
+        <ol class="model-atlas__grid" aria-label="Six Bitcoin token state models">
+          <li class="model-card model-card--inscription">
+            <span class="model-card__number">01</span>
+            <span class="model-card__eyebrow">Read the inscription</span>
+            <h3>Inscription-first</h3>
+            <p>Compatible indexers read the token instruction from an inscription convention and follow that convention's lifecycle.</p>
+            <strong>BRC-20 · CBRC-20 · TAP · Block-20 · DUST-20</strong>
+          </li>
+          <li class="model-card model-card--output">
+            <span class="model-card__number">02</span>
+            <span class="model-card__eyebrow">Follow the UTXO</span>
+            <h3>Output ownership</h3>
+            <p>Each unit is tied to a satoshi-backed output, so compatible tools follow UTXO ownership rather than an inscription event history.</p>
+            <strong>ARC-20</strong>
+          </li>
+          <li class="model-card model-card--stamps">
+            <span class="model-card__number">03</span>
+            <span class="model-card__eyebrow">Decode the carrier</span>
+            <h3>Bitcoin Stamps</h3>
+            <p>A Stamps-compatible indexer validates the applicable SRC-20 transaction format and then applies its source and destination rules.</p>
+            <strong>SRC-20</strong>
+          </li>
+          <li class="model-card model-card--return">
+            <span class="model-card__number">04</span>
+            <span class="model-card__eyebrow">Parse output data</span>
+            <h3>OP_RETURN grammars</h3>
+            <p>Token instructions live in transaction output data. Each protocol supplies its own strict grammar and state transition rules.</p>
+            <strong>OP-20 · Runes · Mezcal</strong>
+          </li>
+          <li class="model-card model-card--programs">
+            <span class="model-card__number">05</span>
+            <span class="model-card__eyebrow">Run the program</span>
+            <h3>Programmable state</h3>
+            <p>An application runtime executes contract-defined logic, so state depends on the program and the runtime behavior it declares.</p>
+            <strong>Alkanes</strong>
+          </li>
+          <li class="model-card model-card--opdrop">
+            <span class="model-card__number">06</span>
+            <span class="model-card__eyebrow">Prove the commitment</span>
+            <h3>Taproot proof</h3>
+            <p>A canonical token record is checked against its exact <code>OP_DROP</code> commitment and confirmed Bitcoin proof before it updates state.</p>
+            <strong>op-drop</strong>
+          </li>
+        </ol>
       </section>
 
       <section class="dark-cta">
