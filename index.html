@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Drops is the immutable OP_DROP artifact layer for Bitcoin L1. Create inscriptions, op-drop token records, and Pacts with an explicit Taproot proof." />
+    <title>Drops, immutable artifacts on Bitcoin</title>
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="Drops home"><span class="brand-mark">D</span><span>Drops</span></a>
+      <nav aria-label="Primary navigation">
+        <a href="#why">Why Drops</a>
+        <a href="#how">How it works</a>
+        <a href="#pacts">Pacts</a>
+        <a href="pages/op-drop.html">op-drop</a>
+        <a href="pages/protocol.html">Protocol</a>
+        <a href="#start">Build</a>
+      </nav>
+      <a class="button button-small" href="#start">Explore Drops</a>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <img class="hero-art" src="assets/drops-hero-proof.png" alt="A Bitcoin artifact connected to a glowing Taproot proof leaf" />
+        <div class="hero-content">
+          <p class="eyebrow">Immutable artifacts. Live Bitcoin proof.</p>
+          <h1>Build on Bitcoin<br /><em>without building around it.</em></h1>
+          <p class="hero-copy">Drops gives an idea, a collectible, or an agreement a permanent home on Bitcoin. It is the shared foundation for simple inscriptions, op-drop fungible tokens such as <code>$DROP</code>, the first token on op-drop, and readable Pacts.</p>
+          <p class="hero-copy"><strong>Built to last:</strong> once confirmed, the commitment is part of Bitcoin history. Any compatible indexer can independently verify the exact artifact it records.</p>
+          <div class="actions">
+            <a class="button" href="#start">Build with Drops</a>
+            <a class="button button-quiet" href="pages/protocol.html">Understand the proof</a>
+          </div>
+          <div class="hero-proof" aria-label="Drops verification chain">
+            <span>Canonical leaf</span><b>+</b><span>Taproot proof</span><b>+</b><span>Confirmed block</span><b>=</b><strong>Verified Drop</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="numbers" aria-label="Drops guarantees">
+        <article><strong>256 B</strong><span>native body cap</span></article>
+        <article><strong>1</strong><span>canonical leaf grammar</span></article>
+        <article><strong>0</strong><span>sat-number assignments</span></article>
+        <article><strong>1 proof</strong><span>per confirmed Drop</span></article>
+      </section>
+
+      <section class="bitcoin-l1" aria-labelledby="bitcoin-l1-title">
+        <div class="bitcoin-l1-copy">
+          <p class="eyebrow">Bitcoin L1, all the way down</p>
+          <h2 id="bitcoin-l1-title">One immutable foundation for the things people build on Bitcoin.</h2>
+          <p>Think of Drops as a clear way to give a record a permanent place on Bitcoin. Once Bitcoin confirms it, people can find the same record again without trusting a changing app database, a sidechain, or a private index.</p>
+          <div class="highlight-grid" aria-label="Drops highlights">
+            <article><strong>Immutable by confirmation</strong><span>A confirmed Drop is an on-chain commitment. Its body and proof cannot be edited into something else.</span></article>
+            <article><strong>OP_DROP native</strong><span>A small, canonical leaf keeps the format legible for wallets and straightforward for independent verification.</span></article>
+            <article><strong>BIP-110 ready</strong><span>Drops works alongside the registered <code>bip110-op-drop</code> carrier while keeping each parser's meaning strict and separate.</span></article>
+            <article><strong>Bitcoin-lifetime proof</strong><span>There is no mutable profile to rewrite. Anyone with chain data can recheck the commitment and preserve its record.</span></article>
+          </div>
+        </div>
+        <div class="l1-stack" aria-label="Bitcoin L1 to Drops product stack">
+          <div class="l1-layer l1-base"><span>Bitcoin L1</span><strong>Confirmed blocks, UTXOs, Taproot</strong></div>
+          <div class="l1-layer l1-opdrop"><span>OP_DROP</span><strong>Compact canonical commitment</strong></div>
+          <div class="l1-layer l1-drops"><span>Drops</span><strong>Body, hash, key, and proof</strong></div>
+          <div class="l1-products"><article><b>Inscriptions</b><span>Compact, identity-rich artifacts</span></article><article><a href="pages/op-drop.html"><b>op-drop tokens</b><span>Strict fungible-token events</span></a></article><article><b>Drops Pacts</b><span>Verifiable Bitcoin agreements</span></article></div>
+        </div>
+      </section>
+
+      <section id="why" class="section">
+        <p class="eyebrow">Different by design</p>
+        <h2>Simple enough to verify. Useful enough to build on.</h2>
+        <p class="section-lead">You do not need to understand the code below to benefit from Drops. It lets you share a Bitcoin record that wallets, explorers, and independent services can recognize and check for themselves.</p>
+        <div class="cards">
+          <article class="card"><span class="card-number">01</span><h3>One carrier, one reading</h3><p>The marker, MIME type, body hash, body, and creator key have a fixed order. Your app does not need to guess what a payload means.</p></article>
+          <article class="card"><span class="card-number">02</span><h3>Proof before display</h3><p>A verified indexer checks the leaf script and BIP341 control block against the P2TR output that was spent. Seeing a transaction is not enough.</p></article>
+          <article class="card"><span class="card-number">03</span><h3>IDs that travel</h3><p><code>drops:mainnet:&lt;txid&gt;:d&lt;input&gt;</code> comes from the reveal transaction. It stays meaningful across wallets, explorers, and indexers.</p></article>
+          <article class="card"><span class="card-number">04</span><h3>Small on purpose</h3><p>Drops carries compact, legible artifacts. Larger material belongs behind explicit content-addressed references, never hidden conventions.</p></article>
+        </div>
+      </section>
+
+      <section id="how" class="section">
+        <p class="eyebrow">A proof anyone can follow</p>
+        <h2>Publish. Confirm. Verify.</h2>
+        <p class="section-lead">For you, the process is simple: publish a small record, wait for Bitcoin to confirm it, then let anyone check the same proof. No separate account or private database is required.</p>
+        <div class="cards">
+          <article class="card"><span class="card-number">01</span><h3>Publish a clear body</h3><p>Your wallet prepares the canonical leaf with a MIME type, body hash, body, and public key. The body is compact and exact.</p></article>
+          <article class="card"><span class="card-number">02</span><h3>Anchor it in Taproot</h3><p>The reveal spends the Taproot output that committed to that exact leaf. The outpoint is part of the verification story, not an implementation detail.</p></article>
+          <article class="card"><span class="card-number">03</span><h3>Verify independently</h3><p>An indexer recomputes the commitment, checks the body hash, and records the Drop only after the proof succeeds on the confirmed chain.</p></article>
+        </div>
+      </section>
+
+      <section class="proof-map" aria-labelledby="proof-map-title">
+        <div class="proof-map-intro">
+          <p class="eyebrow">The Drops proof path</p>
+          <h2 id="proof-map-title">Every verified Drop has a trail you can inspect.</h2>
+          <p>In simple terms, Drops lets you see that a record is really on Bitcoin and has not been quietly changed. The artifact bytes, Taproot commitment, and confirmed Bitcoin transaction must all agree.</p>
+        </div>
+        <div class="proof-flow" aria-label="Artifact body to verified Drop flow">
+          <article><span>01</span><strong>Artifact body</strong><p>Exact bytes and canonical MIME type.</p></article>
+          <i aria-hidden="true">&rarr;</i>
+          <article><span>02</span><strong>Body hash</strong><p>SHA256 commits the displayed content.</p></article>
+          <i aria-hidden="true">&rarr;</i>
+          <article><span>03</span><strong>Taproot anchor</strong><p>Control block proves the committed leaf.</p></article>
+          <i aria-hidden="true">&rarr;</i>
+          <article><span>04</span><strong>Verified Drop</strong><p>Confirmed on Bitcoin and independently checkable.</p></article>
+        </div>
+      </section>
+
+      <section class="comparison" aria-labelledby="comparison-title">
+        <div><p class="eyebrow">A clear choice of tradeoffs</p><h2 id="comparison-title">Designed for apps that value explicit proof.</h2><p>If you want an inscription-style record or token event that is simple for anyone to check, Drops gives that record a direct Bitcoin proof. It makes a different tradeoff from ordinal conventions: less hidden interpretation and more explicit proof.</p></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Question</th><th>Drops</th><th>Ordinal inscription conventions</th></tr></thead>
+          <tbody>
+            <tr><td>What identifies the artifact?</td><td>Reveal txid plus input index</td><td>Inscription identity and satoshi tracking conventions</td></tr>
+            <tr><td>What does an indexer verify?</td><td>Exact carrier, body hash, and P2TR commitment</td><td>Protocol-specific envelope and ordinal state rules</td></tr>
+            <tr><td>How much content is native?</td><td>At most 256 bytes</td><td>Varies by implementation and inscription form</td></tr>
+            <tr><td>Where is the anchor?</td><td>Explicit spent P2TR outpoint</td><td>Sat-level assignment model</td></tr>
+          </tbody>
+        </table></div>
+        <p class="comparison-note">This is a design comparison, not a security ranking. Choose the model that matches your application and verify the implementation you rely on.</p>
+      </section>
+
+      <section id="pacts" class="pacts-showcase" aria-labelledby="pacts-title">
+        <div class="pacts-copy">
+          <p class="eyebrow">Pacts on Bitcoin</p>
+          <h2 id="pacts-title">Bitcoin L1 agreements, made readable.</h2>
+          <p>Think of a Pact as a promise people can read before they sign. Its terms and important changes stay visible on Bitcoin, instead of being hidden in an app. Behind that simple experience is a compact identity, committed state, and proof package that parties can inspect.</p>
+          <div class="pacts-steps" aria-label="Pact lifecycle">
+            <span><b>Seed</b> fixes the agreement identity.</span>
+            <span><b>Cell</b> commits the current state.</span>
+            <span><b>Proof</b> records the verified transition.</span>
+          </div>
+          <a class="button" href="pages/pacts.html">Explore Drops Pacts</a>
+        </div>
+        <figure class="pacts-art-wrap"><img src="assets/pacts-lifecycle.png" alt="Three connected agreement stages representing Seed, Cell, and Proof on Bitcoin" /><figcaption>Seed, Cell, Proof: a compact path for verifiable Bitcoin agreements.</figcaption></figure>
+      </section>
+
+      <section class="pacts-outcomes" aria-labelledby="pacts-outcomes-title">
+        <figure class="pacts-outcomes-art"><img src="assets/pacts-outcomes.png" alt="A Bitcoin vault, escrow lock, and vesting timeline connected by proof lines" /><figcaption>Shared custody, conditional release, and scheduled access can all begin with visible terms.</figcaption></figure>
+        <div class="pacts-outcomes-copy">
+          <p class="eyebrow">Built for clear commitments</p>
+          <h2 id="pacts-outcomes-title">Make the agreement easy to see before you sign.</h2>
+          <p>You can use the same approach for an op-drop token such as <code>$DROP</code>, the first token on op-drop, shared funds, release schedules, and simple agreements. People see what is agreed before they act.</p>
+          <div class="outcome-grid" aria-label="Pact use cases">
+            <article><strong>Shared treasury</strong><span>Keep controllers, recovery terms, and every approved state change in view.</span></article>
+            <article><strong>Escrow</strong><span>Set the conditions for release and refund before value moves.</span></article>
+            <article><strong>Vesting</strong><span>Record a visible release schedule tied to Bitcoin block height.</span></article>
+            <article><strong>Asset policy</strong><span>Connect an op-drop policy to a reviewable agreement record.</span></article>
+          </div>
+          <a class="button" href="pages/studio.html">Open Pacts Studio</a>
+        </div>
+      </section>
+
+      <section id="wire" class="section wire">
+        <p class="eyebrow">Drops wire format</p>
+        <h2>Five values. Four drops. One clear artifact.</h2>
+        <p class="section-lead">You do not need to write this code to use Drops. It is here to show that every compatible wallet and verifier receives the same clear record, with no hidden interpretation.</p>
+        <pre><code id="wire-code">PUSH "drops"           OP_DROP
+PUSH &lt;canonical MIME&gt; OP_DROP
+PUSH SHA256(body)      OP_DROP
+PUSH &lt;body, max 256B&gt; OP_DROP
+PUSH &lt;x-only pubkey&gt;  OP_CHECKSIG</code></pre>
+        <button class="copy" type="button" data-copy="#wire-code">Copy format</button>
+        <p>All pushes must be minimal. The Taproot leaf byte is <code>0xc0</code>. The Drops indexer accepts a record only after it proves that the control block commits this exact leaf to the spent P2TR output. That is the difference between a Bitcoin commitment and a database label.</p>
+      </section>
+
+      <section id="start" class="section start">
+        <p class="eyebrow">Start building</p>
+        <h2>Build with a verifier you control.</h2>
+        <p class="section-lead">Whether you are curious about a new Bitcoin record or ready to launch a product, start by exploring verified Drops and <code>$DROP</code>, the first token on op-drop.</p>
+        <div class="terminal"><div class="terminal-bar"><span></span><span></span><span></span><label>PowerShell</label></div><pre><code id="start-code">git clone https://github.com/bitcoinuniverse/drops
+cd drops
+npm install
+$env:BITCOIN_RPC_URL = 'http://127.0.0.1:8332'
+npm run dev -- serve --network mainnet --start-height 0</code></pre></div>
+        <button class="copy" type="button" data-copy="#start-code">Copy commands</button>
+        <div class="link-grid">
+          <a href="pages/discover.html"><strong>Discover Drops</strong><span>See why immutable Bitcoin proof changes the experience</span></a>
+          <a href="pages/op-drop.html"><strong>Explore op-drop and $DROP</strong><span>See strict fungible tokens with Bitcoin-native proof</span></a>
+          <a href="pages/verifier.html"><strong>Run a verifier</strong><span>Connect Bitcoin Core, prove confirmations, serve the API</span></a>
+          <a href="pages/protocol.html"><strong>Read the protocol</strong><span>See the canonical OP_DROP proof format</span></a>
+          <a href="pages/agreement.html"><strong>Publish an agreement</strong><span>Give reviewed Pact terms an immutable Bitcoin record</span></a>
+          <a href="pages/pacts.html"><strong>Use Pacts</strong><span>Explore smart agreements on Bitcoin L1</span></a>
+          <a href="pages/studio.html"><strong>Use Pacts Studio</strong><span>Design, review, and publish a Pact artifact</span></a>
+          <a href="pages/artifact.html"><strong>Record a Pact artifact</strong><span>Commit a completed plan and blueprint hash pair</span></a>
+          <a href="pages/carriers.html"><strong>See supported carriers</strong><span>Choose the exact verified artifact format</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer><span>(c) 2026 Drops Protocol contributors</span><span>Open specification. Local verification. Bitcoin-native.</span></footer>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
