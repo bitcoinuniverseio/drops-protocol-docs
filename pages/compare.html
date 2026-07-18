@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="A plain-language comparison of op-drop, OP-20, BRC-20, CBRC-20, SRC-20, Runes, and Alkanes on Bitcoin." />
+    <meta name="description" content="A plain-language comparison of op-drop, OP-20, BRC-20, CBRC-20, SRC-20, Runes, Alkanes, Mezcal, ARC-20, TAP, Block-20, and DUST-20 on Bitcoin." />
     <title>Compare Bitcoin token protocols | Drops Documentation</title>
     <link rel="stylesheet" href="../assets/pages.css" />
   </head>
@@ -50,6 +50,11 @@
           <article><span>Output-directed assets</span><h3>Runes</h3><p>For fungible assets expressed through runestones that direct balances to Bitcoin transaction outputs.</p></article>
           <article><span>OP_RETURN experiment</span><h3>OP-20</h3><p>For the OP20 Labs experiment that records deploy, mint, and transfer operations with OP_RETURN.</p></article>
           <article><span>Programmable applications</span><h3>Alkanes</h3><p>For builders who need application-specific WebAssembly logic, beyond a fixed token rule set.</p></article>
+          <article><span>JSON output records</span><h3>Mezcal</h3><p>For output-directed assets that use readable JSON mezcalstones in OP_RETURN, including priced-mint terms.</p></article>
+          <article><span>Satoshi-backed units</span><h3>ARC-20</h3><p>For Atomicals assets where token units are represented by satoshis and followed through Bitcoin outputs.</p></article>
+          <article><span>Extended OrdFi</span><h3>TAP</h3><p>For projects using an Ordinals-based protocol with BRC-20-compatible basics and extended token features.</p></article>
+          <article><span>Block-linked inscriptions</span><h3>Block-20</h3><p>For JSON inscription events that connect token minting to the protocol's block-hash rules.</p></article>
+          <article><span>Dust-backed outputs</span><h3>DUST-20</h3><p>For token events that pair units with dust-sized Bitcoin outputs for a UTXO-aware asset model.</p></article>
           <article><span>Start with $DROP</span><h3>See op-drop in action</h3><p><code>$DROP</code>, the first token on op-drop, is a simple place to see a Bitcoin-native fungible token before launching your own.</p></article>
         </div>
       </section>
@@ -76,8 +81,8 @@
       <section class="page-main">
         <div class="page-intro">
           <p class="eyebrow">The full comparison</p>
-          <h2>Seven approaches, explained without the fog.</h2>
-          <p>There is no universal winner. The right protocol depends on whether you value an inscription convention, the Bitcoin Stamps ecosystem, output-based asset movement, open-ended program logic, or a fixed rule set with an explicit proof path. The table names what each model is made to do, and what you should verify before using it.</p>
+          <h2>Twelve approaches, explained without the fog.</h2>
+          <p>There is no universal winner. The right protocol depends on whether you value an inscription convention, satoshi-backed ownership, the Bitcoin Stamps ecosystem, output-based asset movement, open-ended program logic, or a fixed rule set with an explicit proof path. The table names what each model is made to do, and what you should verify before using it.</p>
         </div>
 
         <div class="protocol-table-wrap">
@@ -94,6 +99,11 @@
               <tr><td><strong class="protocol-name">SRC-20</strong></td><td>Direct-to-Bitcoin SRC-20 JSON token events in the Bitcoin Stamps format. The current specification encodes the record in multisig public-key data.</td><td>A Bitcoin Stamps-compatible indexer validates the event, source and destination rules, then calculates indexed balances.</td><td>Projects that want a fungible token inside the Bitcoin Stamps and SRC-20 ecosystem.</td><td>The current SRC-20 specification, its transaction encoding, and the wallet or indexer that supports it.</td></tr>
               <tr><td><strong class="protocol-name">Runes</strong></td><td>A runestone in a Bitcoin transaction output, using <code>OP_RETURN</code> followed by <code>OP_13</code> and encoded data pushes.</td><td>Runestones direct rune balances from transaction inputs to outputs, including etching, minting, and edicts.</td><td>Output-directed fungible assets built around the Runes model.</td><td>The <code>ord</code> implementation and malformed-runestone, or cenotaph, behavior.</td></tr>
               <tr><td><strong class="protocol-name">Alkanes</strong></td><td>WebAssembly smart-contract programs and calls through the Protorunes-based Alkanes metaprotocol.</td><td>The Alkanes runtime and indexing infrastructure process application-specific execution and state.</td><td>Apps that need custom logic such as AMMs, lending, governance, or programmable token behavior.</td><td>The contract code, runtime behavior, and indexer or node implementation you rely on.</td></tr>
+              <tr><td><strong class="protocol-name">Mezcal</strong></td><td>UTF-8 JSON mezcalstones pushed directly after <code>OP_RETURN</code>, with etching, mint, and output edict data.</td><td>A compatible Mezcal indexer strictly decodes the JSON record and follows its etching, mint, and output-routing rules.</td><td>Readable OP_RETURN token records, output-directed balances, and launches that use priced mints.</td><td>The active Mezcal rules, strict JSON validation, output edicts, and the indexer or wallet your users use.</td></tr>
+              <tr><td><strong class="protocol-name">ARC-20</strong></td><td>Atomicals records and satoshi-backed token outputs. Each token unit is represented by a satoshi in the ARC-20 model.</td><td>UTXO ownership follows the satoshi-backed units, using the Atomicals rules for direct or decentralized minting.</td><td>Assets whose units remain tied to Bitcoin satoshis and move with compatible UTXO-aware wallets.</td><td>The Atomicals implementation, UTXO selection support, ticker claim, and whether the asset uses direct or decentralized minting.</td></tr>
+              <tr><td><strong class="protocol-name">TAP</strong></td><td>TAP operations built on the Ordinals model, with BRC-20-compatible basics and extended protocol functions.</td><td>A TAP-compatible indexer follows the Ordinals record lifecycle and TAP's additional token, authority, and transfer rules.</td><td>OrdFi assets that need extended capabilities such as mass-send, peer-to-peer trading, or TAP's authority features.</td><td>The current TAP specification, the exact function being used, and compatible wallet, indexer, and marketplace support.</td></tr>
+              <tr><td><strong class="protocol-name">Block-20</strong></td><td>JSON deploy, mint, and transfer inscriptions. Mint records can include the block hash required by the Block-20 rule set.</td><td>A compatible Block-20 indexer checks the inscription event order and block-linked mint rules before calculating balances.</td><td>Block-linked token launches and mints using the Block-20 inscription convention.</td><td>The block-anchor rules, canonical JSON fields, and the specific indexer and wallet implementation.</td></tr>
+              <tr><td><strong class="protocol-name">DUST-20</strong></td><td>JSON deploy, mint, and transfer inscriptions with satoshi values that define its dust-backed token units.</td><td>A compatible DUST-20 indexer follows the event data and the associated dust-sized output values to calculate balances.</td><td>Assets that want a token event model paired with UTXO-aware, dust-backed output units.</td><td>The unit-satoshi and limit-satoshi rules, inscription data, output values, and indexer support.</td></tr>
             </tbody>
           </table>
         </div>
@@ -109,7 +119,7 @@
 
         <div class="protocol-table-wrap">
           <table class="comparison-table">
-            <caption>Launch and verification lens across all seven protocols</caption>
+            <caption>Launch and verification lens across all twelve protocols</caption>
             <thead>
               <tr><th>Protocol</th><th>Primary carrier</th><th>How balances or state are followed</th><th>Media and identity</th><th>Logic model</th></tr>
             </thead>
@@ -121,6 +131,11 @@
               <tr><td><strong class="protocol-name">SRC-20</strong></td><td>Bitcoin Stamps-formatted SRC-20 data carried directly in Bitcoin transactions.</td><td>Bitcoin Stamps-compatible indexers validate operations and address rules to calculate balances.</td><td>Part of the Bitcoin Stamps ecosystem, which has its own artifact and token conventions.</td><td>Fixed SRC-20 deploy, mint, and transfer operations.</td></tr>
               <tr><td><strong class="protocol-name">Runes</strong></td><td>A runestone using <code>OP_RETURN</code> with encoded data.</td><td>Balances are routed from inputs to outputs by etching, minting, and edict rules.</td><td>Media is separate from the runestone token instruction.</td><td>Fixed runestone semantics for fungible assets.</td></tr>
               <tr><td><strong class="protocol-name">Alkanes</strong></td><td>WebAssembly programs and calls in the Alkanes metaprotocol.</td><td>Its runtime executes application-defined code and state transitions.</td><td>Application-defined.</td><td>Open-ended application logic for contracts, games, and other programmable systems.</td></tr>
+              <tr><td><strong class="protocol-name">Mezcal</strong></td><td>A JSON mezcalstone pushed directly after <code>OP_RETURN</code>.</td><td>Its indexer decodes strict JSON records and routes balances through etch, mint, and edict rules.</td><td>Token names and terms are readable in the mezcalstone. Media is a separate choice.</td><td>Fixed output-directed rules with optional priced-mint terms.</td></tr>
+              <tr><td><strong class="protocol-name">ARC-20</strong></td><td>Atomicals records paired with satoshi-backed token outputs.</td><td>Compatible tools follow the UTXO that holds the satoshi-backed units.</td><td>Metadata can carry an image and asset details alongside the Atomicals identity.</td><td>Direct and decentralized mint models with satoshi-backed units.</td></tr>
+              <tr><td><strong class="protocol-name">TAP</strong></td><td>Ordinals-based TAP records and protocol operations.</td><td>A TAP indexer follows basic operations plus the protocol's extended transfer and authority rules.</td><td>Supports OrdFi extensions including Digital Matter Theory and Bitmap integrations.</td><td>Extended token functionality, including authority features and TAP smart-contract tooling.</td></tr>
+              <tr><td><strong class="protocol-name">Block-20</strong></td><td>JSON token inscriptions with a block-linked mint field.</td><td>A compatible indexer reads the event sequence and validates the matching block-hash rules.</td><td>Media is separate from the JSON token event.</td><td>Fixed deploy, mint, and transfer rules with block-linked mints.</td></tr>
+              <tr><td><strong class="protocol-name">DUST-20</strong></td><td>JSON token inscriptions paired with satoshi-valued dust outputs.</td><td>A compatible indexer reads event data and the dust-backed output values for the token state.</td><td>Media is separate from the token event and output-unit record.</td><td>Fixed deploy, mint, and transfer rules with dust-backed units.</td></tr>
             </tbody>
           </table>
         </div>
@@ -133,9 +148,10 @@
           <h2>The same Bitcoin block can carry very different promises.</h2>
           <p>A protocol is the shared reading rule that turns a Bitcoin transaction into a token event. In an inscription-first model, the protocol reads a token instruction from an inscription. In the Bitcoin Stamps model, it decodes and checks a dedicated transaction format. In an output-first model, it routes balances through transaction outputs. In a programmable model, it interprets application code. In op-drop, it checks a small canonical token record and the Taproot proof that committed to it.</p>
           <div class="proof-map" aria-label="Comparison of token state models">
-            <article><span>Inscriptions</span><strong>BRC-20, CBRC-20</strong><p>Token meaning is read from Ordinals inscription conventions.</p></article>
+            <article><span>Inscriptions</span><strong>BRC-20, CBRC-20, TAP, Block-20, DUST-20</strong><p>Token meaning is read from an inscription convention and its compatible indexer.</p></article>
+            <article><span>Satoshi-backed outputs</span><strong>ARC-20</strong><p>Each token unit is represented by a satoshi, so compatible tools follow UTXO ownership.</p></article>
             <article><span>Bitcoin Stamps</span><strong>SRC-20</strong><p>A Stamps-compatible indexer decodes and validates the SRC-20 transaction format.</p></article>
-            <article><span>OP_RETURN</span><strong>OP-20, Runes</strong><p>Token instructions are carried in transaction output data.</p></article>
+            <article><span>OP_RETURN</span><strong>OP-20, Runes, Mezcal</strong><p>Token instructions are carried in transaction output data, each with its own grammar.</p></article>
             <article><span>Programs</span><strong>Alkanes</strong><p>Application-specific logic determines the result.</p></article>
             <article><span>Taproot proof</span><strong>op-drop</strong><p>A canonical token record is checked against its OP_DROP commitment.</p></article>
           </div>
@@ -165,6 +181,10 @@
           <a href="https://docs.openstamp.io/introduction/src20-protocol/src20-on-bitcoin"><strong>SRC-20 and Bitcoin Stamps</strong><span>Direct-to-Bitcoin SRC-20 token events, transaction rules, and indexer validation.</span></a>
           <a href="https://docs.ordinals.com/runes.html"><strong>Runes handbook</strong><span>Runestones, etching, minting, and output-directed transfers.</span></a>
           <a href="https://alkanes.build/en/docs"><strong>Alkanes documentation</strong><span>WASM-based smart contracts and the Alkanes execution model.</span></a>
+          <a href="https://mezcal.sh/"><strong>Mezcal</strong><span>JSON mezcalstones, output-directed balances, and priced-mint terms.</span></a>
+          <a href="https://atomicals-community.github.io/atomicals-guide/arc20-tokens/"><strong>ARC-20 and Atomicals</strong><span>Satoshi-backed ARC-20 units, direct minting, and decentralized minting.</span></a>
+          <a href="https://docs.tap-protocol.com/"><strong>TAP Protocol</strong><span>OrdFi functions, extended token features, and TAP smart-contract tooling.</span></a>
+          <a href="https://inscribe.bitcoinuniverse.io/"><strong>Block-20 and DUST-20</strong><span>Check compatible tools and the exact indexer rules before you launch or trade.</span></a>
         </div>
       </section>
     </main>
