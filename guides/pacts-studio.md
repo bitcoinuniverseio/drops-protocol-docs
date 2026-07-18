@@ -2,7 +2,7 @@
 
 Pacts Studio turns a plain-language agreement into a clear Bitcoin artifact that people can read, review, and preserve. It lives in the Drops area of the app and guides you through a bounded agreement without asking you to learn a contract language first.
 
-![Pacts Studio review: a readable agreement, hash seal, Taproot leaf, and public key geometry](../assets/pacts-studio-review.png)
+![Pacts Studio: a luminous glass agreement, polished chrome lock, and visible state connections](../assets/pacts-luxe-hero.png)
 
 ## From an idea to an immutable Bitcoin record
 
