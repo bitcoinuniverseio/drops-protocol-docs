@@ -6,10 +6,11 @@
     <meta name="description" content="Drops is the immutable OP_DROP artifact layer for Bitcoin L1. Create inscriptions, op-drop token records, and Pacts with an explicit Taproot proof." />
     <title>Drops, immutable artifacts on Bitcoin</title>
     <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="assets/afterglow.css" />
     <link rel="stylesheet" href="assets/translation-toggle.css" />
     <script defer src="assets/translation-toggle.js"></script>
   </head>
-  <body>
+  <body class="afterglow afterglow-drops">
     <header class="topbar">
       <a class="brand" href="#top" aria-label="Drops home"><span class="brand-mark">D</span><span>Drops</span></a>
       <nav aria-label="Primary navigation">
@@ -26,14 +27,14 @@
 
     <main id="top">
       <section class="hero">
-        <img class="hero-art" src="assets/drops-hero-proof.png" alt="A Bitcoin artifact connected to a glowing Taproot proof leaf" />
+        <img class="hero-art" src="assets/new-bitcoin-afterglow.png" alt="Two original fashion figures beside a glossy pink supercar in a colorful Bitcoin-inspired studio" />
         <div class="hero-content">
-          <p class="eyebrow">Immutable artifacts. Live Bitcoin proof.</p>
-          <h1>Build on Bitcoin<br /><em>without building around it.</em></h1>
-          <p class="hero-copy">Drops gives an idea, a collectible, or an agreement a permanent home on Bitcoin. It is the shared foundation for simple inscriptions, op-drop fungible tokens such as <code>$DROP</code>, the first token on op-drop, and readable Pacts.</p>
-          <p class="hero-copy"><strong>Built to last:</strong> once confirmed, the commitment is part of Bitcoin history. Any compatible indexer can independently verify the exact artifact it records.</p>
+          <p class="eyebrow">New Bitcoin, in full color</p>
+          <h1>Bitcoin gets useful<br /><em>when it gets expressive.</em></h1>
+          <p class="hero-copy">The original orange Bitcoin story made scarce digital cash legible. Drops adds a bolder chapter: compact artifacts, strict token events, and readable agreement records, all verified against the same Bitcoin L1.</p>
+          <p class="hero-copy"><strong>Built to last:</strong> a confirmed commitment becomes part of Bitcoin history. Any compatible indexer can independently verify the exact artifact it records, without trusting a changing product database.</p>
           <div class="actions">
-            <a class="button" href="#start">Build with Drops</a>
+            <a class="button" href="#start">Build in full color</a>
             <a class="button button-quiet" href="pages/protocol.html">Understand the proof</a>
           </div>
           <div class="hero-proof" aria-label="Drops verification chain">
@@ -42,6 +43,10 @@
         </div>
       </section>
 
+      <div class="afterglow-marquee" aria-label="Drops themes">
+        <span>Payments</span><span>Proof</span><span>Artifacts</span><span>Tokens</span><span>Agreements</span><span>Bitcoin L1</span><span>Full color</span>
+      </div>
+
       <section class="numbers" aria-label="Drops guarantees">
         <article><strong>256 B</strong><span>native body cap</span></article>
         <article><strong>1</strong><span>canonical leaf grammar</span></article>
@@ -49,15 +54,36 @@
         <article><strong>1 proof</strong><span>per confirmed Drop</span></article>
       </section>
 
+      <section class="new-bitcoin" aria-labelledby="new-bitcoin-title">
+        <div class="new-bitcoin-intro">
+          <p class="eyebrow">A bigger Bitcoin canvas</p>
+          <h2 id="new-bitcoin-title">Payments were the beginning. <em>Coordination is the next act.</em></h2>
+          <p>Drops does not replace Bitcoin's original job. Sending value remains the foundation. The opportunity is to make that value useful in more situations: a compact identity, a token event with strict rules, or a visible agreement that parties can review before they sign.</p>
+        </div>
+        <div class="chapter-rails">
+          <article class="chapter-rail chapter-rail--old">
+            <span>Bitcoin's first chapter</span>
+            <strong>Simple value transfer.</strong>
+            <p>Orange, iconic, and essential: send value from one person to another with final settlement on Bitcoin.</p>
+          </article>
+          <article class="chapter-rail chapter-rail--new">
+            <span>Bitcoin in full color</span>
+            <strong>Proof that can power products.</strong>
+            <p>Pink on purpose: portable artifacts, strict token state, and bounded agreement records that people can inspect, verify, and build around.</p>
+          </article>
+        </div>
+        <p class="chapter-note">The visual is playful. The verification standard is not. Drops stays deliberately small: every valid record has a canonical grammar, an explicit Taproot proof path, and a confirmed Bitcoin anchor.</p>
+      </section>
+
       <section class="bitcoin-l1" aria-labelledby="bitcoin-l1-title">
         <div class="bitcoin-l1-copy">
           <p class="eyebrow">Bitcoin L1, all the way down</p>
-          <h2 id="bitcoin-l1-title">One immutable foundation for the things people build on Bitcoin.</h2>
+          <h2 id="bitcoin-l1-title">One immutable foundation for Bitcoin that can do more.</h2>
           <p>Think of Drops as a clear way to give a record a permanent place on Bitcoin. Once Bitcoin confirms it, people can find the same record again without trusting a changing app database, a sidechain, or a private index.</p>
           <div class="highlight-grid" aria-label="Drops highlights">
             <article><strong>Immutable by confirmation</strong><span>A confirmed Drop is an on-chain commitment. Its body and proof cannot be edited into something else.</span></article>
             <article><strong>OP_DROP native</strong><span>A small, canonical leaf keeps the format legible for wallets and straightforward for independent verification.</span></article>
-            <article><strong>BIP-110 ready</strong><span>Drops works alongside the registered <code>bip110-op-drop</code> carrier while keeping each parser's meaning strict and separate.</span></article>
+            <article><strong>BIP-110 compatibility</strong><span>Drops can recognize the <code>bip110-op-drop</code> carrier while keeping each parser's meaning strict and separate. This does not promise relay, mining, or third-party support.</span></article>
             <article><strong>Bitcoin-lifetime proof</strong><span>There is no mutable profile to rewrite. Anyone with chain data can recheck the commitment and preserve its record.</span></article>
           </div>
         </div>
@@ -143,7 +169,7 @@
         <div class="pacts-outcomes-copy">
           <p class="eyebrow">Built for clear commitments</p>
           <h2 id="pacts-outcomes-title">Make the agreement easy to see before you sign.</h2>
-          <p>You can use the same approach for an op-drop token such as <code>$DROP</code>, the first token on op-drop, shared funds, release schedules, and simple agreements. People see what is agreed before they act.</p>
+          <p>You can use the same approach for an op-drop token such as <code>$DROP</code>, shared funds, release schedules, and simple agreements. People see what is agreed before they act. Pacts is a design and verification layer, so its enforcement boundary remains explicit rather than hidden behind a promise.</p>
           <div class="outcome-grid" aria-label="Pact use cases">
             <article><strong>Shared treasury</strong><span>Keep controllers, recovery terms, and every approved state change in view.</span></article>
             <article><strong>Escrow</strong><span>Set the conditions for release and refund before value moves.</span></article>

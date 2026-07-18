@@ -11,7 +11,7 @@ The carrier registry prevents one permissive parser from assigning different mea
 | `drops-cell` | Hidden Cell descriptor leaf | Pact Cell descriptor validator |
 | `DPC1` | 36-byte transition payload inside an `OP_RETURN` output | Pact transition validator |
 
-`DPC1` is not a standalone script marker. It is exactly four bytes followed by a 32-byte transition commitment in a 38-byte `OP_RETURN` script.
+`DPC1` is a fixed transition-discovery prefix. It is exactly four bytes followed by a 32-byte transition commitment in a 38-byte `OP_RETURN` script.
 
 ## Registration requirements
 

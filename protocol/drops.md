@@ -53,6 +53,22 @@ The human display sequence `Drop #42` is indexer-local presentation metadata. It
 
 Drops limits the native body to 256 bytes. This supports small text, JSON objects, identifiers, manifests, and checksums. Larger material uses an explicit content-addressed artifact with its own marker and canonical grammar. A separate artifact never reinterprets a confirmed Drops leaf.
 
+## Product and parser boundary
+
+Drops is the compact artifact carrier. It proves a small body, its MIME type, and its Taproot commitment. It does not by itself decode an op-drop token event, maintain a fungible-token ledger, or validate a Pact state transition.
+
+Wallets, explorers, and indexers MUST keep carrier meanings separate:
+
+| Carrier | What its parser may establish |
+| --- | --- |
+| `drops` | A canonical Drops artifact with the five-value leaf grammar in this document. |
+| `bip110-op-drop` | A compatibility carrier whose body requires the strict op-drop JSON decoder before it may be treated as a token event. |
+| `drops-pact` | A Pact Seed record with its own fixed binary grammar. |
+| `drops-cell` | A deliberately unspendable descriptor leaf used to audit the state commitment of a Pact Cell. |
+| `DPC1` | A transition-discovery output for a Pact state update, not a Drops artifact. |
+
+This separation is intentional. A colorful product interface may connect these pieces, but proof still begins with the exact parser and commitment rule for the thing being displayed.
+
 ## Reference material
 
 - [BIP-341, Taproot](https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki)

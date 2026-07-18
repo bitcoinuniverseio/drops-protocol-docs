@@ -4,6 +4,12 @@
 
 ![Pact outcomes: a shared Bitcoin vault, escrow lock, and vesting path](../assets/pacts-outcomes.png)
 
+## Status and safety boundary
+
+Pacts is a development reference and verification design. It is not a production custody system, a general-purpose smart-contract runtime, or a mainnet contract wallet. Do not use it as a substitute for an audited custody design or deposit real value based only on a displayed Pact screen.
+
+The interface must show the Pact's enforcement grade before a person signs or accepts an associated asset. That grade separates conditions Bitcoin directly enforces from conditions a compatible Pact validator checks. A valid Bitcoin spend is not automatically a Pact-verified state transition.
+
 ## Smart agreements on Bitcoin L1
 
 Pacts brings smart-contract-style coordination to Bitcoin L1 without asking users to leave Bitcoin for a separate execution network. The immutable Pact Seed is recorded as a Drops artifact. The live Pact Cell is a Bitcoin UTXO. Each accepted update is a confirmed Bitcoin transaction with a compact proof trail.
@@ -48,6 +54,15 @@ A **Pact Cell** is the central object in this journey. It is a P2TR UTXO that co
 Pacts supports custody, escrow, treasuries, vesting, bounded auctions, rights, and op-drop policy controls. It uses bounded agreement rules rather than a general-purpose EVM or WASM environment.
 
 Bitcoin validates UTXO spends, signatures, timelocks, and transaction structure. Pact validators interpret the agreement rules. If a Cell is spent outside the Pact flow, the Pact closes instead of silently moving its state to a new Cell. The displayed enforcement grade tells each signer exactly which conditions Bitcoin enforces and which conditions are checked by Pact validation.
+
+## What a verifier can honestly say
+
+| Result | Meaning |
+| --- | --- |
+| `pact-verified` | The confirmed transition, Proof Pack, ruleset result, and successor Cell commitment all passed the declared validation rules. |
+| `committed-unavailable` | Bitcoin confirms a commitment, but the required hash-addressed proof data is unavailable. This is not a verified transition. |
+| `closed` | The live Cell was spent without a valid matching Pact transition. The protocol must not silently infer a successor state. |
+| `recorded` | A Seed or artifact is confirmed, but it does not by itself prove that a later agreement transition is valid. |
 
 ## Before you sign
 
