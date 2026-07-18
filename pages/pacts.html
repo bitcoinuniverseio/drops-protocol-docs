@@ -22,8 +22,7 @@
     </header>
 
     <main>
-      <section class="page-hero">
-        <img class="page-hero-art" src="../assets/pacts-luxe-hero.png" width="1821" height="864" alt="Couture-clad figures around a glowing glass agreement in a lavender penthouse" />
+      <section class="page-hero page-hero--campaign">
         <div class="page-hero-copy">
           <p class="eyebrow">Drops Pacts</p>
           <div class="status-note"><span>Development reference</span><b>Not a production custody system or a mainnet contract wallet.</b> Review the enforcement grade and test with non-value scenarios.</div>
@@ -35,6 +34,10 @@
           </div>
           <div class="proof-belt"><span>Immutable Seed</span><b>+</b><span>Live Cell</span><b>+</b><span>Proof Pack</span><b>=</b><strong>Verified agreement history</strong></div>
         </div>
+        <figure class="hero-campaign">
+          <img src="../assets/pacts-luxe-hero.png" width="1821" height="864" alt="Couture-clad figures around a glowing glass agreement in a lavender penthouse" />
+          <figcaption>Visible terms, compact state, and a proof package people can inspect.</figcaption>
+        </figure>
       </section>
 
       <section class="page-main">
@@ -74,10 +77,11 @@
       </section>
 
       <section class="split-section paper">
-        <figure>
-          <img src="../assets/pacts-luxe-hero.png" width="1821" height="864" alt="A luminous agreement object connected through pearlescent state cells" />
-          <figcaption>Seed, Cell, Proof: a compact lifecycle for a Bitcoin agreement.</figcaption>
-        </figure>
+        <ol class="pact-lifecycle" aria-label="Pact lifecycle">
+          <li><span>01</span><strong>Seed</strong><p>Fix the agreement identity, rules, and initial state commitment.</p></li>
+          <li><span>02</span><strong>Cell</strong><p>Commit the current visible state in a normal Bitcoin UTXO.</p></li>
+          <li><span>03</span><strong>Proof Pack</strong><p>Verify the transition and its confirmed successor state.</p></li>
+        </ol>
         <div>
           <p class="eyebrow">The Pacts lifecycle</p>
           <h2>Start immutable. Stay visible. Verify every transition.</h2>

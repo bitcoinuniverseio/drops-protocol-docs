@@ -2,8 +2,6 @@
 
 Pacts Studio turns a plain-language agreement into a clear Bitcoin artifact that people can read, review, and preserve. It lives in the Drops area of the app and guides you through a bounded agreement without asking you to learn a contract language first.
 
-![Pacts Studio: a luminous glass agreement, polished chrome lock, and visible state connections](../assets/pacts-luxe-hero.png)
-
 ## From an idea to an immutable Bitcoin record
 
 Pacts Studio is the human-friendly path into Bitcoin L1 agreements. You choose a familiar outcome, set the visible terms, and review the result before your wallet records the completed hash pair as a Drops artifact. The agreement you publish is tied to a canonical `OP_DROP` commitment and Taproot proof, not a mutable project page or a hidden application database.

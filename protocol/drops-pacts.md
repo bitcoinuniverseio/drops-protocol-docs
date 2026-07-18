@@ -2,8 +2,6 @@
 
 **Drops Pacts** is the agreement layer for Drops. It gives a Bitcoin agreement a stable identity, a visible current state, and a proof package that every party can inspect. A Pact is not an opaque virtual machine. It is a bounded agreement whose terms, lifecycle, and verification path remain understandable from the first review through every confirmed update.
 
-![Pact outcomes: a luminous agreement object, visible state lines, and a shared review surface](../assets/pacts-luxe-hero.png)
-
 ## Status and safety boundary
 
 Pacts is a development reference and verification design. It is not a production custody system, a general-purpose smart-contract runtime, or a mainnet contract wallet. Do not use it as a substitute for an audited custody design or deposit real value based only on a displayed Pact screen.
@@ -46,8 +44,6 @@ flowchart LR
   D --> E[Proof Pack]
   E --> F[Verified successor Cell]
 ```
-
-![Pact lifecycle: a luminous agreement object connected by pearlescent state cells](../assets/pacts-luxe-hero.png)
 
 A **Pact Cell** is the central object in this journey. It is a P2TR UTXO that commits to the agreement identity and current state. A normal state update consumes one Cell, creates its successor, and publishes a compact transaction commitment. A verifier can inspect that one transition, its Proof Pack, and its successor Cell without replaying arbitrary bytecode from the beginning of the protocol.
 
