@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="A plain-language comparison of op-drop, OP-20, BRC-20, CBRC-20, Runes, and Alkanes on Bitcoin." />
+    <meta name="description" content="A plain-language comparison of op-drop, OP-20, BRC-20, CBRC-20, SRC-20, Runes, and Alkanes on Bitcoin." />
     <title>Compare Bitcoin token protocols | Drops Documentation</title>
     <link rel="stylesheet" href="../assets/pages.css" />
   </head>
@@ -44,7 +44,9 @@
 
         <div class="feature-grid" aria-label="Bitcoin token protocol choices">
           <article><span>Fixed-rule launch</span><h3>op-drop</h3><p>For a token with clear deploy, mint, and transfer events, a verified OP_DROP commitment, and an optional image paired with its deploy reveal.</p></article>
-          <article><span>Inscription convention</span><h3>BRC-20 and CBRC-20</h3><p>For projects that want token meaning carried through Ordinals inscription conventions and the ecosystem around them.</p></article>
+          <article><span>Inscription convention</span><h3>BRC-20</h3><p>For projects that want token meaning carried through the established Ordinals inscription-token convention.</p></article>
+          <article><span>Media-aware inscription convention</span><h3>CBRC-20</h3><p>For Ordinal projects that want BRC-20-style token operations alongside flexible inscription content.</p></article>
+          <article><span>Bitcoin Stamps model</span><h3>SRC-20</h3><p>For the Bitcoin Stamps ecosystem, where a dedicated indexer validates direct-to-Bitcoin token events.</p></article>
           <article><span>Output-directed assets</span><h3>Runes</h3><p>For fungible assets expressed through runestones that direct balances to Bitcoin transaction outputs.</p></article>
           <article><span>OP_RETURN experiment</span><h3>OP-20</h3><p>For the OP20 Labs experiment that records deploy, mint, and transfer operations with OP_RETURN.</p></article>
           <article><span>Programmable applications</span><h3>Alkanes</h3><p>For builders who need application-specific WebAssembly logic, beyond a fixed token rule set.</p></article>
@@ -74,13 +76,13 @@
       <section class="page-main">
         <div class="page-intro">
           <p class="eyebrow">The full comparison</p>
-          <h2>Six approaches, explained without the fog.</h2>
-          <p>There is no universal winner. The right protocol depends on whether you value an inscription convention, output-based asset movement, open-ended program logic, or a fixed rule set with an explicit proof path. The table names what each model is made to do, and what you should verify before using it.</p>
+          <h2>Seven approaches, explained without the fog.</h2>
+          <p>There is no universal winner. The right protocol depends on whether you value an inscription convention, the Bitcoin Stamps ecosystem, output-based asset movement, open-ended program logic, or a fixed rule set with an explicit proof path. The table names what each model is made to do, and what you should verify before using it.</p>
         </div>
 
         <div class="protocol-table-wrap">
           <table class="comparison-table">
-            <caption>Comparison of common Bitcoin token protocol approaches</caption>
+            <caption>Full comparison of common Bitcoin token protocol approaches</caption>
             <thead>
               <tr><th>Protocol</th><th>What gets written</th><th>How state is read</th><th>Good fit</th><th>What to check</th></tr>
             </thead>
@@ -89,6 +91,7 @@
               <tr><td><strong class="protocol-name">OP-20</strong></td><td>Deploy, mint, and transfer operation data carried through <code>OP_RETURN</code> in the OP20 Labs experiment.</td><td>The OP-20 rules aggregate events and use UTXO ownership for transfer receipts.</td><td>Exploring the specific OP20 Labs OP_RETURN token experiment.</td><td>The exact OP-20 implementation and its rules. The same name is also used by unrelated projects.</td></tr>
               <tr><td><strong class="protocol-name">BRC-20</strong></td><td>JSON operations inscribed through the Ordinals inscription convention.</td><td>Compatible indexers interpret deploy, mint, and transfer inscriptions to calculate token state.</td><td>Projects that want the established BRC-20 inscription-token model.</td><td>The indexer policy and transfer-inscription lifecycle your wallet or marketplace uses.</td></tr>
               <tr><td><strong class="protocol-name">CBRC-20</strong></td><td>Ordinals <code>metaprotocol</code> operations, with CBOR metadata for deployment and content still available for other media.</td><td>Its convention follows the BRC-20-style deploy, mint, and transfer model while using Ordinals envelope fields.</td><td>Ordinal projects that want token operations paired with flexible inscription content.</td><td>The CBRC-20 convention, the Ordinals client behavior it expects, and indexer support.</td></tr>
+              <tr><td><strong class="protocol-name">SRC-20</strong></td><td>Direct-to-Bitcoin SRC-20 JSON token events in the Bitcoin Stamps format. The current specification encodes the record in multisig public-key data.</td><td>A Bitcoin Stamps-compatible indexer validates the event, source and destination rules, then calculates indexed balances.</td><td>Projects that want a fungible token inside the Bitcoin Stamps and SRC-20 ecosystem.</td><td>The current SRC-20 specification, its transaction encoding, and the wallet or indexer that supports it.</td></tr>
               <tr><td><strong class="protocol-name">Runes</strong></td><td>A runestone in a Bitcoin transaction output, using <code>OP_RETURN</code> followed by <code>OP_13</code> and encoded data pushes.</td><td>Runestones direct rune balances from transaction inputs to outputs, including etching, minting, and edicts.</td><td>Output-directed fungible assets built around the Runes model.</td><td>The <code>ord</code> implementation and malformed-runestone, or cenotaph, behavior.</td></tr>
               <tr><td><strong class="protocol-name">Alkanes</strong></td><td>WebAssembly smart-contract programs and calls through the Protorunes-based Alkanes metaprotocol.</td><td>The Alkanes runtime and indexing infrastructure process application-specific execution and state.</td><td>Apps that need custom logic such as AMMs, lending, governance, or programmable token behavior.</td><td>The contract code, runtime behavior, and indexer or node implementation you rely on.</td></tr>
             </tbody>
@@ -97,13 +100,41 @@
         <p class="comparison-note">This is a design and user-experience comparison, not an investment recommendation or a security ranking. Always inspect the specific wallet, indexer, marketplace, and protocol implementation you choose.</p>
       </section>
 
+      <section class="page-main comparison-lens">
+        <div class="page-intro">
+          <p class="eyebrow">At a glance</p>
+          <h2>See the design choice before you choose a ticker.</h2>
+          <p>Here is the practical view. It tells you where each protocol puts its token instruction, how the token story is followed, and whether the protocol is meant for fixed rules or open-ended applications.</p>
+        </div>
+
+        <div class="protocol-table-wrap">
+          <table class="comparison-table">
+            <caption>Launch and verification lens across all seven protocols</caption>
+            <thead>
+              <tr><th>Protocol</th><th>Primary carrier</th><th>How balances or state are followed</th><th>Media and identity</th><th>Logic model</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong class="protocol-name drop-name">op-drop</strong></td><td>A canonical token record in a Taproot leaf using <code>OP_DROP</code>.</td><td>A compatible verifier proves the leaf and confirmed transaction, then follows deploy, mint, and transfer events.</td><td>An optional token image can be inscribed with the deploy reveal, so the launch identity starts on Bitcoin with the token.</td><td>Fixed fungible-token rules. Custom game or agreement logic belongs in an app or Drops Pact.</td></tr>
+              <tr><td><strong class="protocol-name">OP-20</strong></td><td>Operation data in <code>OP_RETURN</code>.</td><td>Its rules aggregate events and use UTXO ownership for transfer receipts.</td><td>Media is not a required part of the token operation format.</td><td>Fixed deploy, mint, and transfer operations in the OP20 Labs experiment.</td></tr>
+              <tr><td><strong class="protocol-name">BRC-20</strong></td><td>JSON operation inscriptions in the Ordinals convention.</td><td>Indexers interpret the token inscription lifecycle to calculate balances.</td><td>The token operation is an inscription record. Any richer media experience depends on the surrounding Ordinals tooling.</td><td>Fixed token operations interpreted by compatible indexers.</td></tr>
+              <tr><td><strong class="protocol-name">CBRC-20</strong></td><td>Ordinals <code>metaprotocol</code> fields with CBOR metadata.</td><td>Indexers follow BRC-20-style operations using the CBRC-20 convention.</td><td>Designed to pair token metadata with flexible inscription content.</td><td>Fixed token operations within the Ordinals ecosystem.</td></tr>
+              <tr><td><strong class="protocol-name">SRC-20</strong></td><td>Bitcoin Stamps-formatted SRC-20 data carried directly in Bitcoin transactions.</td><td>Bitcoin Stamps-compatible indexers validate operations and address rules to calculate balances.</td><td>Part of the Bitcoin Stamps ecosystem, which has its own artifact and token conventions.</td><td>Fixed SRC-20 deploy, mint, and transfer operations.</td></tr>
+              <tr><td><strong class="protocol-name">Runes</strong></td><td>A runestone using <code>OP_RETURN</code> with encoded data.</td><td>Balances are routed from inputs to outputs by etching, minting, and edict rules.</td><td>Media is separate from the runestone token instruction.</td><td>Fixed runestone semantics for fungible assets.</td></tr>
+              <tr><td><strong class="protocol-name">Alkanes</strong></td><td>WebAssembly programs and calls in the Alkanes metaprotocol.</td><td>Its runtime executes application-defined code and state transitions.</td><td>Application-defined.</td><td>Open-ended application logic for contracts, games, and other programmable systems.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="comparison-note">The categories are intentionally simple. A protocol can be useful outside its typical fit, but every launch should be tested against the exact implementation and services your users will rely on.</p>
+      </section>
+
       <section class="callout">
         <div>
           <p class="eyebrow">How the models differ</p>
           <h2>The same Bitcoin block can carry very different promises.</h2>
-          <p>A protocol is the shared reading rule that turns a Bitcoin transaction into a token event. In an inscription-first model, the protocol reads a token instruction from an inscription. In an output-first model, it routes balances through transaction outputs. In a programmable model, it interprets application code. In op-drop, it checks a small canonical token record and the Taproot proof that committed to it.</p>
+          <p>A protocol is the shared reading rule that turns a Bitcoin transaction into a token event. In an inscription-first model, the protocol reads a token instruction from an inscription. In the Bitcoin Stamps model, it decodes and checks a dedicated transaction format. In an output-first model, it routes balances through transaction outputs. In a programmable model, it interprets application code. In op-drop, it checks a small canonical token record and the Taproot proof that committed to it.</p>
           <div class="proof-map" aria-label="Comparison of token state models">
             <article><span>Inscriptions</span><strong>BRC-20, CBRC-20</strong><p>Token meaning is read from Ordinals inscription conventions.</p></article>
+            <article><span>Bitcoin Stamps</span><strong>SRC-20</strong><p>A Stamps-compatible indexer decodes and validates the SRC-20 transaction format.</p></article>
             <article><span>OP_RETURN</span><strong>OP-20, Runes</strong><p>Token instructions are carried in transaction output data.</p></article>
             <article><span>Programs</span><strong>Alkanes</strong><p>Application-specific logic determines the result.</p></article>
             <article><span>Taproot proof</span><strong>op-drop</strong><p>A canonical token record is checked against its OP_DROP commitment.</p></article>
@@ -131,6 +162,7 @@
           <a href="https://op20labs.gitbook.io/op-20-experiment"><strong>OP20 Labs OP-20</strong><span>Its OP_RETURN fungibility experiment and UTXO transfer model.</span></a>
           <a href="https://domo-2.gitbook.io/brc-20-experiment"><strong>Domo's BRC-20 experiment</strong><span>The original BRC-20 inscription-token convention.</span></a>
           <a href="https://ordinals.com/preview/130c79034450163f36fcde8e27f96904dc42e535f28aacd5af3b9a18d0b1c7f9i0"><strong>CBRC-20 convention</strong><span>CBOR metadata and metaprotocol fields in Ordinals inscriptions.</span></a>
+          <a href="https://docs.openstamp.io/introduction/src20-protocol/src20-on-bitcoin"><strong>SRC-20 and Bitcoin Stamps</strong><span>Direct-to-Bitcoin SRC-20 token events, transaction rules, and indexer validation.</span></a>
           <a href="https://docs.ordinals.com/runes.html"><strong>Runes handbook</strong><span>Runestones, etching, minting, and output-directed transfers.</span></a>
           <a href="https://alkanes.build/en/docs"><strong>Alkanes documentation</strong><span>WASM-based smart contracts and the Alkanes execution model.</span></a>
         </div>
