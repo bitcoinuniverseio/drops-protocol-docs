@@ -28,7 +28,7 @@ flowchart TB
 | Release value over time | A schedule tied to Bitcoin block height | The beneficiary, schedule terms, current sequence, and successor state |
 | Attach a policy to an op-drop asset | A compact agreement record alongside the asset policy | The reviewed hash pair and linked Drops artifact |
 
-Open [Pacts Studio](../guides/pacts-studio.md) to choose a bounded agreement, review the visible terms, and record the completed artifact on Bitcoin.
+Open [Pacts Studio](../pages/pacts-studio-guide.html) to choose a bounded agreement, review the visible terms, and record the completed artifact on Bitcoin.
 
 ## The Pact journey
 

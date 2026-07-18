@@ -1,14 +1,84 @@
 <!doctype html>
 <html lang="en">
-  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="Drops Pacts, readable smart agreements with Bitcoin L1 state and proof." /><title>Drops Pacts, smart agreements on Bitcoin L1</title><link rel="stylesheet" href="../assets/pages.css" /><link rel="stylesheet" href="../assets/translation-toggle.css" /><script defer src="../assets/translation-toggle.js"></script></head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Drops Pacts, readable smart agreements with Bitcoin L1 state and proof." />
+    <title>Drops Pacts, smart agreements on Bitcoin L1</title>
+    <link rel="stylesheet" href="../assets/pages.css?v=20260718" />
+    <link rel="stylesheet" href="../assets/translation-toggle.css" />
+    <script defer src="../assets/translation-toggle.js"></script>
+  </head>
   <body>
-    <header class="page-nav"><a class="page-brand" href="../index.html"><b>D</b> Drops</a><nav class="page-nav-links" aria-label="Primary navigation"><a href="discover.html">Discover</a><a href="agreement.html">Publish agreement</a><a href="studio.html">Pacts Studio</a></nav><a class="page-button" href="../protocol/drops-pacts.md">Canonical detail</a></header>
+    <header class="page-nav">
+      <a class="page-brand" href="../index.html"><b>D</b> Drops</a>
+      <nav class="page-nav-links" aria-label="Primary navigation">
+        <a href="discover.html">Discover</a>
+        <a href="agreement.html">Publish agreement</a>
+        <a href="studio.html">Pacts Studio</a>
+      </nav>
+      <a class="page-button" href="pacts-reference.html">Pacts reference</a>
+    </header>
+
     <main>
-      <section class="page-hero"><img class="page-hero-art" src="../assets/pacts-outcomes.png" alt="A Bitcoin vault, escrow lock, and vesting timeline connected by proof lines" /><div class="page-hero-copy"><p class="eyebrow">Drops Pacts</p><h1>Smart agreements that stay <em>readable on Bitcoin L1.</em></h1><p>Pacts lets people make a Bitcoin agreement they can read together, then keep its important history visible on Bitcoin. It brings the clarity people expect from a written agreement to shared funds, releases, schedules, and token policies without hiding the rules in a black box.</p><div class="page-actions"><a class="page-button" href="studio.html">Build a Pact</a><a class="page-button quiet" href="agreement.html">Publish an agreement</a></div><div class="proof-belt"><span>Immutable Seed</span><b>+</b><span>Live Cell</span><b>+</b><span>Proof Pack</span><b>=</b><strong>Verified agreement history</strong></div></div></section>
-      <section class="page-main"><div class="page-intro"><p class="eyebrow">Not an opaque VM</p><h2>Every party can see what the agreement is, where it is, and what changed.</h2><p>You should be able to understand an agreement before you put value behind it. Pacts keeps its terms and history visible on Bitcoin, including agreements that set a public policy for an op-drop asset such as <code>$DROP</code>, the first token on op-drop.</p></div><div class="feature-grid"><article><span>Shared custody</span><h3>Treasuries with visible rules</h3><p>Keep controllers, recovery terms, and approved state changes connected to a named Bitcoin agreement.</p></article><article><span>Conditional release</span><h3>Escrow without a black box</h3><p>Set release and refund conditions before funds move, then follow the agreed state changes on Bitcoin.</p></article><article><span>Scheduled access</span><h3>Vesting tied to block height</h3><p>Make release schedules clear, explicit, and connected to a Bitcoin-native proof trail.</p></article></div></section>
-      <section class="split-section paper"><figure><img src="../assets/pacts-lifecycle.png" alt="Three connected Pact lifecycle stages" /><figcaption>Seed, Cell, Proof: a compact lifecycle for a Bitcoin agreement.</figcaption></figure><div><p class="eyebrow">The Pacts lifecycle</p><h2>Start immutable. Stay visible. Verify every transition.</h2><p>The Pact Seed gives the agreement a stable Bitcoin identity. A live Cell commits its current state. A normal update creates a successor Cell and a compact DPC1 transaction commitment, with a Proof Pack to verify the move.</p><div class="step-list"><div><b>Seed:</b> fixed agreement identity, ruleset, policy, and initial state commitment.</div><div><b>Cell:</b> ordinary P2TR UTXO with the current state commitment.</div><div><b>Proof:</b> hash-addressed package that verifies the confirmed transition and successor Cell.</div></div></div></section>
-      <section class="callout"><div><p class="eyebrow">Bitcoin L1 smart agreements</p><h2>Build coordination into the record, not into a hidden platform.</h2><p>Pacts works directly with Bitcoin UTXOs, signatures, timelocks, and transaction structure. It keeps the enforcement grade visible so signers know exactly what Bitcoin enforces and what Pact validation checks.</p><a class="page-button" href="studio.html">Design a Pact</a></div></section>
+      <section class="page-hero">
+        <img class="page-hero-art" src="../assets/pacts-outcomes.png" alt="A Bitcoin vault, escrow lock, and vesting timeline connected by proof lines" />
+        <div class="page-hero-copy">
+          <p class="eyebrow">Drops Pacts</p>
+          <h1>Smart agreements that stay <em>readable on Bitcoin L1.</em></h1>
+          <p>Pacts gives people a Bitcoin agreement they can read together, then keeps its important history visible on Bitcoin. It brings the clarity of a written agreement to shared funds, releases, schedules, and token policies without hiding the rules in a black box.</p>
+          <div class="page-actions">
+            <a class="page-button" href="studio.html">Build a Pact</a>
+            <a class="page-button quiet" href="agreement.html">Publish an agreement</a>
+          </div>
+          <div class="proof-belt"><span>Immutable Seed</span><b>+</b><span>Live Cell</span><b>+</b><span>Proof Pack</span><b>=</b><strong>Verified agreement history</strong></div>
+        </div>
+      </section>
+
+      <section class="page-main">
+        <div class="page-intro">
+          <p class="eyebrow">Built for clear commitments</p>
+          <h2>Make the agreement easy to see before you sign.</h2>
+          <p>Use the same visible-first approach for an op-drop token such as <code>$DROP</code>, the first token on op-drop, shared funds, release schedules, and simple agreements. People see what is agreed before they act.</p>
+        </div>
+        <div class="feature-grid">
+          <article><span>Shared treasury</span><h3>Keep control visible</h3><p>Connect controllers, recovery terms, and every approved state change to one named Bitcoin agreement.</p></article>
+          <article><span>Escrow</span><h3>Set the release conditions first</h3><p>Make the release and refund route clear before value moves, then follow the agreement history on Bitcoin.</p></article>
+          <article><span>Vesting</span><h3>Record a visible schedule</h3><p>Give beneficiaries and teams a reviewable release plan that is tied to Bitcoin block height.</p></article>
+          <article><span>Asset policy</span><h3>Connect a token to its terms</h3><p>Pair an op-drop policy with a readable agreement record that people can inspect independently.</p></article>
+          <article><span>Reviewable history</span><h3>See every agreed transition</h3><p>Move from the immutable agreement identity to a confirmed state change with a compact proof pack.</p></article>
+          <article><span>Wallet controlled</span><h3>Keep signing where it belongs</h3><p>Pacts never asks for seed phrases or private keys. Your wallet creates and signs the Bitcoin transaction.</p></article>
+        </div>
+      </section>
+
+      <section class="split-section paper">
+        <figure>
+          <img src="../assets/pacts-lifecycle.png" alt="Three connected Pact lifecycle stages" />
+          <figcaption>Seed, Cell, Proof: a compact lifecycle for a Bitcoin agreement.</figcaption>
+        </figure>
+        <div>
+          <p class="eyebrow">The Pacts lifecycle</p>
+          <h2>Start immutable. Stay visible. Verify every transition.</h2>
+          <p>The Pact Seed gives the agreement a stable Bitcoin identity. A live Cell commits its current state. A normal update creates a successor Cell and a compact DPC1 transaction commitment, with a Proof Pack to verify the move.</p>
+          <div class="step-list">
+            <div><b>Seed:</b> fixed agreement identity, ruleset, policy, and initial state commitment.</div>
+            <div><b>Cell:</b> an ordinary P2TR UTXO with the current state commitment.</div>
+            <div><b>Proof:</b> a hash-addressed package that verifies the confirmed transition and successor Cell.</div>
+          </div>
+          <div class="page-actions"><a class="page-button" href="pacts-reference.html">Read the Pacts reference</a><a class="page-button quiet" href="pacts-studio-guide.html">Open the Studio guide</a></div>
+        </div>
+      </section>
+
+      <section class="callout">
+        <div>
+          <p class="eyebrow">Bitcoin L1 smart agreements</p>
+          <h2>Build coordination into the record, not into a hidden platform.</h2>
+          <p>Pacts works directly with Bitcoin UTXOs, signatures, timelocks, and transaction structure. It keeps the enforcement grade visible so signers know exactly what Bitcoin enforces and what Pact validation checks.</p>
+          <div class="page-actions"><a class="page-button" href="studio.html">Open Pacts Studio</a><a class="page-button quiet" href="agreement.html">Publish an agreement</a></div>
+        </div>
+      </section>
     </main>
-    <footer class="page-footer"><span>© 2026 Drops Protocol contributors</span><span>Visible terms. Bitcoin UTXOs. Verified transitions.</span></footer>
+
+    <footer class="page-footer"><span>(c) 2026 Drops Protocol contributors</span><span>Visible terms. Bitcoin UTXOs. Verified transitions.</span></footer>
   </body>
 </html>

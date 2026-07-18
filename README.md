@@ -41,10 +41,10 @@ flowchart TB
 
 ## Choose your path
 
-- **I want to understand Drops:** read the [protocol overview](protocol/drops.md) and [why Drops is designed differently](guides/why-drops.md).
-- **I want to create or verify a Drop:** follow [run a verified indexer](guides/run-indexer.md).
-- **I want to build an app:** use the [Drops API reference](guides/run-indexer.md#read-api-and-swagger-ui), then review the [carrier registry](protocol/carrier-registry.md).
-- **I want to explore Pacts:** begin with [Drops Pacts](protocol/drops-pacts.md), then the [Pacts Studio guide](guides/pacts-studio.md).
+- **I want to understand Drops:** read the [protocol overview](pages/drops-specification.html) and [why Drops is designed differently](pages/why-drops.html).
+- **I want to create or verify a Drop:** follow the [verifier guide](pages/verifier-guide.html).
+- **I want to build an app:** use the [Drops API reference](pages/verifier-guide.html#configure-inscribe), then review the [carrier registry](pages/carrier-registry.html).
+- **I want to explore Pacts:** begin with [Drops Pacts](pages/pacts-reference.html), then the [Pacts Studio guide](pages/pacts-studio-guide.html).
 
 ## Why Drops
 
@@ -65,7 +65,7 @@ Drops does not ask users to trust a database just because it has observed a tran
 - Publish a compact text, JSON, identifier, checksum, manifest pointer, or other bounded artifact.
 - Verify a confirmed Drop with the Drops CLI and your own Bitcoin Core connection.
 - Search confirmed artifacts by canonical Drop ID, body hash, or Pacts Studio plan hash.
-- Build a backend integration against the read-only [OpenAPI and Swagger interface](guides/run-indexer.md#read-api-and-swagger-ui).
+- Build a backend integration against the read-only [OpenAPI and Swagger interface](pages/verifier-guide.html#configure-inscribe).
 - Design a bounded Pact agreement in Pacts Studio and record its plan and blueprint hashes as a Drop.
 
 ## What a Drop proves
@@ -76,10 +76,10 @@ That clear boundary is intentional. It keeps the protocol useful without asking 
 
 ## Protocol map
 
-- [Drops wire specification](protocol/drops.md)
-- [Carrier registry](protocol/carrier-registry.md)
-- [Drops Pacts](protocol/drops-pacts.md)
-- [Pacts Studio artifact profile](protocol/pacts-studio-reference.md)
+- [Drops wire specification](pages/drops-specification.html)
+- [Carrier registry](pages/carrier-registry.html)
+- [Drops Pacts](pages/pacts-reference.html)
+- [Pacts Studio artifact profile](pages/pacts-artifact.html)
 
 ## Naming
 

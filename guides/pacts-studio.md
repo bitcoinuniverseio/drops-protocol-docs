@@ -67,7 +67,7 @@ When the visible checks are complete, Pacts Studio creates this canonical Drops 
 
 The body uses `application/vnd.drops.pacts-reference+json` and stays within the 256-byte Drops body limit. Once it is committed in a verified Drop, an indexer can find it by exact plan hash.
 
-Use the [Pacts Studio artifact profile](../protocol/pacts-studio-reference.md) for the full canonical rules.
+Use the [Pacts Studio artifact profile](../pages/pacts-artifact.html) for the full canonical rules.
 
 ```mermaid
 flowchart LR
