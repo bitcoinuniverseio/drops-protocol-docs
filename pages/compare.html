@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A plain-language comparison of op-drop, OP-20, BRC-20, CBRC-20, Runes, and Alkanes on Bitcoin." />
+    <title>Compare Bitcoin token protocols | Drops Documentation</title>
+    <link rel="stylesheet" href="../assets/pages.css" />
+  </head>
+  <body>
+    <header class="page-nav">
+      <a class="page-brand" href="../index.html"><b>D</b> Drops</a>
+      <nav class="page-nav-links" aria-label="Primary navigation">
+        <a href="discover.html">Discover</a>
+        <a href="op-drop.html">op-drop</a>
+        <a href="pacts.html">Pacts</a>
+        <a href="protocol.html">Protocol</a>
+      </nav>
+      <a class="page-button" href="https://inscribe.bitcoinuniverse.io/?tab=op_drop">Mint $DROP</a>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <img class="page-hero-art" src="../assets/op-drop-token.png" alt="Bitcoin token records connected to a verified OP_DROP Taproot commitment" />
+        <div class="page-hero-copy">
+          <p class="eyebrow">Choose your Bitcoin token model</p>
+          <h1>One Bitcoin.<br /><em>Different ways to create a token.</em></h1>
+          <p>You do not need to be technical to understand the important part: a token protocol decides what is written to Bitcoin, how ownership changes, and what a wallet needs to check. This guide puts the choices side by side so you can choose with confidence.</p>
+          <p><code>op-drop</code> is built for clear fungible-token launches with a direct Bitcoin proof trail. <code>$DROP</code>, the first token on op-drop, shows how a fixed supply, visible mint rules, and a verified <code>OP_DROP</code> commitment can live together on Bitcoin L1.</p>
+          <div class="page-actions">
+            <a class="page-button" href="op-drop.html">Explore op-drop</a>
+            <a class="page-button quiet" href="https://inscribe.bitcoinuniverse.io/?tab=op_drop">Mint $DROP</a>
+          </div>
+          <div class="proof-belt"><span>Bitcoin confirmation</span><b>+</b><span>exact record</span><b>+</b><span>independent verification</span><b>=</b><strong>an asset people can inspect</strong></div>
+        </div>
+      </section>
+
+      <section class="page-main">
+        <div class="page-intro">
+          <p class="eyebrow">The simple answer</p>
+          <h2>Pick the experience you want people to have.</h2>
+          <p>All of these protocols create meaning from data confirmed on Bitcoin. They are not interchangeable. Some center on inscription conventions, some direct balances between Bitcoin outputs, and some enable general-purpose programs. op-drop focuses on the middle ground: fixed fungible-token rules that are easy for people to read and easy for compatible software to prove.</p>
+        </div>
+
+        <div class="feature-grid" aria-label="Bitcoin token protocol choices">
+          <article><span>Fixed-rule launch</span><h3>op-drop</h3><p>For a token with clear deploy, mint, and transfer events, a verified OP_DROP commitment, and an optional image paired with its deploy reveal.</p></article>
+          <article><span>Inscription convention</span><h3>BRC-20 and CBRC-20</h3><p>For projects that want token meaning carried through Ordinals inscription conventions and the ecosystem around them.</p></article>
+          <article><span>Output-directed assets</span><h3>Runes</h3><p>For fungible assets expressed through runestones that direct balances to Bitcoin transaction outputs.</p></article>
+          <article><span>OP_RETURN experiment</span><h3>OP-20</h3><p>For the OP20 Labs experiment that records deploy, mint, and transfer operations with OP_RETURN.</p></article>
+          <article><span>Programmable applications</span><h3>Alkanes</h3><p>For builders who need application-specific WebAssembly logic, beyond a fixed token rule set.</p></article>
+          <article><span>Start with $DROP</span><h3>See op-drop in action</h3><p><code>$DROP</code>, the first token on op-drop, is a simple place to see a Bitcoin-native fungible token before launching your own.</p></article>
+        </div>
+      </section>
+
+      <section class="split-section paper">
+        <figure>
+          <img src="../assets/drops-hero-proof.png" alt="A compact Drops artifact anchored to a Bitcoin Taproot proof" />
+          <figcaption>op-drop makes the token record and its Bitcoin commitment part of the same verification story.</figcaption>
+        </figure>
+        <div>
+          <p class="eyebrow">Why op-drop exists</p>
+          <h2>Simple to use. Explicit enough to verify.</h2>
+          <p>People launching a token should not need to explain a maze of hidden rules. An op-drop token is a compact, canonical record for deploy, mint, and transfer. A compatible indexer accepts it only after the matching Bitcoin transaction and Taproot commitment check out.</p>
+          <div class="step-list">
+            <div><b>Immutable by confirmation:</b> a valid record can be rechecked from Bitcoin chain data instead of a changing app database.</div>
+            <div><b>OP_DROP native:</b> the token designator is <code>op-drop</code>; <code>OP_DROP</code> is the Bitcoin Script opcode that carries its canonical commitment.</div>
+            <div><b>BIP-110 ready:</b> the format uses a compact, strict grammar designed for the BIP-110 OP_DROP compatibility boundary.</div>
+            <div><b>Designed for real launches:</b> a deploy can carry its token image in the same reveal, so the asset identity follows the token from day one.</div>
+          </div>
+          <div class="page-actions"><a class="page-button" href="https://inscribe.bitcoinuniverse.io/?tab=op_drop">Mint $DROP</a><a class="page-button quiet" href="op-drop.html">Read op-drop</a></div>
+        </div>
+      </section>
+
+      <section class="page-main">
+        <div class="page-intro">
+          <p class="eyebrow">The full comparison</p>
+          <h2>Six approaches, explained without the fog.</h2>
+          <p>There is no universal winner. The right protocol depends on whether you value an inscription convention, output-based asset movement, open-ended program logic, or a fixed rule set with an explicit proof path. The table names what each model is made to do, and what you should verify before using it.</p>
+        </div>
+
+        <div class="protocol-table-wrap">
+          <table class="comparison-table">
+            <caption>Comparison of common Bitcoin token protocol approaches</caption>
+            <thead>
+              <tr><th>Protocol</th><th>What gets written</th><th>How state is read</th><th>Good fit</th><th>What to check</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong class="protocol-name drop-name">op-drop</strong></td><td>Canonical JSON token events inside a verified <code>OP_DROP</code> Taproot leaf. A deploy may also include its image in the same reveal.</td><td>A compatible verifier checks the exact leaf, body hash, Taproot commitment, and confirmed transaction before it updates supply or balances.</td><td>Clear fungible-token launches, inscriptions with a token identity, and readable Bitcoin L1 agreements.</td><td>The compatible Drops verifier or indexer, the canonical event, and the Bitcoin confirmation.</td></tr>
+              <tr><td><strong class="protocol-name">OP-20</strong></td><td>Deploy, mint, and transfer operation data carried through <code>OP_RETURN</code> in the OP20 Labs experiment.</td><td>The OP-20 rules aggregate events and use UTXO ownership for transfer receipts.</td><td>Exploring the specific OP20 Labs OP_RETURN token experiment.</td><td>The exact OP-20 implementation and its rules. The same name is also used by unrelated projects.</td></tr>
+              <tr><td><strong class="protocol-name">BRC-20</strong></td><td>JSON operations inscribed through the Ordinals inscription convention.</td><td>Compatible indexers interpret deploy, mint, and transfer inscriptions to calculate token state.</td><td>Projects that want the established BRC-20 inscription-token model.</td><td>The indexer policy and transfer-inscription lifecycle your wallet or marketplace uses.</td></tr>
+              <tr><td><strong class="protocol-name">CBRC-20</strong></td><td>Ordinals <code>metaprotocol</code> operations, with CBOR metadata for deployment and content still available for other media.</td><td>Its convention follows the BRC-20-style deploy, mint, and transfer model while using Ordinals envelope fields.</td><td>Ordinal projects that want token operations paired with flexible inscription content.</td><td>The CBRC-20 convention, the Ordinals client behavior it expects, and indexer support.</td></tr>
+              <tr><td><strong class="protocol-name">Runes</strong></td><td>A runestone in a Bitcoin transaction output, using <code>OP_RETURN</code> followed by <code>OP_13</code> and encoded data pushes.</td><td>Runestones direct rune balances from transaction inputs to outputs, including etching, minting, and edicts.</td><td>Output-directed fungible assets built around the Runes model.</td><td>The <code>ord</code> implementation and malformed-runestone, or cenotaph, behavior.</td></tr>
+              <tr><td><strong class="protocol-name">Alkanes</strong></td><td>WebAssembly smart-contract programs and calls through the Protorunes-based Alkanes metaprotocol.</td><td>The Alkanes runtime and indexing infrastructure process application-specific execution and state.</td><td>Apps that need custom logic such as AMMs, lending, governance, or programmable token behavior.</td><td>The contract code, runtime behavior, and indexer or node implementation you rely on.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="comparison-note">This is a design and user-experience comparison, not an investment recommendation or a security ranking. Always inspect the specific wallet, indexer, marketplace, and protocol implementation you choose.</p>
+      </section>
+
+      <section class="callout">
+        <div>
+          <p class="eyebrow">How the models differ</p>
+          <h2>The same Bitcoin block can carry very different promises.</h2>
+          <p>A protocol is the shared reading rule that turns a Bitcoin transaction into a token event. In an inscription-first model, the protocol reads a token instruction from an inscription. In an output-first model, it routes balances through transaction outputs. In a programmable model, it interprets application code. In op-drop, it checks a small canonical token record and the Taproot proof that committed to it.</p>
+          <div class="proof-map" aria-label="Comparison of token state models">
+            <article><span>Inscriptions</span><strong>BRC-20, CBRC-20</strong><p>Token meaning is read from Ordinals inscription conventions.</p></article>
+            <article><span>OP_RETURN</span><strong>OP-20, Runes</strong><p>Token instructions are carried in transaction output data.</p></article>
+            <article><span>Programs</span><strong>Alkanes</strong><p>Application-specific logic determines the result.</p></article>
+            <article><span>Taproot proof</span><strong>op-drop</strong><p>A canonical token record is checked against its OP_DROP commitment.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="dark-cta">
+        <div>
+          <p class="eyebrow">A better starting point for fixed-rule tokens</p>
+          <h2>Launch a token people can understand at a glance.</h2>
+          <p>op-drop keeps the launch story visible: a token name, supply terms, mint limit, optional image, confirmed Bitcoin record, and a proof a compatible verifier can repeat. Start by minting <code>$DROP</code>, the first token on op-drop, then bring the same simple experience to your own launch.</p>
+          <div class="page-actions"><a class="page-button" href="https://inscribe.bitcoinuniverse.io/?tab=op_drop">Mint $DROP</a><a class="page-button quiet" href="op-drop.html">Explore op-drop and $DROP</a></div>
+        </div>
+      </section>
+
+      <section class="page-main sources-section">
+        <div class="page-intro">
+          <p class="eyebrow">Read every protocol in its own words</p>
+          <h2>Useful source material before you choose.</h2>
+          <p>This page summarizes the current published documentation for each model. For a launch or integration, read the original rules and test the exact implementation your product will use.</p>
+        </div>
+        <div class="page-links">
+          <a href="op-drop.html"><strong>op-drop and $DROP</strong><span>Canonical token events, OP_DROP commitments, and the $DROP launch experience.</span></a>
+          <a href="https://op20labs.gitbook.io/op-20-experiment"><strong>OP20 Labs OP-20</strong><span>Its OP_RETURN fungibility experiment and UTXO transfer model.</span></a>
+          <a href="https://domo-2.gitbook.io/brc-20-experiment"><strong>Domo's BRC-20 experiment</strong><span>The original BRC-20 inscription-token convention.</span></a>
+          <a href="https://ordinals.com/preview/130c79034450163f36fcde8e27f96904dc42e535f28aacd5af3b9a18d0b1c7f9i0"><strong>CBRC-20 convention</strong><span>CBOR metadata and metaprotocol fields in Ordinals inscriptions.</span></a>
+          <a href="https://docs.ordinals.com/runes.html"><strong>Runes handbook</strong><span>Runestones, etching, minting, and output-directed transfers.</span></a>
+          <a href="https://alkanes.build/en/docs"><strong>Alkanes documentation</strong><span>WASM-based smart contracts and the Alkanes execution model.</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer"><span>(c) 2026 Drops Protocol contributors</span><span>Clear tradeoffs. Explicit proof. Bitcoin-native records.</span></footer>
+  </body>
+</html>
