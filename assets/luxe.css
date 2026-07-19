@@ -1093,14 +1093,26 @@ a {
 }
 
 .event-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   overflow: hidden;
+  padding: 26px 26px 0;
   border: 1px solid rgba(255, 220, 242, .22);
   border-radius: var(--luxe-radius-md);
   background: rgba(255, 255, 255, .08);
   box-shadow: 0 16px 34px rgba(0, 0, 0, .22);
 }
 
+.event-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  margin-top: 48px;
+}
+
 .event-card h3 {
+  margin: 0;
   font-family: var(--luxe-font-display);
   font-size: 27px;
   font-weight: 400;
@@ -1109,11 +1121,16 @@ a {
 }
 
 .event-card p {
+  margin: 16px 0 24px;
   min-height: 94px;
   color: #f5d2e4;
 }
 
 .event-card pre {
+  min-width: 0;
+  margin: auto -26px 0;
+  padding: 17px 26px;
+  overflow-x: auto;
   border-width: 1px 0 0;
   border-radius: 0;
   box-shadow: none;
