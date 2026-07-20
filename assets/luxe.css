@@ -472,7 +472,7 @@ a {
   position: relative;
   z-index: 2;
   max-width: 1240px;
-  margin: -30px auto 0;
+  margin: 0 auto;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, .8);
   border-radius: var(--luxe-radius-lg);
@@ -1534,7 +1534,7 @@ footer {
   }
 
   .numbers {
-    margin: -18px 16px 0;
+    margin: 0 16px;
   }
 
   .numbers article {
@@ -2889,5 +2889,73 @@ img {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .01ms !important;
+  }
+}
+
+/* Launch brand assets used by the three public product pages. */
+.brand-lockup {
+  display: block;
+  width: min(100%, 370px);
+  height: auto;
+  margin: 0 0 26px;
+}
+
+.diagram-showcase {
+  padding: clamp(74px, 10vw, 132px) clamp(20px, 8vw, 130px);
+  background: #120610;
+  color: #fffaf0;
+}
+
+.diagram-showcase__intro {
+  max-width: 820px;
+  margin: 0 auto 44px;
+}
+
+.diagram-showcase__intro h2 {
+  margin: 0;
+  font-size: clamp(42px, 6vw, 76px);
+  line-height: .93;
+  letter-spacing: -.065em;
+}
+
+.diagram-showcase__intro p:not(.eyebrow) {
+  max-width: 680px;
+  color: #d9d1df;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.diagram-showcase__figure {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.diagram-showcase__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(255, 207, 236, .36);
+  box-shadow: 14px 14px 0 rgba(255, 35, 143, .22);
+}
+
+.diagram-showcase__figure figcaption {
+  margin-top: 13px;
+  color: #c8bdd0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+@media (max-width: 680px) {
+  .brand-lockup {
+    width: min(100%, 290px);
+    margin-bottom: 20px;
+  }
+
+  .diagram-showcase__intro {
+    margin-bottom: 28px;
+  }
+
+  .diagram-showcase__figure img {
+    box-shadow: 7px 7px 0 rgba(255, 35, 143, .22);
   }
 }
