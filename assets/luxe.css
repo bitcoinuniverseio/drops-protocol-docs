@@ -1980,35 +1980,6 @@ img {
   line-height: 1.42;
 }
 
-.pact-outcome-orbit {
-  position: absolute;
-  z-index: 2;
-  top: 50%;
-  left: 50%;
-  display: grid;
-  width: 132px;
-  height: 132px;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, .85);
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 25%, #fff, #f6b6e0 48%, #a636c4 100%);
-  box-shadow: 0 12px 32px rgba(101, 10, 76, .25), 0 0 0 10px rgba(255, 255, 255, .34);
-  color: #2e0020;
-  transform: translate(-50%, -50%);
-}
-
-.pact-outcome-orbit b {
-  position: absolute;
-  font-family: var(--luxe-font-mono);
-  font-size: 10px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-.pact-outcome-orbit b:nth-of-type(1) { top: 22px; }
-.pact-outcome-orbit b:nth-of-type(2) { left: 12px; bottom: 22px; }
-.pact-outcome-orbit b:nth-of-type(3) { right: 8px; bottom: 22px; }
-
 .pact-lifecycle,
 .verifier-proof-route,
 .carrier-boundary-map,
@@ -2736,9 +2707,6 @@ img {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .pact-outcome-orbit {
-    display: none;
-  }
 }
 
 @media (max-width: 760px) {
@@ -2799,10 +2767,6 @@ img {
   .protocol-specimen dl,
   .studio-canvas .canvas-grid {
     grid-template-columns: 1fr;
-  }
-
-  .pact-outcome-orbit {
-    display: none;
   }
 
   .model-atlas {
