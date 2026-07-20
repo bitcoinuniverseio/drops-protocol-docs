@@ -2215,6 +2215,9 @@ img {
 
 .verifier-proof-route strong {
   color: #fff;
+  font-size: clamp(23px, 1.45vw, 28px);
+  letter-spacing: -.045em;
+  overflow-wrap: anywhere;
 }
 
 .verifier-proof-route p {
