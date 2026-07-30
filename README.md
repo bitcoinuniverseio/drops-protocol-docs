@@ -21,7 +21,7 @@ flowchart LR
 | Explore | What Bitcoin preserves | Why it matters |
 | --- | --- | --- |
 | **Drops artifacts** | A compact body, creator key, stable identity, and proof | A record that stays easy to find and verify. |
-| **op-drop tokens** | Strict token events, including [`$DROP`](https://inscribe.bitcoinuniverse.io/?tab=op_drop) | Supply and balances follow visible confirmed rules. |
+| **op-drop tokens** | Strict token events, including [`$DROP`](https://inscribe.bitcoinuniverse.io/op-drop) | Supply and balances follow visible confirmed rules. |
 | **Drops Pacts** | Agreement identity, visible terms, state transitions, and proof packs | People can compare what was agreed with what Bitcoin confirmed. |
 
 ## Why Drops feels different
