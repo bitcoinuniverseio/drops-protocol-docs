@@ -211,7 +211,7 @@ PUSH SHA256(body)      OP_DROP
 PUSH &lt;body, max 256B&gt; OP_DROP
 PUSH &lt;x-only pubkey&gt;  OP_CHECKSIG</code></pre>
         <button class="copy" type="button" data-copy="#wire-code">Copy format</button>
-        <p>All pushes must be minimal. The Taproot leaf byte is <code>0xc0</code>. The Drops indexer accepts a record only after it proves that the control block commits this exact leaf to the spent P2TR output. That is the difference between a Bitcoin commitment and a database label.</p>
+        <p>Each Drop follows one exact compact layout. A compatible verifier compares its content, Taproot commitment, and confirmed Bitcoin transaction before presenting it as verified. That keeps the proof attached to the artifact instead of asking people to trust a database label.</p>
       </section>
 
       <section id="start" class="section start">
