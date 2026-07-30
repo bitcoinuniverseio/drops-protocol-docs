@@ -4,7 +4,7 @@
 
 ## Status and safety boundary
 
-Pacts is a development reference and verification design. It is not a production custody system, a general-purpose smart-contract runtime, or a mainnet contract wallet. Do not use it as a substitute for an audited custody design or deposit real value based only on a displayed Pact screen.
+Pacts is a clear agreement and verification layer, not a custody service, general-purpose smart-contract runtime, or wallet. A displayed Pact screen cannot authorize value on its own: review the complete agreement, enforcement boundary, transaction, destination, and fee in a wallet you trust before signing.
 
 The interface must show the Pact's enforcement grade before a person signs or accepts an associated asset. That grade separates conditions Bitcoin directly enforces from conditions a compatible Pact validator checks. A valid Bitcoin spend is not automatically a Pact-verified state transition.
 
@@ -125,7 +125,7 @@ The Pacts codec uses an exact 184-byte binary Seed body with MIME type `applicat
 | 120 | 32 | Policy root |
 | 152 | 32 | Data-availability policy hash |
 
-For the Pact ID calculation, the canonical Seed Drop ID is parsed as `drops:<network>:<reveal-txid>:d<input-index>` and encoded as its little-endian reveal txid plus a big-endian uint32 input index. This fixes the Seed Drop ID byte representation before any multi-language implementation is released.
+For the Pact ID calculation, the canonical Seed Drop ID is parsed as `drops:<network>:<reveal-txid>:d<input-index>` and encoded as its little-endian reveal txid plus a big-endian uint32 input index. This keeps the Seed Drop ID byte representation consistent everywhere it is used.
 
 ## Pact Cell
 
@@ -209,7 +209,7 @@ A valid Proof Pack contains:
 
 The Pacts encoder accepts definite-length CBOR only, shortest integer encodings, no floating point values, no duplicate map keys, numeric map keys in ascending order, a maximum depth of 32, and at most 16 availability hashes. It rejects non-canonical equivalents before hash comparison.
 
-Canonical CBOR rules are fixed before implementation: definite lengths only, shortest integer encoding, no floating-point values, no duplicate map keys, numeric keys in ascending order, and no application-defined normalization. See [RFC 8949](https://www.rfc-editor.org/rfc/rfc8949.html) for deterministic CBOR guidance.
+Canonical CBOR rules are fixed: definite lengths only, shortest integer encoding, no floating-point values, no duplicate map keys, numeric keys in ascending order, and no application-defined normalization. See [RFC 8949](https://www.rfc-editor.org/rfc/rfc8949.html) for deterministic CBOR guidance.
 
 Clients may fetch packs from any relay, local archive, or bundled test fixture. The hash is the integrity boundary. A public pact indexer must expose `committed-unavailable` distinctly from `pact-verified`.
 
