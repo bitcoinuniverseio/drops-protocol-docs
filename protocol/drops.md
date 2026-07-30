@@ -73,4 +73,4 @@ This separation is intentional. A colorful product interface may connect these p
 
 - [BIP-341, Taproot](https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki)
 - [BIP-342, Tapscript](https://github.com/bitcoin/bips/blob/master/bip-0342.mediawiki)
-- [Drops implementation](https://github.com/bitcoinuniverse/drops)
+- [Drops project](https://github.com/bitcoinuniverse/drops)
