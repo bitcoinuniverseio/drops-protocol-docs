@@ -8,6 +8,14 @@ Pacts is a development reference and verification design. It is not a production
 
 The interface must show the Pact's enforcement grade before a person signs or accepts an associated asset. That grade separates conditions Bitcoin directly enforces from conditions a compatible Pact validator checks. A valid Bitcoin spend is not automatically a Pact-verified state transition.
 
+### Current implementation status
+
+The current InScribe Pacts Studio creates proposals, blueprints, hashes, and optional Drops references. The Drops reference indexer reports `mode: reference` through `GET /pacts/capabilities`. It is not a transaction, signature, broadcast, custody, live Pact Cell, contract-execution, or value-bearing Pact authority. It rejects Pacts write requests.
+
+No funds or live Pact state are held here. If another screen claims a Pact transaction is pending, do not sign or send funds. Keep the full blueprint and plan hash, verify the Bitcoin transaction independently, and contact support with the plan hash.
+
+The protocol model below describes a future audited deployment. It does not describe a live custody or settlement service.
+
 ## Smart agreements on Bitcoin L1
 
 Pacts brings smart-contract-style coordination to Bitcoin L1 without asking users to leave Bitcoin for a separate execution network. The immutable Pact Seed is recorded as a Drops artifact. The live Pact Cell is a Bitcoin UTXO. Each accepted update is a confirmed Bitcoin transaction with a compact proof trail.
@@ -27,10 +35,10 @@ flowchart TB
 
 | If you need to | Pacts gives you | What you can inspect |
 | --- | --- | --- |
-| Share custody | A named Pact with declared controllers and recovery terms | The Pact ID, current Cell, policy root, and confirmed state history |
-| Hold value in escrow | Terms for release, refund, and the next allowed state | The visible agreement, state transition, and Proof Pack |
-| Release value over time | A schedule tied to Bitcoin block height | The beneficiary, schedule terms, current sequence, and successor state |
-| Attach a policy to an op-drop asset | A compact agreement record alongside the asset policy | The reviewed hash pair and linked Drops artifact |
+| Design shared custody | A proposal with declared controllers and recovery terms | The blueprint, plan hash, and reviewed public identifiers |
+| Design an escrow | Terms for release, refund, and a proposed next state | The visible proposal and its hash-addressed records |
+| Design a timed release | A schedule tied to Bitcoin block height | The beneficiary and schedule terms in the blueprint |
+| Attach a policy proposal to an op-drop asset | A compact agreement record alongside the asset policy | The reviewed hash pair and linked Drops artifact |
 
 Open [Pacts Studio](../pages/pacts-studio-guide.html) to choose a bounded agreement, review the visible terms, and record the completed artifact on Bitcoin.
 
@@ -47,7 +55,7 @@ flowchart LR
 
 A **Pact Cell** is the central object in this journey. It is a P2TR UTXO that commits to the agreement identity and current state. A normal state update consumes one Cell, creates its successor, and publishes a compact transaction commitment. A verifier can inspect that one transition, its Proof Pack, and its successor Cell without replaying arbitrary bytecode from the beginning of the protocol.
 
-Pacts supports custody, escrow, treasuries, vesting, bounded auctions, rights, and op-drop policy controls. It uses bounded agreement rules rather than a general-purpose EVM or WASM environment.
+A future audited Pacts system may support custody, escrow, treasuries, vesting, bounded auctions, rights, and op-drop policy controls. The current implementation only records and reviews proposal artifacts. It uses bounded agreement rules rather than a general-purpose EVM or WASM environment.
 
 Bitcoin validates UTXO spends, signatures, timelocks, and transaction structure. Pact validators interpret the agreement rules. If a Cell is spent outside the Pact flow, the Pact closes instead of silently moving its state to a new Cell. The displayed enforcement grade tells each signer exactly which conditions Bitcoin enforces and which conditions are checked by Pact validation.
 
