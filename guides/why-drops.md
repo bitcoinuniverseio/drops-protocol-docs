@@ -38,6 +38,6 @@ flowchart LR
 
 ## A better user experience through explicitness
 
-For users, the visible result is simple: the app can show the artifact's stable ID, block confirmation, content hash, creator key, anchor outpoint, and proof status as distinct facts. For builders, the result is a small consensus surface that is easy to test and difficult to reinterpret accidentally.
+The visible result is simple: the app can show the artifact's stable ID, block confirmation, content hash, creator key, anchor outpoint, and proof status as distinct facts. For anyone checking the proof, the result is a small, precise rule set that is difficult to reinterpret accidentally.
 
 Ordinal inscription conventions remain useful for applications that want satoshi-level assignment and their surrounding ecosystem. Drops is aimed at a different tradeoff: explicit, compact, independently verifiable artifacts.

@@ -83,7 +83,7 @@ The fair-launch template checks the token values before it hands the reviewed de
 - The ticker uses four lowercase ASCII letters or digits.
 - Maximum supply and mint limit are positive integers.
 - Mint limit is no greater than total supply.
-- [`$DROP` uses the fixed terms of `21,000,000` maximum supply and `1,000` per mint.](https://inscribe.bitcoinuniverse.io/?tab=op_drop)
+- [`$DROP` uses the fixed terms of `21,000,000` maximum supply and `1,000` per mint.](https://inscribe.bitcoinuniverse.io/op-drop)
 
 The app compares the final token payload to the reviewed payload before it creates the order. If any term changes, return to Pacts Studio, review the updated agreement, and create a new hash pair.
 

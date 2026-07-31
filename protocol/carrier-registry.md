@@ -1,40 +1,35 @@
-# Drops carrier registry
+# One marker, one meaning
 
-The carrier registry prevents one permissive parser from assigning different meanings to the same Taproot leaf. Every marker has one grammar, one validator, and a published test-vector set.
+Drops keeps every kind of Bitcoin record easy to recognize. Each marker has one
+clear purpose, so an artifact, token event, or agreement never quietly changes
+meaning from one app to another.
 
-## Registry
+## The Drops family
 
-| Marker or prefix | Purpose | Validator |
+| Marker | What it represents | What you can understand |
 | --- | --- | --- |
-| `drops` | Compact generic artifact | Drops five-push validator |
-| `drops-pact` | Immutable Pact Seed | Pact Seed validator |
-| `drops-cell` | Hidden Cell descriptor leaf | Pact Cell descriptor validator |
-| `DPC1` | 36-byte transition payload inside an `OP_RETURN` output | Pact transition validator |
+| `drops` | A compact Bitcoin artifact | The exact content, creator key, and proof anchor |
+| `drops-pact` | The beginning of a Drops Pact | The agreement identity and the terms people started from |
+| `drops-cell` | The current state of a Pact | Which agreement state is live now |
+| `DPC1` | A confirmed Pact update | How one visible agreement state moved to the next |
 
-`DPC1` is a fixed transition-discovery prefix. It is exactly four bytes followed by a 32-byte transition commitment in a 38-byte `OP_RETURN` script.
+## Why the distinction matters
 
-## Registration requirements
+- A Drop remains an artifact; it does not become a token balance.
+- A token record counts only when its own confirmed rules recognize it.
+- A Pact record describes an agreement; it does not rewrite an asset ledger.
+- A transition marker points to a possible update, while the complete Bitcoin
+  proof shows whether that update belongs to the agreement.
 
-A carrier is accepted only when its specification includes:
+That separation keeps histories understandable long after a particular website
+or visual style changes.
 
-1. A precise binary grammar, including character set, ordering, length bounds, and canonical encodings.
-2. A parser that rejects noncanonical alternatives rather than trying to repair them.
-3. BIP341 compatibility rules.
-4. Stable error codes and valid and invalid test vectors.
-5. Reorganization, duplicate, closure, and data-availability behavior.
-6. Security analysis and an owner for coordinated vulnerability disclosure.
-7. At least one independently runnable verifier.
+## Records keep their meaning
 
-## Non-interference rule
+A confirmed Drops record keeps the meaning it had when it was created. New
+experiences can present it with richer art and clearer storytelling, but they do
+not get to redefine the original proof.
 
-No carrier may reinterpret a confirmed record from another marker. In particular:
-
-- A `drops` artifact never implies an op-drop balance.
-- A generic `bip110-op-drop` record is not a valid token event until the strict token decoder accepts it.
-- A Pact Seed cannot modify an asset ledger.
-- An `op-drop-pact` binding cannot modify a Pact state.
-- A `DPC1` commitment is not a Pact transition until its parent Cell, successor Cell, and Proof Pack verify.
-
-## Deprecation
-
-Confirmed records retain their original meaning forever. A carrier may be marked deprecated for new construction, but its parser and vectors remain available. Security fixes may reject malformed records only when the original specification already made them invalid. A new interpretation requires a new marker.
+Explore [Drops artifacts](../pages/discover.html), meet
+[op-drop and `$DROP`](../pages/op-drop.html), or discover
+[Drops Pacts](../pages/pacts.html).
