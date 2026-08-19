@@ -33,6 +33,15 @@ drops:<network>:<reveal-transaction>:d<input>
 The identity points back to the Bitcoin evidence instead of relying on a
 private naming service.
 
+## How confirmed records stay available
+
+The Universe explorer serves verified records from read-only API replicas while
+one scanner advances the shared chain cursor. The scanner compares finalized
+block hashes from two independently operated Bitcoin nodes and commits Drops
+and token projections together. If catch-up or recovery is required, existing
+committed records remain available and no partial block is published as a new
+confirmed result.
+
 ## What the proof says
 
 A confirmed Drop shows that its exact content belongs to the committed Taproot

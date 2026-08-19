@@ -4,6 +4,11 @@
 
 Drops gives records, tokens, and agreements a permanent home on Bitcoin through a compact `OP_DROP` commitment. Publish something meaningful, let Bitcoin confirm it, and give everyone the same proof to inspect later.
 
+Universe's production verifier separates public reads from chain scanning and
+checks finalized history against two independently operated Bitcoin nodes.
+Users keep access to the last fully verified state during controlled catch-up,
+and new records appear only after the shared scanner commits a complete block.
+
 ![Drops proof layer](assets/drops-hero-proof.png)
 
 Visit the [Drops experience](https://bitcoinuniverse.github.io/drops-protocol/) to discover the protocol in full color.
