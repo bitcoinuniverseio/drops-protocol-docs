@@ -31,7 +31,7 @@ flowchart LR
 
 ## Why Drops feels different
 
-- **Exact by design.** The marker, content type, body hash, body, and creator key always appear in one canonical order.
+- **Exact by design.** The marker, content type, body hash, body, and creator key always appear in one authoritative order.
 - **Proof before presentation.** A Drop appears only after its body and Taproot commitment agree with confirmed Bitcoin data.
 - **Stable identity.** `drops:<network>:<reveal-txid>:d<input-index>` identifies the artifact without a private naming service.
 - **Compact and legible.** A native body is capped at 256 bytes, encouraging clear records with durable meaning.
@@ -47,14 +47,14 @@ flowchart LR
 
 ## What a Drop proves
 
-A confirmed Drop proves that exact bytes were committed in a canonical `OP_DROP` leaf and that the leaf belongs to the spent Taproot output. It does not prove off-chain authorship, legal ownership, token balances, or custody beyond what the record itself contains.
+A confirmed Drop proves that exact bytes were committed in a authoritative `OP_DROP` leaf and that the leaf belongs to the spent Taproot output. It does not prove off-chain authorship, legal ownership, token balances, or custody beyond what the record itself contains.
 
 Bitcoin transactions are difficult to reverse. Review the content, network, destination, and fee in your wallet before signing. Never share a seed phrase or private key with a website or support account.
 
 ## Explore the protocol
 
 - [Drops protocol](pages/protocol.html)
-- [Canonical artifact rules](pages/drops-specification.html)
+- [Authoritative artifact rules](pages/drops-specification.html)
 - [Supported carriers](pages/carriers.html)
 - [Drops Pacts](pages/pacts.html)
 - [Pacts Studio](pages/studio.html)
