@@ -4,7 +4,7 @@ Pacts Studio turns a plain-language agreement into a clear Bitcoin artifact that
 
 ## From an idea to an immutable Bitcoin record
 
-Pacts Studio is the human-friendly path into Bitcoin L1 agreements. You choose a familiar outcome, set the visible terms, and review the result before your wallet records the completed hash pair as a Drops artifact. The agreement you publish is tied to a authoritative `OP_DROP` commitment and Taproot proof, not a mutable project page or a hidden application database.
+Pacts Studio is the human-friendly path into Bitcoin L1 agreements. You choose a familiar outcome, set the visible terms, and review the result before your wallet records the completed hash pair as a Drops artifact. The agreement you publish is tied to an authoritative `OP_DROP` commitment and Taproot proof, not a mutable project page or a hidden application database.
 
 For compatible token flows, Studio keeps the reviewed op-drop values alongside the agreement. `$DROP`, the first token on op-drop, uses this clear fair-launch path with a public fixed supply and mint limit. For Drops Pacts, Studio gives the agreement a durable starting record that wallets, explorers, and independent verifiers can rediscover from Bitcoin history.
 
