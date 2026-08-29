@@ -47,7 +47,7 @@ flowchart LR
 
 ## What a Drop proves
 
-A confirmed Drop proves that exact bytes were committed in a authoritative `OP_DROP` leaf and that the leaf belongs to the spent Taproot output. It does not prove off-chain authorship, legal ownership, token balances, or custody beyond what the record itself contains.
+A confirmed Drop proves that exact bytes were committed in an authoritative `OP_DROP` leaf and that the leaf belongs to the spent Taproot output. It does not prove off-chain authorship, legal ownership, token balances, or custody beyond what the record itself contains.
 
 Bitcoin transactions are difficult to reverse. Review the content, network, destination, and fee in your wallet before signing. Never share a seed phrase or private key with a website or support account.
 
