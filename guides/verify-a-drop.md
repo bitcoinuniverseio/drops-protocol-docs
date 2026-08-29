@@ -4,11 +4,11 @@ Every confirmed Drop carries a proof path that can be checked from the record ba
 
 ## The proof path
 
-1. **Find the confirmed transaction.** A Drop becomes canonical only after Bitcoin confirms it.
-2. **Read the canonical leaf.** The marker, content type, body hash, body, and creator key must appear in the exact Drops order.
+1. **Find the confirmed transaction.** A Drop becomes authoritative only after Bitcoin confirms it.
+2. **Read the authoritative leaf.** The marker, content type, body hash, body, and creator key must appear in the exact Drops order.
 3. **Match the content.** Hash the body with SHA256 and compare it with the committed body hash.
 4. **Check the Taproot commitment.** The control block must commit the exact leaf to the spent Taproot output.
-5. **Confirm the identity.** The network, reveal transaction, and input index form the canonical Drop ID.
+5. **Confirm the identity.** The network, reveal transaction, and input index form the authoritative Drop ID.
 
 ## What success means
 
