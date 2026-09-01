@@ -4,7 +4,7 @@
   "name": "Drops protocol",
   "classification": "protocol",
   "repository": "bitcoinuniverseio/drops-protocol-docs",
-  "documentationUrl": "https://docs.bitcoinuniverse.io/protocols/drops-protocol-docs/",
+  "documentationUrl": "https://docs.bitcoinuniverse.io/products/drops/",
   "docsRoot": ".",
   "sourceRef": "main",
   "releasedRef": "f7bd2a22b3f4ea9517fc8653f8ef431e478aba51",
