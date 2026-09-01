@@ -43,9 +43,6 @@
   "owners": [
     "bitcoinuniverseio"
   ],
-  "redirects": [
-    { "from": "/products/drops/", "to": "https://docs.bitcoinuniverse.io/protocols/drops-protocol-docs/" }
-  ],
   "lastVerified": {
     "commit": "f7bd2a22b3f4ea9517fc8653f8ef431e478aba51",
     "timestamp": "2026-09-01T12:00:00Z"
