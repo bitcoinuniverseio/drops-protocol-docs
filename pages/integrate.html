@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Integration guide for wallets, explorers and indexers | Drops protocol</title>
+<meta name="description" content="What to implement and in what order when adding Drops support to a wallet, explorer or indexer, plus the verified support matrix for Bitcoin Universe surfaces and the mistakes that produce a wrong ledger.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/integrate.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Integration guide">
+<meta property="og:description" content="What to implement and in what order when adding Drops support to a wallet, explorer or indexer, plus the verified support matrix for Bitcoin Universe surfaces and the mistakes that produce a wrong ledger.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/integrate.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html" aria-current="page">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Guide &middot; for people building on it</p>
+    <h1>Integration <em>guide</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">Drops is small enough that a full implementation is a few hundred lines. The work that matters is not the parser, it is the discipline: verify before you record, publish what you are relative to, and never let a display field become an identity.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="support">Support matrix</h2>
+    <p>This table lists only what is wired into the org's own code and recorded in the Bitcoin Universe capability registry. Actions not listed here are not claimed.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Drops support across Bitcoin Universe surfaces</caption>
+        <thead><tr><th scope="col">Surface</th><th scope="col">Actions</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <th scope="row">Core</th>
+            <td><code>view</code>, <code>discover</code>, <code>view-collection</code>, <code>view-activity</code>, <code>view-transaction</code>, <code>list</code>, <code>update-listing</code>, <code>unlist</code>, <code>buy</code>, <code>make-offer</code>, <code>accept-offer</code>, <code>cancel-offer</code>, <code>settle</code>, <code>reconcile</code></td>
+            <td><span class="chip chip--warn">feature-gated</span> behind <code>dropsMarketplaceV1</code>, mode <code>external-execution</code></td>
+          </tr>
+          <tr>
+            <th scope="row">Wallet</th>
+            <td><code>view</code>, <code>send</code>, <code>receive</code></td>
+            <td><span class="chip chip--info">declared surface</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Inscribe</th>
+            <td><code>inscribe</code>, <code>transfer</code></td>
+            <td><span class="chip chip--info">declared surface</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Any surface</th>
+            <td><code>sell</code></td>
+            <td><span class="chip chip--bad">not supported</span>. Registry reason: <q>DROPS has no executable offer workflow on this marketplace surface.</q></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="note__title">Feature-gated means off unless an operator turns it on</span>
+      <p>Every marketplace action above is implemented and switched off by default. Availability is <code>feature-gated</code> and the execution mode is <code>external-execution</code>, so a deployment that has not enabled <code>dropsMarketplaceV1</code> offers none of them. Do not design a user flow that assumes a gate is on; check, and degrade honestly when it is not.</p>
+    </div>
+
+    <p>Registered marketplace semantics, for the deployments that do enable the gate: settlement is recorded at a minimum of one confirmation and only when the finalized-block scanner has verified the exact intent transaction and the custody transition. There is no enforced freshness limit at the registry level, so operator readiness must impose deployment-specific lag limits. Reorganisation reconciliation is automatic: rollback removes block-bound settlement evidence, marks the intent reorged, and preserves the rebroadcast lineage.</p>
+
+    <p>Support outside Bitcoin Universe is not claimed. If another wallet, explorer, marketplace or indexer supports Drops, that is for them to state, and their rules are theirs.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="order">Implementation order</h2>
+    <p>Build in this order and each stage is testable against the <a href="test-vectors.html">test vectors</a> before the next one exists.</p>
+
+    <ol class="steps">
+      <li><b>Leaf parser</b><p>Ten chunks, five fields, minimal pushes, re-serialization equality. Run every <code>VT</code> and <code>IV</code> vector through it. Do this before touching a node.</p></li>
+      <li><b>Field validators</b><p>Marker allowlist, content-type grammar, hash length and match, body bounds and encodability, x-only point validation. Point validation is the one people skip; do not skip it.</p></li>
+      <li><b>Taproot commitment</b><p>Control block structure, leaf version, internal key validity, tapleaf hash, merkle fold, tweak, parity and key equality. Compare against the <code>CT</code> vectors.</p></li>
+      <li><b>Witness gate</b><p>Exactly three items, signature 64 or 65 bytes, no annex. This is cheap and rejects most non-Drops inputs before any hashing.</p></li>
+      <li><b>Block scanner</b><p>Walk confirmed blocks up to <code>tip - (N - 1)</code>. For each transaction, for each input, apply steps 4, 1, 2 then 3. Record on success.</p></li>
+      <li><b>Identity and storage</b><p>Key everything on <code>drops:&lt;network&gt;:&lt;txid&gt;:d&lt;input&gt;</code>. Store the raw body bytes; derive everything else.</p></li>
+      <li><b>Custody projection</b><p>Track output 0 of the reveal, then output 0 of each spend, with the P2WPKH and P2TR value test. Rebuild rather than patch.</p></li>
+      <li><b>Reorg handling</b><p>Keep a block journal. On divergence, roll back to the common ancestor and rebuild projections. Set a budget, and stop with a named reason when you exceed it.</p></li>
+      <li><b>Serving</b><p>If you serve bodies over HTTP, apply the <a href="artifact.html#serving">passive-content policy</a>. Treat every body as hostile.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="patterns">Patterns worth copying</h2>
+
+    <h3>Publish what your answer is relative to</h3>
+    <p>Every response should be accompanied by the network, the confirmation depth and the indexed height. A balance or a record with no context is a claim; with context it is a measurement. The reference health payload carries <code>confirmationsRequired</code>, <code>lagBlocks</code>, <code>tipAgeSeconds</code> and an indexer state for exactly this reason.</p>
+
+    <h3>Record rejections without letting them affect state</h3>
+    <p>Storing why a candidate failed makes an indexer auditable. It must never change another record. A rejection is a diagnostic, not a ledger event.</p>
+
+    <h3>Separate provisional from recorded, visibly</h3>
+    <p>If you show unconfirmed activity, label it and keep it in a different field, the way the OP_DROP layer marks <code>finality: provisional</code> with a <code>chainState</code> of <code>mempool</code>, <code>mined</code>, <code>finalized</code> or <code>reorged</code>. Blending the two is how users end up trusting a transaction that never confirmed.</p>
+
+    <h3>Fail closed</h3>
+    <p>An error during verification is a rejection. An ambiguous reorg ancestor is a stop, not a guess. A missing previous output is an unresolved candidate, not an accepted one.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="antipatterns">Mistakes that produce a wrong ledger</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Mistake</th><th scope="col">What goes wrong</th></tr></thead>
+        <tbody>
+          <tr><td>Matching on the string <code>drops</code> anywhere in a transaction</td><td>You will record arbitrary data as artifacts, including data deliberately planted to look like one.</td></tr>
+          <tr><td>Skipping the Taproot commitment check</td><td>Anyone can put any leaf in a witness. Without the commitment, a Drop proves nothing at all.</td></tr>
+          <tr><td>Validating the key by length only</td><td>32 bytes that are not a curve point pass a length check and fail rule D-19. See vector IV-8.</td></tr>
+          <tr><td>Accepting non-minimal pushes</td><td>Two different byte strings decode to the same fields, so the leaf no longer has one serialization.</td></tr>
+          <tr><td>Accepting <code>bip110-op-drop</code></td><td>You have merged two ledgers. A token event becomes an artifact and the balances stop being reproducible.</td></tr>
+          <tr><td>Keying on <code>sequence</code> or <code>displayName</code></td><td>They are deployment-local. Two indexers will disagree and your references will break.</td></tr>
+          <tr><td>Using output index rather than input index for identity</td><td>A transaction revealing two Drops collapses into one, or into the wrong one.</td></tr>
+          <tr><td>Rendering a body with its declared content type</td><td>An SVG or HTML body executes in your origin. Serve unknown and active types as opaque attachments.</td></tr>
+          <tr><td>Patching a projection after a reorg</td><td>Projections drift from the immutable records and cannot be reproduced. Rebuild.</td></tr>
+          <tr><td>Assuming a feature gate is on</td><td>Marketplace actions are off by default. A flow that assumes otherwise breaks on every deployment that has not opted in.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="checklist">Before you call it done</h2>
+    <p>Work through the <a href="conformance.html">conformance checklist</a>. It is the same content as this page expressed as things you can tick off, and it includes the tests an implementation should be able to pass on demand.</p>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/integrate.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/integrate.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

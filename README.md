@@ -1,62 +1,91 @@
 # Drops
 
-**A clear, verifiable artifact layer for Bitcoin.**
+**A record that is dropped once and meant to last.**
 
-Drops gives records, tokens, and agreements a permanent home on Bitcoin through a compact `OP_DROP` commitment. Publish something meaningful, let Bitcoin confirm it, and give everyone the same proof to inspect later.
+Drops is an original Bitcoin Universe application protocol for two kinds of permanent Bitcoin record: **media-first artifacts**, and **Drop Pacts**, agreements whose terms are committed on chain so every party can check them later. Both travel in an `OP_DROP` Tapscript leaf, and both are counted only after the Taproot commitment verifies against confirmed chain data.
 
-Universe's production verifier separates public reads from chain scanning and
-checks finalized history against two independently operated Bitcoin nodes.
-Users keep access to the last fully verified state during controlled catch-up,
-and new records appear only after the shared scanner commits a complete block.
+**Documentation site: <https://bitcoinuniverseio.github.io/drops-protocol-docs/>**
 
-![Drops proof layer](assets/drops-hero-proof.png)
+![The Drops wordmark: a faceted magenta droplet beside the word DROPS in a high-contrast serif, over a fine spectrum rule](assets/img/wordmark-drops.png)
 
-Visit the [Drops experience](https://bitcoinuniverse.github.io/drops-protocol/) to discover the protocol in full color.
+## The leaf, in full
 
-```mermaid
-flowchart LR
-  A[Meaningful record] --> B[Exact body hash]
-  B --> C[Taproot commitment]
-  C --> D[Bitcoin confirmation]
-  D --> E[Verified Drop]
+```text
+PUSH <marker>         OP_DROP     drops | drops-pact
+PUSH <content type>   OP_DROP     lowercase type/subtype, at most 80 bytes
+PUSH SHA256(body)     OP_DROP     32 bytes
+PUSH <body>           OP_DROP     1 to 256 bytes
+PUSH <x-only pubkey>  OP_CHECKSIG 32 bytes
 ```
 
-## One Bitcoin foundation, three expressive layers
+Five pushes, fixed order, minimal push encoding, Tapleaf version `0xc0`. The leaf must be a leaf the spent Taproot output actually committed to. An indexer that only pattern-matches a transaction has not verified a Drop.
 
-| Explore | What Bitcoin preserves | Why it matters |
-| --- | --- | --- |
-| **Drops artifacts** | A compact body, creator key, stable identity, and proof | A record that stays easy to find and verify. |
-| **op-drop tokens** | Strict token events, including [`$DROP`](https://inscribe.bitcoinuniverse.io/op-drop) | Supply and balances follow visible confirmed rules. |
-| **Drops Pacts** | Agreement identity, visible terms, state transitions, and proof packs | People can compare what was agreed with what Bitcoin confirmed. |
+Every artifact gets a portable identity from the input that revealed it:
 
-## Why Drops feels different
+```text
+drops:<network>:<reveal-txid>:d<reveal-input-index>
+```
 
-- **Exact by design.** The marker, content type, body hash, body, and creator key always appear in one authoritative order.
-- **Proof before presentation.** A Drop appears only after its body and Taproot commitment agree with confirmed Bitcoin data.
-- **Stable identity.** `drops:<network>:<reveal-txid>:d<input-index>` identifies the artifact without a private naming service.
-- **Compact and legible.** A native body is capped at 256 bytes, encouraging clear records with durable meaning.
-- **Open verification.** The proof belongs to the record, so anyone can check the same confirmed result.
+## Availability today
 
-## Choose your experience
+The Bitcoin Universe capability registry records both `drops` and `op_drop` as **feature-gated** with mode **external-execution**. The code is implemented and wired into Core, and every marketplace action stays off unless an operator enables the gate: `dropsMarketplaceV1` for Drops, `opDropTrading` for OP_DROP. The `sell` action is not supported on any deployment, gate or no gate.
 
-- [Discover Drops](pages/discover.html) and see what permanent Bitcoin proof unlocks.
-- [Create or verify a Drop](pages/verifier.html) with a simple proof-first flow.
-- [Explore op-drop and `$DROP`](pages/op-drop.html) for strict confirmed token events.
-- [Design a Pact](pages/studio.html) and make every important term visible before publication.
-- [Compare Bitcoin protocols](pages/compare.html) with clear boundaries and no hidden assumptions.
+**Drop Pacts are reference-only.** The indexer's capability contract reports `mode: reference`, with every execution, custody, authorization, signature, broadcast, live-Cell and value-bearing field set to `false`. Pact records are readable; there is no Pact settlement authority. If a screen tells you a Pact transaction is pending, do not sign and do not send funds.
 
-## What a Drop proves
+## Start here
 
-A confirmed Drop proves that exact bytes were committed in an authoritative `OP_DROP` leaf and that the leaf belongs to the spent Taproot output. It does not prove off-chain authorship, legal ownership, token balances, or custody beyond what the record itself contains.
+| I want to | Go to |
+| --- | --- |
+| Understand the protocol in plain language | [Home](https://bitcoinuniverseio.github.io/drops-protocol-docs/) |
+| Read the normative rules | [Specification](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/drops-specification.html) |
+| See the transaction structure | [Carrier and anatomy](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/carriers.html) |
+| Understand agreements | [Drop Pacts](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/pacts.html) |
+| Make a Drop | [Create a Drop](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/create.html) |
+| Implement an indexer | [Integration guide](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/integrate.html) and [conformance](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/conformance.html) |
+| Decode a payload | [Decoder](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/decoder.html) |
+| Check a Pact outcome | [Verifier](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/verifier.html) |
+| Test my implementation | [Test vectors](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/test-vectors.html) |
+| Call the API | [API reference](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/api.html) |
 
-Bitcoin transactions are difficult to reverse. Review the content, network, destination, and fee in your wallet before signing. Never share a seed phrase or private key with a website or support account.
+## What a confirmed Drop proves
 
-## Explore the protocol
+1. These exact body bytes, this content type, this marker and this key were committed together in one Tapscript leaf.
+2. That leaf is a leaf the spent Taproot output committed to, before the spend existed.
+3. The declared SHA-256 equals the revealed body.
+4. The spend is in a block on the chain the reading implementation follows, at or beyond its confirmation depth. On mainnet that floor is six confirmations.
 
-- [Drops protocol](pages/protocol.html)
-- [Authoritative artifact rules](pages/drops-specification.html)
-- [Supported carriers](pages/carriers.html)
-- [Drops Pacts](pages/pacts.html)
-- [Pacts Studio](pages/studio.html)
+It does not prove authorship, legal rights, market value, that a Pact's off-chain terms were performed, or that another implementation reads it the same way. [Security and safety](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/security.html) states this in full.
 
-The protocol is **Drops**. One artifact is **a Drop**. Its identity always follows `drops:<network>:<reveal-txid>:d<input-index>`.
+Bitcoin transactions are difficult to reverse. Review the body, the network, the destination and the fee in a wallet you trust before signing. No Drops or Pacts interface ever needs a seed phrase or a private key.
+
+## Related
+
+- [bitcoinuniverseio/op-drop](https://github.com/bitcoinuniverseio/op-drop): the OP_DROP carrier protocol, which shares the leaf shape and nothing else. Summarised here, specified there.
+- [docs.bitcoinuniverse.io](https://docs.bitcoinuniverse.io): the Bitcoin Universe documentation portal, which ingests this repository through `docs.manifest.json`.
+
+## This repository
+
+Hand-authored static HTML, CSS and vanilla JavaScript. No build step, no framework, no external requests, no trackers. Deployed by GitHub Pages from `main` at the repository root.
+
+```text
+index.html            Overview and site map
+changelog.html        Protocol and document version history
+404.html              Where former pages went
+pages/                17 documentation pages
+assets/drops.css      The design system
+assets/site.js        Theme toggle, local search, copy buttons
+assets/decoder.js     The payload decoder
+assets/verifier.js    The Pact outcome verifier
+assets/img/           Optimized image derivatives, all under 200KB
+search-index.json     One entry per section, for the local search
+docs.manifest.json    Portal ingestion manifest
+llms.txt              Machine-readable site description
+```
+
+Every page works with JavaScript disabled. JavaScript adds search, the theme toggle, copy buttons and the two interactive tools; both tools state what they check and what they do not, and neither transmits, stores or logs anything you paste.
+
+To work on the site, open `index.html` in a browser, or serve the directory with any static file server. There is nothing to install and nothing to compile.
+
+Contributions: see [CONTRIBUTING.md](CONTRIBUTING.md). Questions: [SUPPORT.md](SUPPORT.md). Security: [SECURITY.md](SECURITY.md).
+
+Drops and OP_DROP are original Bitcoin Universe protocols. Content is licensed under the terms in [LICENSE](LICENSE).

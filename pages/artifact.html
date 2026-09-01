@@ -1,35 +1,269 @@
 <!doctype html>
 <html lang="en">
-  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="Record a completed Pacts blueprint and plan reference as an immutable Drops artifact." /><title>Record a Pact artifact on Bitcoin</title><link rel="stylesheet" href="../assets/pages.css" /><link rel="stylesheet" href="../assets/afterglow.css" /><link rel="stylesheet" href="../assets/translation-toggle.css" /><script defer src="../assets/translation-toggle.js"></script></head>
-  <body class="afterglow afterglow-pacts">
-    <header class="page-nav"><a class="page-brand" href="../index.html"><b>D</b> Drops</a><nav class="page-nav-links" aria-label="Primary navigation"><a href="pacts.html">Pacts</a><a href="studio.html">Pacts Studio</a><a href="agreement.html">Publish agreement</a></nav><a class="page-button" href="pacts-artifact.html">Canonical detail</a></header>
-    <main>
-      <section class="page-hero page-hero--visual">
-        <div class="page-hero-visual artifact-receipt" role="group" aria-label="Pact artifact receipt">
-          <header><span>Pact</span><b>Recorded</b></header>
-          <dl>
-            <div><dt>Blueprint</dt><dd>SHA256</dd></div>
-            <div><dt>Plan</dt><dd>SHA256</dd></div>
-            <div><dt>Proof</dt><dd>Taproot</dd></div>
-          </dl>
-          <footer><span>Canonical body</span><span>Bitcoin record</span></footer>
-        </div>
-        <div class="page-hero-copy"><p class="eyebrow">Record a Pact artifact</p><h1>Keep the exact agreement <em>easy to find and prove.</em></h1><p>A Pact artifact is a compact Drops body containing the blueprint hash and plan hash for a completed Pacts Studio agreement. It gives every party one immutable Bitcoin record to compare with the terms they reviewed.</p><div class="page-actions"><a class="page-button" href="agreement.html">Publish an agreement</a><a class="page-button quiet" href="pacts.html">Explore Pacts</a></div><div class="proof-belt"><span>Blueprint hash</span><b>+</b><span>Plan hash</span><b>+</b><span>Drops proof</span><b>=</b><strong>Recorded agreement</strong></div></div>
-      </section>
-      <section class="page-main"><div class="page-intro"><p class="eyebrow">Small record, strong identity</p><h2>Two stable hashes carry the identity of a completed agreement.</h2><p>You do not have to trust a private project database to find the agreement everyone reviewed. This small Bitcoin record lets any person compare the saved agreement with the exact final fingerprints that Bitcoin confirmed.</p></div><div class="proof-map"><article><span>01</span><strong>Blueprint hash</strong><p>Fingerprint of the deterministic agreement blueprint.</p></article><article><span>02</span><strong>Plan hash</strong><p>Fingerprint of the full reviewed package, including PactScript.</p></article><article><span>03</span><strong>Canonical body</strong><p>Compact ordered JSON keeps the publication record exact.</p></article><article><span>04</span><strong>Confirmed Drop</strong><p>Taproot proof connects the record to Bitcoin history.</p></article></div><pre class="mono-panel">{"bh":"&lt;blueprint-hash&gt;","p":"pacts","ph":"&lt;plan-hash&gt;","t":"fair-launch"}</pre></section>
-      <section class="split-section paper">
-        <figure>
-          <div class="artifact-actions" role="group" aria-label="Pact artifact actions">
-            <article><span>01</span><strong>Compare</strong><p>Match saved hashes.</p></article>
-            <article><span>02</span><strong>Discover</strong><p>Find the confirmed record.</p></article>
-            <article><span>03</span><strong>Verify</strong><p>Check the Bitcoin proof.</p></article>
-          </div>
-          <figcaption>The recorded artifact is the durable entry point into a wider Pact lifecycle.</figcaption>
-        </figure>
-        <div><p class="eyebrow">What people can do with it</p><h2>Compare, discover, and verify without trusting a private project database.</h2><p>Use the exact plan hash to find the confirmed artifact. Compare its blueprint hash with the agreement you saved. Verify the Drops proof against Bitcoin chain data. The record is compact enough to travel and precise enough to settle which completed plan was published.</p><div class="step-list"><div><b>Compare:</b> match the displayed hashes with your saved agreement package.</div><div><b>Discover:</b> find confirmed records by exact plan hash through a compatible verifier.</div><div><b>Verify:</b> recompute the body and Taproot commitment from the confirmed Bitcoin transaction.</div></div></div>
-      </section>
-      <section class="callout"><div><p class="eyebrow">A lasting agreement record</p><h2>When the terms matter, give the completed plan a proof-backed home on Bitcoin.</h2><p>Studio keeps the agreement readable. Drops makes the final hash pair immutable and independently verifiable.</p><a class="page-button" href="studio.html">Open Pacts Studio</a></div></section>
-    </main>
-    <footer class="page-footer"><span>© 2026 Drops Protocol contributors</span><span>Compact record. Exact hashes. Bitcoin proof.</span></footer>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artifacts: media model, custody and serving | Drops protocol</title>
+<meta name="description" content="The Drops artifact model: what fits in 256 bytes, how content types are handled, how custody moves between owners, and the serving policy that decides which media types are rendered inline.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/artifact.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drops artifacts">
+<meta property="og:description" content="The Drops artifact model: what fits in 256 bytes, how content types are handled, how custody moves between owners, and the serving policy that decides which media types are rendered inline.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/artifact.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html" aria-current="page">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Application layer &middot; marker <code>drops</code></p>
+    <h1>Artifacts: <em>small, exact, permanent</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">A Drops artifact is a media object small enough to sit inside its own proof. There is no separate content server to trust, no envelope to reassemble, and no chunking convention to get wrong. What the leaf holds is what the artifact is.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="model">The 256-byte decision</h2>
+    <p>Most artifact formats on Bitcoin optimise for size: how much can be pushed on chain, in how few transactions. Drops optimises for the opposite property. A body that fits in 256 bytes is a body that can be shown in full next to its own hash, reproduced from a single witness, and reasoned about without streaming.</p>
+
+    <div class="grid grid--3">
+      <article class="card card--sealed">
+        <span class="seal" aria-hidden="true">1</span>
+        <h3>Self-contained proof</h3>
+        <p>The hash, the bytes and the commitment are all in the same witness. Verifying the artifact requires the reveal transaction and nothing else.</p>
+      </article>
+      <article class="card card--sealed">
+        <span class="seal" aria-hidden="true">2</span>
+        <h3>No reassembly</h3>
+        <p>No chunk ordering, no continuation markers, no partial-artifact state. An artifact is present or absent.</p>
+      </article>
+      <article class="card card--sealed">
+        <span class="seal" aria-hidden="true">3</span>
+        <h3>Explicit references</h3>
+        <p>Larger material is referenced by a content-addressed pointer written into the body. The reference is visible, so its trust assumptions are visible too.</p>
+      </article>
+    </div>
+
+    <h3 id="fits">What actually fits</h3>
+    <div class="table-scroll">
+      <table>
+        <caption>Realistic bodies within 256 bytes</caption>
+        <thead><tr><th scope="col">Content type</th><th scope="col">What fits</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>text/plain</code></th><td>Roughly 256 ASCII characters, or fewer for multi-byte UTF-8. A statement, a name, a key fingerprint, a short poem.</td></tr>
+          <tr><th scope="row"><code>image/svg+xml</code></th><td>A compact vector mark. Geometry, not illustration. Note the serving policy below.</td></tr>
+          <tr><th scope="row"><code>application/json</code></th><td>A small structured record. The Pacts reference profile is one such body, and lands around 205 bytes at its longest.</td></tr>
+          <tr><th scope="row"><code>application/vnd.drops.pact-seed</code></th><td>The fixed 184-byte Pact Seed record.</td></tr>
+          <tr><th scope="row">A content-addressed pointer</th><td>A URI naming a hash, for example an IPFS CID or a bare SHA-256 with a retrieval hint. The pointer is on chain; the payload is not.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="note__title">A pointer is a different promise</span>
+      <p>When a body holds a reference rather than the content, Bitcoin proves the reference, not the thing referenced. That is still useful: it fixes which bytes were meant. It is not the same as the content being on chain, and an interface should not present the two as equivalent.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="content-type">Content types</h2>
+    <p>The protocol does not maintain an allowlist. Any string matching the restricted-name grammar is a valid content type in a leaf. That is a deliberate separation: what may be <em>recorded</em> is broad, and what may be <em>rendered</em> is narrow.</p>
+
+    <ul>
+      <li>Lowercase only. <code>Text/Plain</code> is invalid.</li>
+      <li>No parameters. <code>text/plain; charset=utf-8</code> is invalid; the charset belongs inside the body's own convention.</li>
+      <li>At most 80 bytes, ASCII only.</li>
+      <li>Grammar: <code>^[a-z0-9][a-z0-9!#$&amp;^_.+-]*\/[a-z0-9][a-z0-9!#$&amp;^_.+-]*$</code></li>
+    </ul>
+
+    <h2 id="serving">Serving policy</h2>
+    <p>A conforming implementation that serves artifact bodies over HTTP must assume the body is hostile, because anyone can put anything in one. The reference body endpoint applies a passive-content policy: a small set of types keep their declared media type and render inline, and everything else is served as an opaque download.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Passive inline types, and everything else</caption>
+        <thead><tr><th scope="col">Declared content type</th><th scope="col">Served as</th><th scope="col">Why</th></tr></thead>
+        <tbody>
+          <tr><td><code>text/plain</code></td><td>Inline, with its declared type</td><td rowspan="2">Passive. Cannot execute, cannot fetch, cannot navigate.</td></tr>
+          <tr><td><code>image/png</code>, <code>image/jpeg</code>, <code>image/gif</code>, <code>image/webp</code>, <code>image/avif</code></td><td>Inline, with its declared type</td></tr>
+          <tr><td><code>image/svg+xml</code></td><td><code>application/octet-stream</code> attachment</td><td>SVG is an active document format. It can carry script and external references.</td></tr>
+          <tr><td><code>text/html</code>, <code>application/javascript</code>, <code>application/xml</code>, <code>application/json</code>, <code>application/pdf</code></td><td><code>application/octet-stream</code> attachment</td><td>Active, script-bearing, or capable of external fetches.</td></tr>
+          <tr><td>Anything else, including unknown types</td><td><code>application/octet-stream</code> attachment</td><td>Default deny. An unrecognised type is not a safe type.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The same response carries the headers that make caching safe and rendering contained:</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>ETag:                     "&lt;sha256 of the body, quoted&gt;"
+Cache-Control:            public, max-age=31536000, immutable
+Content-Security-Policy:  default-src 'none'; sandbox
+X-Content-Type-Options:   nosniff
+Content-Disposition:      inline | attachment, per the table above</code></pre>
+    </div>
+    <p>A year-long immutable cache is correct here for the same reason the artifact exists: the bytes at a given Drop identity can never change. The <code>ETag</code> is the body hash, so a cache validator and a protocol proof are the same value.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap split--wide-left">
+    <div>
+      <h2 id="lifecycle">Artifact lifecycle</h2>
+      <p>An artifact has one creation event and any number of custody moves. It has no update, no revision, and no delete.</p>
+      <ol class="steps">
+        <li><b>Committed</b><p>A Taproot output commits to a script tree containing the Drops leaf. Nothing is public yet. An observer sees an ordinary P2TR output.</p></li>
+        <li><b>Revealed</b><p>The output is spent on the script path. The leaf and the control block enter the witness. The artifact now exists on chain but is not yet recorded.</p></li>
+        <li><b>Recorded</b><p>At the implementation's confirmation depth, and only after the commitment verifies, the indexer records the artifact. Its identity is fixed at this point and never changes.</p></li>
+        <li><b>Held</b><p>Custody sits at output 0 of the reveal transaction. Custody status is <code>active</code>.</p></li>
+        <li><b>Transferred</b><p>Spending the custody outpoint moves custody to output 0 of the spending transaction, provided that output is a P2WPKH or P2TR output with a positive value. The transfer count increments.</p></li>
+        <li><b>Ended</b><p>If a spend does not produce a supported output 0, custody status becomes <code>burned</code>. The record remains readable forever; only its custody chain stops.</p></li>
+      </ol>
+      <p>The full custody rules, including the exact script patterns and the <code>legacy_unresolved</code> status, are normative in <a href="drops-specification.html#custody">specification section 6.2</a>.</p>
+    </div>
+    <figure>
+      <img src="../assets/img/artifact-proof.jpg" width="1100" height="733" alt="A dark studio scene: a bronze Bitcoin disc on a metal plinth with a glowing translucent droplet in front of it, linked by light lines to small illuminated cubes and a checkmark tile." loading="lazy">
+      <figcaption>One creation event, then a custody chain. No revisions, because a revisable record is not the thing this protocol is for.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="record">What an implementation records</h2>
+    <p>These are the fields the reference indexer stores and returns for an artifact. Field names match the <a href="api.html">API reference</a>.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Artifact record fields</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">Type</th><th scope="col">Notes</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>dropId</code></th><td>string</td><td>The portable identity. The only field safe to key on.</td></tr>
+          <tr><th scope="row"><code>marker</code></th><td><code>drops</code> or <code>drops-pact</code></td><td>From the leaf.</td></tr>
+          <tr><th scope="row"><code>mime</code></th><td>string</td><td>The declared content type, verbatim.</td></tr>
+          <tr><th scope="row"><code>bodyBytes</code></th><td>integer, 1 to 256</td><td>Body length.</td></tr>
+          <tr><th scope="row"><code>bodySha256</code></th><td>64 lowercase hex</td><td>Equals the leaf's hash field, and equals SHA-256 of the served body.</td></tr>
+          <tr><th scope="row"><code>dropmark</code></th><td>10 uppercase hex</td><td>Decorative short label. Not an identity.</td></tr>
+          <tr><th scope="row"><code>creatorPubkey</code></th><td>64 lowercase hex</td><td>The x-only key from the leaf.</td></tr>
+          <tr><th scope="row"><code>initialOwnerAddress</code></th><td>string or null</td><td>Address of output 0 of the reveal transaction.</td></tr>
+          <tr><th scope="row"><code>currentOwnerAddress</code></th><td>string or null</td><td>Address holding the current custody outpoint.</td></tr>
+          <tr><th scope="row"><code>custodyStatus</code></th><td><code>active</code>, <code>burned</code>, <code>legacy_unresolved</code></td><td>See specification 6.2.</td></tr>
+          <tr><th scope="row"><code>currentCustodyOutpoint</code></th><td>object or null</td><td><code>txid</code>, <code>vout</code>, <code>scriptHex</code>, <code>valueSats</code>.</td></tr>
+          <tr><th scope="row"><code>custody</code></th><td>object</td><td>Profile <code>drops-custody-v1</code>, plus <code>transferCount</code>, <code>lastTransferHeight</code>, <code>lastTransferTxid</code>, and the projection's verification height and block hash.</td></tr>
+          <tr><th scope="row"><code>reveal</code></th><td>object</td><td><code>txid</code>, <code>input</code>, <code>height</code>, <code>blockHash</code>.</td></tr>
+          <tr><th scope="row"><code>sequence</code>, <code>displayName</code></th><td>integer, string</td><td>Presentation only. Deployment-local.</td></tr>
+          <tr><th scope="row"><code>pactSeed</code>, <code>pactsReference</code></th><td>object</td><td>Present when the body matched one of the two Pact body profiles.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Everything above except <code>sequence</code>, <code>displayName</code> and the custody verification metadata is derivable from chain data alone. That is the test for whether a field belongs in a protocol record: could a second implementation compute it and get the same answer?</p>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/artifact.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/artifact.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
 </html>

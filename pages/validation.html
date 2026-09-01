@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validation, indexing and finality | Drops protocol</title>
+<meta name="description" content="The order a conforming Drops implementation performs its checks, the confirmation policy and its six-confirmation mainnet floor, mempool behaviour, reorganisation handling, and every rejection reason.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/validation.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Validation and indexing">
+<meta property="og:description" content="The order a conforming Drops implementation performs its checks, the confirmation policy and its six-confirmation mainnet floor, mempool behaviour, reorganisation handling, and every rejection reason.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/validation.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html" aria-current="page">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Indexer semantics</p>
+    <h1>Validation, indexing <em>and finality</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">Two implementations that apply the same rules in a different order can still agree on results, but only if every rule is a hard rejection. Drops is designed that way on purpose: there is no repair step, no partial acceptance, and no ordering-dependent outcome.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="order">1. Verification order</h2>
+    <p>The reference implementation performs these checks in this order. The order matters only for which reason string you get back, never for whether a candidate is accepted.</p>
+
+    <ol class="steps">
+      <li><b>Witness shape</b><p>The input witness must hold exactly three items: signature, leaf script, control block. Each must be an even-length hex string. A final item beginning <code>0x50</code> is an annex and disqualifies the input.</p></li>
+      <li><b>Signature length</b><p>64 or 65 bytes. Nothing else.</p></li>
+      <li><b>Leaf parse</b><p>Decompile the leaf. Ten chunks, five pushes at even positions, the OP_DROP and OP_CHECKSIG sequence at odd positions. Then field-by-field validation: marker, content type, hash length, body length and encodability, key point validity. Then re-serialize and compare byte for byte.</p><p>Failure here reports that the leaf did not satisfy specification section 3.</p></li>
+      <li><b>Body hash</b><p>SHA-256 the body push and compare against the hash push.</p></li>
+      <li><b>Previous output</b><p>Fetch the spent output. It must be a 34-byte native P2TR script. If it cannot be fetched, the reason is <code>missing_previous_output</code>, which is an unresolved candidate rather than a proven rejection.</p></li>
+      <li><b>Control block structure</b><p>Length at least 33, <code>(length - 33)</code> a multiple of 32, and at most 128 path hashes.</p></li>
+      <li><b>Leaf version</b><p><code>controlBlock[0] &amp; 0xfe</code> must be <code>0xc0</code>.</p></li>
+      <li><b>Internal key</b><p>Bytes 1 through 32 must be a valid x-only point.</p></li>
+      <li><b>Merkle fold and tweak</b><p>Compute the tapleaf hash, fold the path with sorted TapBranch hashing, and tweak the internal key.</p></li>
+      <li><b>Parity and key equality</b><p>Output key parity must equal <code>controlBlock[0] &amp; 1</code>, and the resulting x-only key must equal the 32 bytes of the spent script. The comparison is constant-time in the reference implementation.</p></li>
+    </ol>
+
+    <div class="note">
+      <span class="note__title">Errors are rejections</span>
+      <p>Any exception raised anywhere in steps 5 through 10 is reported as <code>Taproot commitment could not be verified</code> and treated as failure. An implementation that treats a thrown error as anything other than "not a Drop" has a vulnerability, not a bug.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="confirmation">2. Confirmation policy</h2>
+
+    <div class="stat-row">
+      <div><b>6</b><span>Minimum confirmations on mainnet, enforced</span></div>
+      <div><b>tip &minus; (N&minus;1)</b><span>Finalized target height for depth N</span></div>
+      <div><b>0</b><span>Mempool parsers for Drops artifacts</span></div>
+      <div><b>1</b><span>Scanner writer, chain-wide</span></div>
+    </div>
+
+    <p>A Drops artifact is recorded only when its reveal transaction has reached the deployment's configured confirmation depth. On mainnet that depth has a hard floor of six confirmations, and the reference indexer refuses to start with a shallower mainnet value. Deeper values are accepted. Shallower values remain available on regtest, where they exist so tests can exercise boundary behaviour.</p>
+
+    <p>For a configured depth <var>N</var>, the scanner advances to a finalized target of <code>tip - (N - 1)</code> and persists records only up to that height. Nothing below the target is treated as state.</p>
+
+    <p>The effective depth is not a secret and should not be guessed: a conforming service exposes it in its health and status responses, and the Drops health payload carries it as <code>confirmationsRequired</code>. Historical one-confirmation behaviour is not compatible with the current policy and must be treated as transition input, never as authority to weaken the floor.</p>
+
+    <h3 id="mempool">2.1 Mempool</h3>
+    <p>There is no mempool parser for Drops artifacts in the reference baseline. An unconfirmed reveal simply does not exist as far as the Drops view is concerned. This is a deliberate asymmetry with the OP_DROP token layer, which does publish provisional observations, clearly separated and never affecting authoritative balances.</p>
+    <p>OP_DROP provisional activity is labelled <code>finality: provisional</code> and carries a <code>chainState</code> of <code>mempool</code>, <code>mined</code>, <code>finalized</code> or <code>reorged</code>. A Drops implementation that wants to show pending activity should build the same explicit separation rather than blending it into recorded state.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="reorg">3. Reorganisation behaviour</h2>
+    <p>Confirmation depth reduces the chance of a reorganisation touching recorded state; it does not eliminate it. The rule is that records are immutable and projections are rebuilt.</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 880 250" role="img" aria-labelledby="reorg-t reorg-d">
+        <title id="reorg-t">How a reorganisation is handled</title>
+        <desc id="reorg-d">A chain reorganisation is detected against the persisted block journal. If the rollback depth is within the automatic reorg depth budget and the estimated rebuild row count is within the rebuild budget, the indexer rolls back the affected blocks, rebuilds the custody and balance projections from the surviving immutable rows, and resumes. If either budget is exceeded, or the common ancestor is ambiguous, or the rebuild estimate fails, the indexer stops and sets an operator-required state with a specific code rather than guessing.</desc>
+
+        <rect x="4" y="30" width="196" height="76" rx="4" class="d-fill-2 d-stroke"/>
+        <text x="20" y="56" class="d-text">Detect</text>
+        <text x="20" y="78" class="d-text-sm">Compare the persisted block</text>
+        <text x="20" y="94" class="d-text-sm">journal against the chain</text>
+
+        <path d="M206 68h34" class="d-stroke-seal"/><path d="M240 68l-9-5v10Z" class="d-seal"/>
+
+        <rect x="248" y="30" width="212" height="76" rx="4" class="d-fill-2 d-stroke"/>
+        <text x="264" y="56" class="d-text">Check the budgets</text>
+        <text x="264" y="78" class="d-text-sm">Rollback depth within limit?</text>
+        <text x="264" y="94" class="d-text-sm">Estimated rebuild rows within limit?</text>
+
+        <path d="M466 56h50v-18h30" class="d-stroke-seal"/><path d="M546 38l-9-5v10Z" class="d-seal"/>
+        <path d="M466 82h50v20h30" class="d-stroke"/><path d="M546 102l-9-5v10Z" class="d-seal"/>
+
+        <rect x="554" y="10" width="322" height="56" rx="4" class="d-seal-soft" stroke="none"/>
+        <rect x="554" y="10" width="322" height="56" rx="4" class="d-stroke-seal"/>
+        <text x="570" y="34" class="d-text">Both within budget: automatic</text>
+        <text x="570" y="54" class="d-text-sm">Roll back, rebuild projections from immutable rows, resume</text>
+
+        <rect x="554" y="74" width="322" height="56" rx="4" class="d-fill-3 d-stroke"/>
+        <text x="570" y="98" class="d-text">Otherwise: stop and ask</text>
+        <text x="570" y="118" class="d-text-sm">Operator-required state with a specific code, no guessing</text>
+
+        <text x="4" y="168" class="d-text-sm">Records are never edited in place. A projection such as custody or a token balance is derived, so it is rebuilt rather than patched.</text>
+        <text x="4" y="190" class="d-text-sm">Marketplace settlement rollback removes block-bound settlement evidence, marks the intent reorged, and preserves rebroadcast lineage.</text>
+        <text x="4" y="218" class="d-text-sm">Failing closed is the design. An indexer that silently guesses at an ambiguous ancestor produces a history nobody can reproduce.</text>
+      </svg>
+      <figcaption>Automatic within budget, operator-required beyond it. The budget exists so that a deep or expensive rebuild is a decision, not a surprise.</figcaption>
+    </figure>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Operator-required codes and their recovery class</caption>
+        <thead><tr><th scope="col">Code</th><th scope="col">Recovery class</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>automatic_reorg_ancestor_ambiguous</code></td><td><code>chain_reorg</code></td><td>The common ancestor could not be determined without guessing.</td></tr>
+          <tr><td><code>automatic_reorg_depth_exceeded</code></td><td><code>chain_reorg</code></td><td>The rollback is deeper than the automatic budget allows.</td></tr>
+          <tr><td><code>automatic_rebuild_estimate_failed</code></td><td><code>chain_reorg</code></td><td>The cost of the rebuild could not be estimated.</td></tr>
+          <tr><td><code>automatic_rebuild_budget_exceeded</code></td><td><code>chain_reorg</code></td><td>The rebuild would touch more rows than the budget allows.</td></tr>
+          <tr><td><code>bip110_assessment_identity_mismatch</code></td><td><code>bip110_assessment</code></td><td>The recorded BIP-110 assessment identity does not match the current one.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>A change to the confirmation depth that intersects already-indexed history is treated the same way: it is a policy reconciliation that must be audited and replayed, under the recovery class <code>confirmation_policy</code>. Silently reinterpreting existing rows under a new depth is not permitted.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="scanner">4. One writer, many readers</h2>
+    <p>The reference deployment separates the read path from the chain scanner. Read replicas serve recorded state; a single scanner holds a writer lock and advances the shared chain cursor. That separation is what lets maintenance and catch-up happen without presenting partial scanner work as confirmed state.</p>
+    <p>A scanner reports a leadership state, one of <code>not_applicable</code>, <code>disabled</code>, <code>acquiring</code>, <code>leader</code>, <code>contended</code>, <code>unavailable</code>, <code>lost</code> or <code>released</code>. An indexer whose scanner does not hold leadership must not claim readiness; the reference health endpoint returns 503 in that case.</p>
+    <p>Indexer state is reported as one of <code>disabled</code>, <code>api_only</code>, <code>writer_lock_unavailable</code>, <code>leadership_lost</code>, <code>operator_required</code>, <code>paused</code>, <code>unavailable</code>, <code>syncing</code> or <code>synced</code>. Only <code>synced</code> means the recorded view is current to the finalized target.</p>
+
+    <h3 id="integrity">4.1 Custody integrity</h3>
+    <p>Because custody is a projection, it can drift from the immutable records if something goes wrong. A conforming implementation should therefore audit it rather than assume it. The reference health payload reports a custody integrity block with counters including unresolved legacy records, active records missing an owner or a custody outpoint, burned-state mismatches, custody mismatches, event discontinuities, transfer-count mismatches, spent-outpoint counts, failed transitions, reconciliation backlog and retries, quarantined records, and the age of the oldest unresolved record. A single <code>custodyHealthy</code> boolean summarises them.</p>
+    <p>Publishing these counters is part of the contract. An indexer that cannot say how far its projection has drifted is asking to be trusted rather than verified.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="determinism">5. Determinism requirements</h2>
+    <ol class="rules">
+      <li><span class="rid">V-1</span><div class="rbody"><p>Two implementations reading the same chain at the same height with the same confirmation depth <span class="must">must</span> record the same set of Drop identities.</p></div></li>
+      <li><span class="rid">V-2</span><div class="rbody"><p>They <span class="may">may</span> disagree about <code>sequence</code> and <code>displayName</code>, because those depend on where each implementation started scanning.</p></div></li>
+      <li><span class="rid">V-3</span><div class="rbody"><p>An implementation <span class="must not">must not</span> use a wallet's claim, an API response from another service, or a label in its own database as evidence. The only evidence is chain data.</p></div></li>
+      <li><span class="rid">V-4</span><div class="rbody"><p>An implementation <span class="should">should</span> record why a candidate was rejected, and <span class="must not">must not</span> let a recorded rejection affect any other record's state.</p></div></li>
+      <li><span class="rid">V-5</span><div class="rbody"><p>An implementation <span class="must">must</span> publish its confirmation depth, its network, and its indexed height alongside any data it serves, so a reader can tell what the answer is relative to.</p></div></li>
+    </ol>
+    <p>The <a href="conformance.html">conformance checklist</a> turns these into a list you can work through, and <a href="test-vectors.html">test vectors</a> gives concrete cases for each rejection.</p>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/validation.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/validation.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
