@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Drops">
+  <title>Drops</title>
+  <rect width="32" height="32" rx="7" fill="#12060f"/>
+  <path d="M16 4.5s-8.4 9.9-8.4 14.4a8.4 8.4 0 0 0 16.8 0C24.4 14.4 16 4.5 16 4.5Z" fill="#d9007a"/>
+  <path d="M16 4.5 10.9 16l5.1 9.9 5.1-9.9Z" fill="#ff8bca" opacity=".55"/>
+  <path d="M7.6 18.9h16.8" stroke="#ffe1f2" stroke-width="1.1" opacity=".7" fill="none"/>
+</svg>

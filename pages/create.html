@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Create a Drop, step by step | Drops protocol</title>
+<meta name="description" content="A plain-language walkthrough from body bytes to a confirmed, recorded artifact: building the leaf, committing to it in a Taproot output, revealing it, and checking the result.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/create.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Create a Drop">
+<meta property="og:description" content="A plain-language walkthrough from body bytes to a confirmed, recorded artifact: building the leaf, committing to it in a Taproot output, revealing it, and checking the result.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/create.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html" aria-current="page">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Guide &middot; for people making one</p>
+    <h1>Create <em>a Drop</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">Six steps, each of which you can check before the next. The transaction structure is ordinary Taproot; the only Drops-specific work is assembling the leaf correctly and keeping the commit output safe until you reveal.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <div class="caution">
+      <span class="caution__title">Before you start</span>
+      <p>Bitcoin transactions are difficult to reverse. Rehearse on <code>signet</code> or <code>regtest</code> first. Review the body, the network, the destination and the fee in a wallet you trust before signing anything. No Drops interface ever needs your seed phrase or private key. This page is a protocol walkthrough, not a wallet.</p>
+    </div>
+
+    <h2 id="step-1">1. Decide what the artifact is</h2>
+    <p>You have 256 bytes. Choose between putting the content itself on chain, or putting a content-addressed pointer to it on chain. Those are different promises, and the choice is permanent.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">If you want</th><th scope="col">Put in the body</th><th scope="col">What Bitcoin then proves</th></tr></thead>
+        <tbody>
+          <tr><td>The content itself to be permanent</td><td>The content, under 256 bytes</td><td>These exact bytes were committed at this height.</td></tr>
+          <tr><td>A large file to be pinned</td><td>A hash or content-addressed URI of it</td><td>This exact reference was committed. Retrieval is your problem, not Bitcoin's.</td></tr>
+          <tr><td>An agreement to be recorded</td><td>A <a href="pacts.html#seed">Pact Seed</a> or a <a href="pacts.html#reference">Pacts reference</a></td><td>These terms, this ruleset, this enforcement floor.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Pick the content type at the same time. It is part of the leaf and cannot be corrected later. Lowercase, no parameters, at most 80 bytes.</p>
+
+    <h2 id="step-2">2. Build the leaf</h2>
+    <p>Five pushes, each with its minimal opcode, in fixed order.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>body      = utf8("hello drops")                    # 11 bytes
+bodyHash  = SHA256(body)                           # 32 bytes, single pass
+marker    = ascii("drops")                         # or "drops-pact"
+mime      = ascii("text/plain")
+
+leaf = push(marker)   || OP_DROP
+     || push(mime)     || OP_DROP
+     || push(bodyHash) || OP_DROP
+     || push(body)     || OP_DROP
+     || push(pubkey)   || OP_CHECKSIG</code></pre>
+    </div>
+    <p>Where <code>push(x)</code> is the minimal encoding: the bare length byte for 1 to 75 bytes, <code>OP_PUSHDATA1</code> for 76 to 255, and <code>OP_PUSHDATA2</code> for exactly 256. Two body values have no minimal push at all and must be avoided: the single byte <code>0x81</code>, and any single byte from <code>0x01</code> to <code>0x10</code>.</p>
+    <p>The public key is the x-only key that will sign the reveal. Paste your assembled leaf into the <a href="decoder.html">decoder</a> before you go any further. It will tell you if any field is wrong while it is still free to fix.</p>
+
+    <h2 id="step-3">3. Commit to it</h2>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>leafHash  = taggedHash("TapLeaf", 0xc0 || compactSize(len(leaf)) || leaf)
+merkleRoot = leafHash                       # single-leaf tree
+tweak     = taggedHash("TapTweak", internalKey || merkleRoot)
+Q         = internalKey + tweak*G
+
+commitOutputScript = OP_1 || push32(xOnly(Q))     # 34 bytes</code></pre>
+    </div>
+    <p>Send a funding transaction to that output. Give it enough value to cover the reveal fee plus the amount the artifact will carry, because the reveal spends this output and its own output 0 becomes the artifact's custody outpoint.</p>
+    <p>The leaf may sit anywhere in a larger script tree if you want other spending paths alongside it; fold the sibling hashes into the merkle root in the usual way and include them in the control block. A single-leaf tree is the simplest and gives a 33-byte control block.</p>
+
+    <h2 id="step-4">4. Reveal it</h2>
+    <p>Spend the commit output on the script path. The input witness has exactly three items and nothing else.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>witness = [
+  schnorrSignature,          # 64 bytes, or 65 with an explicit sighash byte
+  leaf,                      # the script from step 2
+  controlBlock               # (0xc0 | parity(Q)) || internalKey || merklePath
+]</code></pre>
+    </div>
+    <div class="caution">
+      <span class="caution__title">Two things to get right here</span>
+      <p>The low bit of the control block's first byte is the parity of <code>Q</code>, not a flag you choose. And there must be no annex: a fourth witness item starting with <code>0x50</code> disqualifies the input entirely.</p>
+    </div>
+    <p>Output 0 of this transaction is the artifact's first custody outpoint, so send it to an address you control. It must be P2WPKH or P2TR with a positive value, or the artifact is recorded as <code>burned</code> the moment it appears.</p>
+
+    <h2 id="step-5">5. Wait</h2>
+    <p>Nothing exists until the reveal confirms deeply enough. On mainnet that means at least six confirmations, roughly an hour, and a given indexer may be configured deeper. There is no mempool view for Drops artifacts: an unconfirmed reveal is not a pending Drop, it is nothing.</p>
+
+    <h2 id="step-6">6. Check the result</h2>
+    <p>Your artifact's identity is fixed by the reveal, so you can write it down before it is recorded:</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>drops:mainnet:&lt;reveal-txid&gt;:d&lt;index of the input you revealed on&gt;</code></pre>
+    </div>
+    <p>Then confirm the record independently: fetch it from an indexer, fetch its body, and check that SHA-256 of the returned body equals the <code>bodySha256</code> field and equals the hash you put in the leaf. If those three agree, the record is what you made. See the <a href="api.html#artifacts">API reference</a> for the endpoints and the <a href="integrate.html">integration guide</a> for doing this in code.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="mistakes">Mistakes that cost a transaction</h2>
+    <div class="grid grid--2">
+      <div class="note">
+        <span class="note__title">Recoverable before broadcast</span>
+        <ul>
+          <li>Wrong hash, wrong content type case, a parameter in the content type, a non-minimal push. All caught by the <a href="decoder.html">decoder</a>.</li>
+          <li>A body value with no minimal encoding.</li>
+          <li>A public key that is 32 bytes but not on the curve.</li>
+        </ul>
+      </div>
+      <div class="caution">
+        <span class="caution__title">Not recoverable after confirmation</span>
+        <ul>
+          <li>Wrong body, wrong content type, wrong marker. The record is permanent and there is no revision mechanism.</li>
+          <li>Output 0 sent to an unsupported script or a zero value: the artifact is recorded as <code>burned</code> at birth.</li>
+          <li>Revealing on the wrong network. A signet Drop is not a mainnet Drop and never becomes one.</li>
+        </ul>
+      </div>
+    </div>
+    <p>Rehearsing the whole flow on <code>regtest</code> costs nothing and catches all of these.</p>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/create.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/create.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

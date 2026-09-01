@@ -1,136 +1,493 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Drops Pacts, readable smart agreements with Bitcoin L1 state and proof." />
-    <title>Drops Pacts, smart agreements on Bitcoin L1</title>
-    <link rel="stylesheet" href="../assets/pages.css?v=20260718" />
-    <link rel="stylesheet" href="../assets/afterglow.css" />
-    <link rel="stylesheet" href="../assets/translation-toggle.css" />
-    <script defer src="../assets/translation-toggle.js"></script>
-  </head>
-  <body class="afterglow afterglow-pacts">
-    <header class="page-nav">
-      <a class="page-brand" href="../index.html"><b>D</b> Drops</a>
-      <nav class="page-nav-links" aria-label="Primary navigation">
-        <a href="discover.html">Discover</a>
-        <a href="agreement.html">Publish agreement</a>
-        <a href="studio.html">Pacts Studio</a>
-      </nav>
-      <a class="page-button" href="pacts-reference.html">Pacts reference</a>
-    </header>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drop Pacts: agreements, lifecycle and outcomes | Drops protocol</title>
+<meta name="description" content="Drop Pacts record agreements on Bitcoin. The Pact Seed record, enforcement floors, the Cell and transition model, outcome validation rules, and the reference-only capability contract published by the indexer.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/pacts.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drop Pacts">
+<meta property="og:description" content="Drop Pacts record agreements on Bitcoin. The Pact Seed record, enforcement floors, the Cell and transition model, outcome validation rules, and the reference-only capability contract published by the indexer.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/pacts.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
 
-    <main>
-      <section class="page-hero page-hero--campaign">
-        <div class="page-hero-copy">
-          <p class="eyebrow">Drops Pacts</p>
-          <img class="brand-lockup" src="../assets/branding/drop-pacts-logo-2x.png" width="2048" height="1024" alt="Drop Pacts, readable agreements on Bitcoin L1" />
-          <div class="status-note"><span>Agreement clarity</span><b>Pacts records visible terms and proof; it is not a custody service or wallet.</b> Review the enforcement boundary and complete transaction before signing.</div>
-          <h1>Smart agreements that stay <em>readable on Bitcoin L1.</em></h1>
-          <p>Agreements can be serious. Their interface does not have to be beige. Pacts makes the terms, state, and verification route visible before parties act, using Bitcoin UTXOs and a bounded validation model rather than an opaque virtual machine.</p>
-          <div class="page-actions">
-            <a class="page-button" href="studio.html">Explore Pacts Studio</a>
-            <a class="page-button quiet" href="pacts-reference.html">Read the reference</a>
-          </div>
-          <div class="proof-belt"><span>Immutable Seed</span><b>+</b><span>Live Cell</span><b>+</b><span>Proof Pack</span><b>=</b><strong>Verified agreement history</strong></div>
-        </div>
-        <figure class="hero-campaign">
-          <img src="../assets/pacts-luxe-hero.png" width="1821" height="864" alt="Couture-clad figures around a glowing glass agreement in a lavender penthouse" />
-          <figcaption>Visible terms, compact state, and a proof package people can inspect.</figcaption>
-        </figure>
-      </section>
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html" aria-current="page">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
 
-      <section class="page-main">
-        <div class="page-intro">
-          <p class="eyebrow">Built for clear commitments</p>
-          <h2>Make the agreement easy to see before you sign.</h2>
-          <p>Use the same visible-first approach for a token policy, release schedule, shared treasury, or escrow flow. Pacts keeps the agreement identity and stated transition path inspectable, so the people involved can distinguish what Bitcoin directly enforces from what a Pact validator verifies.</p>
-        </div>
-        <div class="feature-grid">
-          <article><span>Shared treasury</span><h3>Keep control visible</h3><p>Connect controllers, recovery terms, and every approved state change to one named Bitcoin agreement.</p></article>
-          <article><span>Escrow</span><h3>Set the release conditions first</h3><p>Make the release and refund route clear before value moves, then follow the agreement history on Bitcoin.</p></article>
-          <article><span>Vesting</span><h3>Record a visible schedule</h3><p>Give beneficiaries and teams a reviewable release plan that is tied to Bitcoin block height.</p></article>
-          <article><span>Asset policy</span><h3>Connect a token to its terms</h3><p>Pair an op-drop policy with a readable agreement record that people can inspect independently.</p></article>
-          <article><span>Reviewable history</span><h3>See every agreed transition</h3><p>Move from the immutable agreement identity to a confirmed state change with a compact proof pack.</p></article>
-          <article><span>Wallet controlled</span><h3>Keep signing where it belongs</h3><p>Pacts never asks for seed phrases or private keys. Your wallet creates and signs the Bitcoin transaction.</p></article>
-        </div>
-      </section>
+<main id="main">
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div>
+      <p class="kicker"><span class="dot"></span>Application layer &middot; marker <code>drops-pact</code></p>
+      <h1>Drop Pacts: agreements <em>that keep their receipts</em></h1>
+      <div class="hero__rule" role="presentation"></div>
+      <p class="lede">A Pact records an agreement's identity and the fingerprints of its rules on Bitcoin, so that any party can later show which rules were agreed and which outcome followed from them. It is deliberately honest about how much of that Bitcoin itself enforces.</p>
+    </div>
+    <figure class="hero__figure">
+      <img src="../assets/img/hero-pacts.jpg" width="1400" height="664" alt="Three people in iridescent evening wear around a lit glass table, studying a chrome padlock and a translucent panel of linked nodes above a night city." fetchpriority="high">
+      <figcaption>Parties, terms, and a record that outlives the interface that produced it.</figcaption>
+    </figure>
+  </div>
+</section>
 
-      <section class="afterglow-section" aria-labelledby="pacts-boundary-title">
-        <div class="afterglow-section__copy">
-          <p class="eyebrow">The smart-agreement boundary</p>
-          <h2 id="pacts-boundary-title">No mystery meat smart contracts.</h2>
-          <p>Pacts is deliberately not an EVM or WASM runtime. The model is compact enough to audit: a Seed fixes the agreement identity, a live Cell holds the current commitment, and a proof package explains an accepted successor state.</p>
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <div class="gate-banner" id="capability">
+      <span class="seal seal--lg" aria-hidden="true">!</span>
+      <div>
+        <h2>Read this before anything else: Pacts is reference-only today</h2>
+        <p>The reference indexer publishes a machine-readable capability boundary. Its <code>mode</code> is <code>reference</code>. Five things are supported, and twelve authority fields are all <code>false</code>.</p>
+        <div class="table-scroll">
+          <table>
+            <caption>Pacts capability contract, schema version 1</caption>
+            <thead><tr><th scope="col">Group</th><th scope="col">Fields</th><th scope="col">Value</th></tr></thead>
+            <tbody>
+              <tr>
+                <th scope="row"><code>supported</code></th>
+                <td><code>verifiedDrops</code>, <code>recordedPactSeeds</code>, <code>pactsReferences</code>, <code>deterministicPrimitives</code>, <code>localProofPackValidation</code></td>
+                <td><span class="chip chip--ok">true</span></td>
+              </tr>
+              <tr>
+                <th scope="row"><code>authority</code></th>
+                <td><code>pactCell</code>, <code>liveCells</code>, <code>transaction</code>, <code>authorization</code>, <code>signature</code>, <code>signatures</code>, <code>broadcast</code>, <code>custody</code>, <code>contractExecution</code>, <code>enforceableOffChainPolicy</code>, <code>valueBearingPacts</code>, <code>valueBearingAuthority</code></td>
+                <td><span class="chip chip--bad">false</span></td>
+              </tr>
+              <tr>
+                <th scope="row"><code>recovery.status</code></th>
+                <td>Guidance returned with every capability response</td>
+                <td><code>reference_only</code></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="contract-boundary">
-          <article>
-            <span>Bitcoin enforces</span>
-            <strong>Spend rules, signatures, timelocks, and UTXO history.</strong>
-            <p>Bitcoin consensus confirms a Cell can only be spent once and validates the key-path or declared recovery conditions that its transaction uses.</p>
-          </article>
-          <article>
-            <span>Pacts verifies</span>
-            <strong>Bounded rules, visible terms, and the successor commitment.</strong>
-            <p>A compatible validator replays the declared rule family, verifies the Proof Pack, and checks that the successor Cell matches the committed <code>DPC1</code> transition. It never silently turns an outside spend into a valid successor state.</p>
-          </article>
-        </div>
-      </section>
+        <p>In the indexer's own words: <q>Pact Seeds and Pacts references are recorded evidence only. They are not live Pact Cells, transaction requests, authorization, signatures, custody records, enforceable off-chain policy, or value-bearing authority.</q></p>
+      </div>
+    </div>
 
-      <section class="split-section paper">
-        <ol class="pact-lifecycle" aria-label="Pact lifecycle">
-          <li><span>01</span><strong>Seed</strong><p>Fix the agreement identity, rules, and initial state commitment.</p></li>
-          <li><span>02</span><strong>Cell</strong><p>Commit the current visible state in a normal Bitcoin UTXO.</p></li>
-          <li><span>03</span><strong>Proof Pack</strong><p>Verify the transition and its confirmed successor state.</p></li>
-        </ol>
-        <div>
-          <p class="eyebrow">The Pacts lifecycle</p>
-          <h2>Start immutable. Stay visible. Verify every transition.</h2>
-          <p>The Pact Seed gives the agreement a stable Bitcoin identity. A live Cell commits its current state. A normal update creates a successor Cell and a compact <code>DPC1</code> transaction commitment, with a canonical Proof Pack to verify the move.</p>
-          <div class="step-list">
-            <div><b>Seed:</b> fixed agreement identity, ruleset, policy, and initial state commitment.</div>
-            <div><b>Cell:</b> an ordinary P2TR UTXO with the current state commitment.</div>
-            <div><b>Proof:</b> a hash-addressed package that verifies the confirmed transition and successor Cell.</div>
-          </div>
-          <div class="page-actions"><a class="page-button" href="pacts-reference.html">Read the Pacts reference</a><a class="page-button quiet" href="pacts-studio-guide.html">Open the Studio guide</a></div>
-        </div>
-      </section>
+    <div class="caution">
+      <span class="caution__title">If a screen tells you a Pact transaction is pending</span>
+      <p>No funds or live Pact state are held by the reference service. Do not sign and do not send funds. Keep the full blueprint and the plan hash together, verify any Bitcoin transaction independently in a wallet or explorer you trust, and contact support with the plan hash. No Pacts interface ever needs a seed phrase or a private key.</p>
+    </div>
 
-      <section class="afterglow-section afterglow-section--night" aria-labelledby="pact-anatomy-title">
-        <div class="afterglow-section__copy">
-          <p class="eyebrow">Pact anatomy</p>
-          <h2 id="pact-anatomy-title">A visible identity, a live state, and a proof for every move.</h2>
-          <p>Each building block has a narrow job. That makes an agreement easier to review, easier to index, and easier to explain to the humans who will live with its outcome.</p>
-        </div>
-        <div class="afterglow-grid">
-          <article class="signal-card"><span>01 / Seed</span><h3>Fix the identity.</h3><p>An immutable compact record commits to the engine, ruleset, ABI, initial state root, policy root, data availability policy, and enforcement floor.</p></article>
-          <article class="signal-card"><span>02 / Cell</span><h3>Commit the live state.</h3><p>A P2TR UTXO holds the Pact ID, state root, policy root, and sequence in a verifiable descriptor commitment.</p></article>
-          <article class="signal-card"><span>03 / Proof Pack</span><h3>Explain the transition.</h3><p>Canonical CBOR data proves the parent, successor, rule input, state delta, and the confirmed transition commitment without becoming an authority itself.</p></article>
-        </div>
-      </section>
+    <p>Everything below the capability contract describes the record formats and the validation rules that are implemented and testable today. Where a structure belongs to the future execution model rather than to what the reference service will act on, this page says so in the section itself.</p>
+  </div>
+</section>
 
-      <section class="diagram-showcase" aria-labelledby="pact-diagram-title">
-        <div class="diagram-showcase__intro">
-          <p class="eyebrow">Pact anatomy</p>
-          <h2 id="pact-diagram-title">Every Pact has a fixed identity, a live state, and a proof for its next move.</h2>
-          <p>Seed, Cell, and Proof Pack each have a narrow role. That keeps the agreement record readable for people and concrete enough for an independent validator to verify.</p>
-        </div>
-        <figure class="diagram-showcase__figure">
-          <img src="../assets/branding/diagram-09-pact-anatomy.png" width="1600" height="900" alt="Drop Pacts anatomy showing the immutable Seed, live Cell, and canonical Proof Pack" />
-          <figcaption>The three parts of a Pact, from its immutable identity to a verified transition.</figcaption>
-        </figure>
-      </section>
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="seed">1. The Pact Seed</h2>
+    <p>A Pact Seed is a Drop. It uses the ordinary Drops leaf, with marker <code>drops-pact</code> and content type <code>application/vnd.drops.pact-seed</code>. Its body is a fixed 184-byte binary record. Nothing about it is free-form, which is why two implementations cannot disagree about what an agreement's identity is.</p>
 
-      <section class="callout">
-        <div>
-          <p class="eyebrow">Bitcoin L1 agreement design</p>
-          <h2>Put coordination in the record, not in a hidden platform.</h2>
-          <p>Pacts works with Bitcoin UTXOs, signatures, timelocks, and transaction structure. The enforcement grade stays visible so signers can distinguish a Bitcoin-enforced condition from an independent Pact-validation conclusion.</p>
-          <div class="page-actions"><a class="page-button" href="studio.html">Open Pacts Studio</a><a class="page-button quiet" href="pacts-reference.html">Read the reference</a></div>
-        </div>
-      </section>
-    </main>
+    <figure class="diagram">
+      <svg viewBox="0 0 880 250" role="img" aria-labelledby="seed-t seed-d">
+        <title id="seed-t">Byte layout of the 184-byte Pact Seed record</title>
+        <desc id="seed-d">Offset zero: four ASCII bytes, D P S E, the record magic. Offset four: one reserved zero byte. Offset five: one network tag byte. Offset six: one enforcement floor tag byte. Offset seven: one reserved zero byte. Offset eight through twenty-four: sixteen bytes of engine identifier, ASCII, zero padded. Then five thirty-two byte hashes in order: ruleset hash at offset twenty-four, ABI hash at fifty-six, genesis state root at eighty-eight, policy root at one hundred and twenty, and data availability policy hash at one hundred and fifty-two. The record ends at offset one hundred and eighty-four.</desc>
 
-    <footer class="page-footer"><span>(c) 2026 Drops Protocol contributors</span><span>Visible terms. Bitcoin UTXOs. Verified transitions.</span></footer>
-  </body>
+        <g class="d-text-sm">
+          <rect x="4" y="40" width="70" height="52" rx="3" class="d-seal-soft" stroke="none"/>
+          <rect x="4" y="40" width="70" height="52" rx="3" class="d-stroke-seal"/>
+          <text x="16" y="62" class="d-text-mono">DPSE</text>
+          <text x="16" y="80">4 bytes</text>
+          <text x="4" y="32" class="d-label">0</text>
+
+          <rect x="78" y="40" width="34" height="52" rx="3" class="d-fill-3 d-stroke"/>
+          <text x="86" y="62" class="d-text-mono">00</text>
+          <text x="86" y="80">rsv</text>
+          <text x="78" y="32" class="d-label">4</text>
+
+          <rect x="116" y="40" width="46" height="52" rx="3" class="d-fill-2 d-stroke"/>
+          <text x="124" y="62" class="d-text-mono">net</text>
+          <text x="124" y="80">1 byte</text>
+          <text x="116" y="32" class="d-label">5</text>
+
+          <rect x="166" y="40" width="52" height="52" rx="3" class="d-fill-2 d-stroke"/>
+          <text x="174" y="62" class="d-text-mono">floor</text>
+          <text x="174" y="80">1 byte</text>
+          <text x="166" y="32" class="d-label">6</text>
+
+          <rect x="222" y="40" width="34" height="52" rx="3" class="d-fill-3 d-stroke"/>
+          <text x="230" y="62" class="d-text-mono">00</text>
+          <text x="230" y="80">rsv</text>
+          <text x="222" y="32" class="d-label">7</text>
+
+          <rect x="260" y="40" width="118" height="52" rx="3" class="d-fill-2 d-stroke"/>
+          <text x="272" y="62" class="d-text-mono">engineId</text>
+          <text x="272" y="80">16 bytes, zero padded</text>
+          <text x="260" y="32" class="d-label">8</text>
+
+          <rect x="382" y="40" width="96" height="52" rx="3" class="d-fill d-stroke"/>
+          <text x="392" y="62" class="d-text-mono">rulesetHash</text>
+          <text x="392" y="80">32 bytes</text>
+          <text x="382" y="32" class="d-label">24</text>
+
+          <rect x="482" y="40" width="96" height="52" rx="3" class="d-fill d-stroke"/>
+          <text x="492" y="62" class="d-text-mono">abiHash</text>
+          <text x="492" y="80">32 bytes</text>
+          <text x="482" y="32" class="d-label">56</text>
+
+          <rect x="582" y="40" width="96" height="52" rx="3" class="d-fill d-stroke"/>
+          <text x="592" y="62" class="d-text-mono">genesis</text>
+          <text x="592" y="80">32 bytes</text>
+          <text x="582" y="32" class="d-label">88</text>
+
+          <rect x="682" y="40" width="96" height="52" rx="3" class="d-fill d-stroke"/>
+          <text x="692" y="62" class="d-text-mono">policyRoot</text>
+          <text x="692" y="80">32 bytes</text>
+          <text x="682" y="32" class="d-label">120</text>
+
+          <rect x="782" y="40" width="94" height="52" rx="3" class="d-fill d-stroke"/>
+          <text x="792" y="62" class="d-text-mono">daPolicy</text>
+          <text x="792" y="80">32 bytes</text>
+          <text x="782" y="32" class="d-label">152</text>
+
+          <text x="4" y="132" class="d-text">Total: exactly 184 bytes, which fits inside the 256-byte Drops body limit with room to spare.</text>
+          <text x="4" y="158">Network tags: mainnet 0, testnet 1, signet 2, regtest 3.</text>
+          <text x="4" y="180">Enforcement floor tags: recorded 0, co-signed 1, template-enforced 2.</text>
+          <text x="4" y="202">Engine id grammar: one to sixteen characters matching a lowercase letter followed by letters, digits or hyphens.</text>
+          <text x="4" y="224">Reserved bytes must be zero, engine padding must be zero, and re-encoding the decoded record must reproduce it exactly.</text>
+        </g>
+      </svg>
+      <figcaption>A fixed-width record with no optional fields. Decoding is a length check followed by five slices.</figcaption>
+    </figure>
+
+    <h3 id="seed-fields">1.1 Seed fields</h3>
+    <div class="table-scroll">
+      <table>
+        <caption>What each Pact Seed field pins</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">Size</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>network</code></th><td>1 byte tag</td><td>The Bitcoin network this Pact belongs to. A Pact does not exist on another network.</td></tr>
+          <tr><th scope="row"><code>enforcementFloor</code></th><td>1 byte tag</td><td>How much of the agreement Bitcoin enforces by itself. See <a href="#floors">enforcement floors</a>.</td></tr>
+          <tr><th scope="row"><code>engineId</code></th><td>16 bytes</td><td>Which rule engine interprets the ruleset. Identifies the interpreter, not the agreement.</td></tr>
+          <tr><th scope="row"><code>rulesetHash</code></th><td>32 bytes</td><td>The agreement's rules. Change one clause and this hash changes.</td></tr>
+          <tr><th scope="row"><code>abiHash</code></th><td>32 bytes</td><td>The shape of the actions the ruleset accepts.</td></tr>
+          <tr><th scope="row"><code>genesisStateRoot</code></th><td>32 bytes</td><td>The agreement's opening state, before any transition.</td></tr>
+          <tr><th scope="row"><code>policyRoot</code></th><td>32 bytes</td><td>The policy in force at genesis. Policy can move; the ruleset cannot.</td></tr>
+          <tr><th scope="row"><code>dataAvailabilityPolicyHash</code></th><td>32 bytes</td><td>Where the parties agreed the off-chain material will be kept, and on what terms.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 id="pactid">1.2 Pact identity</h3>
+    <p>A Pact's identity is derived, not chosen. It is a tagged hash over the Seed's own Drop identity plus the three hashes that cannot change during the Pact's life.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>pactId = taggedHash("Drops/Pact",
+             networkTag                    (1 byte)
+          || txid                          (32 bytes, internal byte order)
+          || seedInputIndex                (4 bytes, big-endian)
+          || rulesetHash                   (32 bytes)
+          || abiHash                       (32 bytes)
+          || policyRoot                    (32 bytes))</code></pre>
+    </div>
+    <p>The Seed's Drop identity supplies the transaction id and input index. Because <code>genesisStateRoot</code> and <code>dataAvailabilityPolicyHash</code> are not in the preimage, a Pact keeps its identity across state changes, while a different ruleset, a different action shape, or a different genesis policy produces a different Pact.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="floors">2. Enforcement floors</h2>
+    <p>This is the field that stops a Pact from pretending. It states the weakest guarantee a reader may assume, in one word.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>The three enforcement floors</caption>
+        <thead><tr><th scope="col">Floor</th><th scope="col">Tag</th><th scope="col">What Bitcoin guarantees</th><th scope="col">What still depends on people</th></tr></thead>
+        <tbody>
+          <tr>
+            <th scope="row"><code>recorded</code></th><td>0</td>
+            <td>That these exact terms were committed at this height, and nobody edited them afterwards.</td>
+            <td>Everything else. Performance, delivery, payment, and any consequence of breach.</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>co-signed</code></th><td>1</td>
+            <td>The above, plus that a spend needs the signatures the script requires.</td>
+            <td>Whether the signers were entitled to sign, and whether the off-chain obligation was met.</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>template-enforced</code></th><td>2</td>
+            <td>The above, plus the script constraints of a known template: timelocks, required keys, and which outputs a spend may create.</td>
+            <td>Anything the template does not encode. A template constrains spends; it does not read the agreement.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="note__title">Read the floor as a ceiling on your trust</span>
+      <p>A <code>recorded</code> Pact is a notarised document, not an escrow. Bitcoin can enforce signatures, timelocks, and whether a particular output has already been spent. It cannot enforce that a shipment arrived. An interface that blurs those two things is the failure this field exists to prevent.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="lifecycle">3. Pact lifecycle</h2>
+    <p>A Pact has three structural pieces. The Seed is recorded today. The Cell and the transition belong to the execution model, and the reference service validates them locally without acting on them.</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 880 320" role="img" aria-labelledby="pl-t pl-d">
+        <title id="pl-t">The Pact lifecycle from Seed to successor Cell</title>
+        <desc id="pl-d">Stage one, the Pact Seed, a Drop with marker drops-pact, fixes the agreement identity. Stage two, a Pact Cell, is a separate Tapscript leaf with marker drops-cell carrying a one hundred and seventy-six byte descriptor that holds the pact id, a sequence number, a state root, a policy root, a state attachment hash and a transition commitment. Stage three, a transition, spends the parent cell and creates a successor cell whose sequence is one higher; an OP_RETURN output tagged D P C 1 carries the thirty-two byte transition commitment, and a proof pack carries the evidence. Arrows run left to right, and a note says the successor cell must prove its own Taproot commitment.</desc>
+
+        <rect x="4" y="46" width="230" height="110" rx="4" class="d-seal-soft" stroke="none"/>
+        <rect x="4" y="46" width="230" height="110" rx="4" class="d-stroke-seal"/>
+        <text x="20" y="38" class="d-label">STAGE 01 &middot; RECORDED TODAY</text>
+        <text x="20" y="74" class="d-text">Pact Seed</text>
+        <text x="20" y="96" class="d-text-sm">A Drop, marker drops-pact</text>
+        <text x="20" y="114" class="d-text-sm">184-byte record, 5 pinned hashes</text>
+        <text x="20" y="132" class="d-text-sm">Fixes the agreement identity</text>
+        <text x="20" y="150" class="d-text-mono">pactId = taggedHash(...)</text>
+
+        <path d="M240 100h40" class="d-stroke-seal"/>
+        <path d="M280 100l-9-5v10Z" class="d-seal"/>
+
+        <rect x="288" y="46" width="240" height="110" rx="4" class="d-fill-2 d-stroke"/>
+        <text x="304" y="38" class="d-label">STAGE 02 &middot; EXECUTION MODEL</text>
+        <text x="304" y="74" class="d-text">Pact Cell</text>
+        <text x="304" y="96" class="d-text-sm">Separate leaf, marker drops-cell</text>
+        <text x="304" y="114" class="d-text-sm">176-byte descriptor, magic DPCL</text>
+        <text x="304" y="132" class="d-text-sm">pactId, sequence, stateRoot,</text>
+        <text x="304" y="150" class="d-text-sm">policyRoot, attachment, commitment</text>
+
+        <path d="M534 100h40" class="d-stroke-seal"/>
+        <path d="M574 100l-9-5v10Z" class="d-seal"/>
+
+        <rect x="582" y="46" width="294" height="110" rx="4" class="d-fill-2 d-stroke"/>
+        <text x="598" y="38" class="d-label">STAGE 03 &middot; EXECUTION MODEL</text>
+        <text x="598" y="74" class="d-text">Transition</text>
+        <text x="598" y="96" class="d-text-sm">Spends the parent cell, creates a successor</text>
+        <text x="598" y="114" class="d-text-sm">successor.sequence = parent.sequence + 1</text>
+        <text x="598" y="132" class="d-text-mono">OP_RETURN 6a24 "DPC1" &lt;32-byte commitment&gt;</text>
+        <text x="598" y="150" class="d-text-sm">Proof pack carries the supporting evidence</text>
+
+        <path d="M120 162v34h620v-34" class="d-stroke" stroke-dasharray="4 4"/>
+        <text x="4" y="228" class="d-text-sm">Every stage is checked against Bitcoin, never against a database label. The successor cell must prove its own Taproot commitment,</text>
+        <text x="4" y="248" class="d-text-sm">the transition preimage must hash to the commitment the successor descriptor carries, and the DPC1 anchor must carry that same value.</text>
+        <text x="4" y="278" class="d-text-sm">An anchor on its own proves nothing. It marks a candidate transition; the proof pack is what decides whether the candidate is real.</text>
+        <text x="4" y="304" class="d-text-sm">The reference service validates all of this locally and acts on none of it. There is no live Cell and no settlement authority.</text>
+      </svg>
+      <figcaption>Seed, Cell, transition. The reference deployment records the first and validates the other two without granting them authority.</figcaption>
+    </figure>
+
+    <h3 id="cell">3.1 The Cell descriptor</h3>
+    <div class="table-scroll">
+      <table>
+        <caption>176-byte Cell descriptor, magic <code>DPCL</code></caption>
+        <thead><tr><th scope="col">Offset</th><th scope="col">Size</th><th scope="col">Field</th><th scope="col">Notes</th></tr></thead>
+        <tbody>
+          <tr><td>0</td><td>4</td><td>magic <code>DPCL</code></td><td>ASCII</td></tr>
+          <tr><td>4</td><td>1</td><td>reserved</td><td>Must be zero</td></tr>
+          <tr><td>5</td><td>1</td><td><code>flags</code></td><td>One byte</td></tr>
+          <tr><td>6</td><td>2</td><td>reserved</td><td>Both bytes must be zero</td></tr>
+          <tr><td>8</td><td>32</td><td><code>pactId</code></td><td>Ties the cell to its Pact</td></tr>
+          <tr><td>40</td><td>8</td><td><code>sequence</code></td><td>Unsigned 64-bit, big-endian</td></tr>
+          <tr><td>48</td><td>32</td><td><code>stateRoot</code></td><td>The state this cell asserts</td></tr>
+          <tr><td>80</td><td>32</td><td><code>policyRoot</code></td><td>The policy in force at this cell</td></tr>
+          <tr><td>112</td><td>32</td><td><code>stateAttachmentHash</code></td><td>Binds the off-chain state material</td></tr>
+          <tr><td>144</td><td>32</td><td><code>transitionCommitment</code></td><td>The transition that produced this cell</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The Cell leaf that carries the descriptor is deliberately tiny: a push of the marker <code>drops-cell</code>, <code>OP_DROP</code>, a push of the 176-byte descriptor, <code>OP_DROP</code>, then <code>OP_0</code>. It is a commitment carrier, not a spending condition, and it is not a Drops leaf.</p>
+
+    <h3 id="transition">3.2 The transition preimage</h3>
+    <p>A transition is committed by hashing a fixed 245-byte preimage. The commitment appears in two places, and both must agree.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>transitionCommitment = taggedHash("Drops/PactTransition", preimage)
+
+preimage (245 bytes, big-endian integers)
+  0    1   networkTag
+  1   32   pactId
+  33  32   parent txid, internal byte order
+  65   4   parent output index
+  69   4   parent input index
+  73   4   successor output index
+  77   8   parent sequence
+  85  32   parentStateRoot
+  117 32   nextStateRoot
+  149 32   nextPolicyRoot
+  181 32   proofPackHash
+  213 32   opDropEffectHash</code></pre>
+    </div>
+    <p>If a transition has no OP_DROP token effect, <code>opDropEffectHash</code> is 32 zero bytes. Otherwise it is the SHA-256 of the effect payload. That single field is how a Pact and a token movement are tied together without either protocol reaching into the other.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="outcomes">4. Outcomes and how they are checked</h2>
+    <p>An outcome is a claim that the Pact moved from one state to the next. Checking it means checking that the recorded successor is exactly the successor the stated terms produce. Nine conditions must all hold.</p>
+
+    <ol class="rules">
+      <li><span class="rid">P-1</span><div class="rbody"><p>The parent descriptor, the successor descriptor and the transition <span class="must">must</span> all carry the same <code>pactId</code>.</p><p><code>PACTS_INVALID_TRANSITION: Pact IDs do not match</code></p></div></li>
+      <li><span class="rid">P-2</span><div class="rbody"><p><code>parent.sequence</code> <span class="must">must</span> equal the transition's <code>parentSequence</code>, and <code>successor.sequence</code> <span class="must">must</span> equal <code>parent.sequence + 1</code>. No gaps, no rewinds.</p><p><code>PACTS_INVALID_TRANSITION: cell sequence is invalid</code></p></div></li>
+      <li><span class="rid">P-3</span><div class="rbody"><p><code>parent.stateRoot</code> <span class="must">must</span> equal <code>parentStateRoot</code>, <code>successor.stateRoot</code> <span class="must">must</span> equal <code>nextStateRoot</code>, and <code>successor.policyRoot</code> <span class="must">must</span> equal <code>nextPolicyRoot</code>.</p><p><code>PACTS_INVALID_TRANSITION: cell roots do not match the transition</code></p></div></li>
+      <li><span class="rid">P-4</span><div class="rbody"><p>The ruleset result recorded in the proof pack <span class="must">must</span> equal <code>nextStateRoot</code>. The outcome must be the outcome the rules produced.</p><p><code>PACTS_INVALID_TRANSITION: ruleset result does not match next state root</code></p></div></li>
+      <li><span class="rid">P-5</span><div class="rbody"><p>The OP_DROP effect hash <span class="must">must</span> equal <code>SHA256(effect)</code> when an effect is present, and 32 zero bytes when it is not.</p><p><code>PACTS_INVALID_TRANSITION: op-drop effect hash does not match</code></p></div></li>
+      <li><span class="rid">P-6</span><div class="rbody"><p><code>proofPackHash</code> <span class="must">must</span> equal the hash of the proof pack payload actually supplied.</p><p><code>PACTS_INVALID_TRANSITION: proof pack payload hash does not match</code></p></div></li>
+      <li><span class="rid">P-7</span><div class="rbody"><p><code>successor.transitionCommitment</code> <span class="must">must</span> equal <code>taggedHash("Drops/PactTransition", preimage)</code>.</p><p><code>PACTS_INVALID_TRANSITION: successor descriptor does not commit to the transition</code></p></div></li>
+      <li><span class="rid">P-8</span><div class="rbody"><p>The successor Cell leaf <span class="must">must</span> prove its own Taproot commitment against the successor output script, using the same control-block rules as a Drop.</p><p><code>PACTS_INVALID_SUCCESSOR_CELL</code></p></div></li>
+      <li><span class="rid">P-9</span><div class="rbody"><p>The <code>DPC1</code> anchor <span class="must">must</span> decode to that same transition commitment. The anchor script is exactly 38 bytes: <code>6a 24 "DPC1" &lt;32-byte commitment&gt;</code>.</p><p><code>PACTS_INVALID_DPC1: DPC1 commitment does not match the proof pack transition</code></p></div></li>
+    </ol>
+
+    <p>The <a href="verifier.html">pact verifier</a> on this site runs rules P-1, P-2, P-3, P-7 and P-9 in your browser from descriptor and preimage hex, and explains exactly which one failed.</p>
+
+    <h3 id="proofpack">4.1 The proof pack</h3>
+    <p>The proof pack is a deterministic CBOR structure holding the transition, both descriptors, the successor control block and output script, and the ruleset material: <code>rulesetInput</code>, <code>stateWitness</code>, <code>stateDelta</code>, <code>rulesetResult</code>, an optional <code>opDropEffect</code>, and a list of availability hashes. Its encoding is deterministic on purpose, so that a proof pack has one serialization and therefore one hash.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="reference">5. The Pacts reference profile</h2>
+    <p>Not every Pact needs the full execution model. The lightest useful record is a Pacts reference: a Drop that ties a template to the two hashes a party keeps locally, so they can prove later which plan and which blueprint they agreed to.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Pacts reference profile</caption>
+        <tbody>
+          <tr><th scope="row">Content type</th><td><code>application/vnd.drops.pacts-reference+json</code></td></tr>
+          <tr><th scope="row">Body</th><td>UTF-8 JSON, exactly four keys, serialized in sorted key order with no whitespace</td></tr>
+          <tr><th scope="row">Keys</th><td><code>bh</code> blueprint hash, <code>p</code> always <code>pacts</code>, <code>ph</code> plan hash, <code>t</code> template id</td></tr>
+          <tr><th scope="row">Hash format</th><td>64 lowercase hex characters each</td></tr>
+          <tr><th scope="row">Template grammar</th><td><code>^[a-z][a-z0-9-]{0,40}$</code></td></tr>
+          <tr><th scope="row">Size</th><td>Always well under the 256-byte body limit</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>{"bh":"&lt;64 hex&gt;","p":"pacts","ph":"&lt;64 hex&gt;","t":"escrow-basic"}</code></pre>
+    </div>
+
+    <p>A body that decodes to the right values but was serialized differently is rejected. Re-encoding the parsed reference must reproduce the body byte for byte, exactly as it must for the leaf itself. Unknown keys, missing keys, reordered keys, added whitespace and non-string values are all rejections.</p>
+
+    <p>The plan hash and the blueprint hash reveal nothing on their own. They let a party show that the document they kept is the document the Pact committed to.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap split">
+    <figure>
+      <img src="../assets/img/pact-outcomes.jpg" width="1100" height="619" alt="A dark studio still life: a glass-fronted vault of coins on the left, an illuminated padlock in the centre, and a rising row of glass blocks on the right, connected by thin light lines." loading="lazy">
+      <figcaption>Shared custody, escrow, vesting and asset policy are the shapes people reach for. What Bitcoin proves about each is the enforcement floor, not the label.</figcaption>
+    </figure>
+    <div>
+      <h2 id="shapes">6. Agreement shapes</h2>
+      <p>These are the agreement structures the Pact record format is designed to describe. They are descriptions of the model, not services offered by the reference deployment.</p>
+      <dl class="defs">
+        <div><dt>Shared custody</dt><dd>Controllers, recovery expectations, and each approved change to the agreement state. A <code>co-signed</code> or <code>template-enforced</code> floor is what makes the signing rules real rather than described.</dd></div>
+        <div><dt>Escrow</dt><dd>Release and refund paths recorded before value moves, so both parties can point at the same terms afterwards.</dd></div>
+        <div><dt>Vesting</dt><dd>A release schedule tied to block height. Timelocks are one of the few things Bitcoin enforces directly, which makes this shape a good fit for <code>template-enforced</code>.</dd></div>
+        <div><dt>Asset policy</dt><dd>An OP_DROP token policy pointed at a durable public agreement record. The <code>opDropEffectHash</code> field is the join.</dd></div>
+        <div><dt>Community treasury</dt><dd>Shared policy, current state, and the history of approved changes, all readable from chain data rather than from an application's database.</dd></div>
+      </dl>
+      <p><a href="verifier.html">Check an outcome against its terms</a> or <a href="decoder.html">decode a Pact Seed body</a>.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/pacts.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/pacts.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
 </html>

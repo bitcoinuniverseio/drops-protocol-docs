@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terminology, sizing and limitations | Drops protocol</title>
+<meta name="description" content="Glossary of Drops terms, constants in one table, fee and size considerations with worked numbers, known limitations, and the implementation checklist in short form.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/reference.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drops reference">
+<meta property="og:description" content="Glossary of Drops terms, constants in one table, fee and size considerations with worked numbers, known limitations, and the implementation checklist in short form.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/reference.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html" aria-current="page">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Reference</p>
+    <h1>Terminology, sizing <em>and limits</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">The vocabulary, the constants, the arithmetic, and an honest list of what this protocol does not do.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="glossary">Glossary</h2>
+    <dl class="defs">
+      <div><dt>Drop</dt><dd>One recorded artifact or Pact Seed. The singular of the protocol name. Identified by the input that revealed it.</dd></div>
+      <div><dt>Drops</dt><dd>The application protocol. Covers media-first artifacts and Drop Pacts.</dd></div>
+      <div><dt>Drops leaf</dt><dd>The Tapscript leaf that carries a Drop: five data pushes, four <code>OP_DROP</code>s and an <code>OP_CHECKSIG</code>.</dd></div>
+      <div><dt>Marker</dt><dd>The first push. A namespace, not a label. <code>drops</code> or <code>drops-pact</code> for this protocol.</dd></div>
+      <div><dt>Body</dt><dd>The fourth push. 1 to 256 opaque bytes, interpreted according to the declared content type.</dd></div>
+      <div><dt>Dropmark</dt><dd>The first ten hex characters of the body hash, uppercased. A short human label. Never an identity, because it is not unique.</dd></div>
+      <div><dt>Commit transaction</dt><dd>The transaction that creates the Taproot output committing to the script tree containing the Drops leaf. Reveals nothing.</dd></div>
+      <div><dt>Reveal transaction</dt><dd>The transaction that spends the commit output on the script path, putting the leaf and control block into the witness.</dd></div>
+      <div><dt>Control block</dt><dd>The third witness item: a leaf-version-and-parity byte, the 32-byte internal key, and up to 128 merkle path hashes.</dd></div>
+      <div><dt>Custody outpoint</dt><dd>The output currently holding the artifact. Output 0 of the reveal, then output 0 of each spending transaction.</dd></div>
+      <div><dt>Pact Seed</dt><dd>A 184-byte record that fixes an agreement's identity and the hashes of its ruleset, ABI, genesis state, policy and data-availability policy.</dd></div>
+      <div><dt>Enforcement floor</dt><dd>The Seed field stating how much of the agreement Bitcoin enforces alone: <code>recorded</code>, <code>co-signed</code> or <code>template-enforced</code>.</dd></div>
+      <div><dt>Pact Cell</dt><dd>A 176-byte descriptor carried in its own leaf, asserting a Pact's current state, policy and the transition that produced it.</dd></div>
+      <div><dt>Transition commitment</dt><dd>A tagged hash over the 245-byte transition preimage. Appears in the successor Cell and in the DPC1 anchor.</dd></div>
+      <div><dt>DPC1 anchor</dt><dd>A 38-byte <code>OP_RETURN</code> output marking a candidate Pact transition. Marks; does not prove.</dd></div>
+      <div><dt>Proof pack</dt><dd>The deterministic CBOR structure holding a transition's supporting evidence.</dd></div>
+      <div><dt>Projection</dt><dd>Anything derived from immutable records, such as custody. Rebuilt after a reorganisation rather than patched.</dd></div>
+      <div><dt>Finalized target</dt><dd>The height an indexer will persist up to: <code>tip - (N - 1)</code> for confirmation depth <var>N</var>.</dd></div>
+      <div><dt>OP_DROP</dt><dd>The neighbouring token protocol, marker <code>bip110-op-drop</code>. Also the Bitcoin Script opcode this carrier is named after.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="constants">Constants</h2>
+    <div class="table-scroll">
+      <table>
+        <caption>Every fixed value in one place</caption>
+        <thead><tr><th scope="col">Constant</th><th scope="col">Value</th></tr></thead>
+        <tbody>
+          <tr><td>Leaf chunk count</td><td>10 (5 pushes, 5 opcodes)</td></tr>
+          <tr><td>Tapleaf version</td><td><code>0xc0</code>, the only accepted value</td></tr>
+          <tr><td>Markers</td><td><code>drops</code>, <code>drops-pact</code></td></tr>
+          <tr><td>Content type maximum</td><td>80 bytes, ASCII</td></tr>
+          <tr><td>Body hash</td><td>32 bytes, single-pass SHA-256</td></tr>
+          <tr><td>Body length</td><td>1 to 256 bytes</td></tr>
+          <tr><td>Creator key</td><td>32 bytes, x-only secp256k1</td></tr>
+          <tr><td>Control block base</td><td>33 bytes</td></tr>
+          <tr><td>Control block merkle path</td><td>0 to 128 hashes of 32 bytes</td></tr>
+          <tr><td>Witness items</td><td>Exactly 3</td></tr>
+          <tr><td>Signature length</td><td>64 or 65 bytes</td></tr>
+          <tr><td>Dropmark</td><td>10 uppercase hex characters</td></tr>
+          <tr><td>Custody successor output index</td><td>0</td></tr>
+          <tr><td>Custody profile</td><td><code>drops-custody-v1</code>, projection version 1</td></tr>
+          <tr><td>Custody statuses</td><td><code>active</code>, <code>burned</code>, <code>legacy_unresolved</code></td></tr>
+          <tr><td>Mainnet confirmation floor</td><td>6</td></tr>
+          <tr><td>Networks</td><td><code>mainnet</code>, <code>testnet</code>, <code>signet</code>, <code>regtest</code></td></tr>
+          <tr><td>Pact Seed record</td><td>184 bytes, magic <code>DPSE</code></td></tr>
+          <tr><td>Pact Cell descriptor</td><td>176 bytes, magic <code>DPCL</code></td></tr>
+          <tr><td>Pact transition preimage</td><td>245 bytes</td></tr>
+          <tr><td>DPC1 anchor script</td><td>38 bytes</td></tr>
+          <tr><td>Enforcement floors</td><td><code>recorded</code>, <code>co-signed</code>, <code>template-enforced</code></td></tr>
+          <tr><td>Engine id grammar</td><td><code>^[a-z][a-z0-9-]{0,15}$</code></td></tr>
+          <tr><td>Pacts template grammar</td><td><code>^[a-z][a-z0-9-]{0,40}$</code></td></tr>
+          <tr><td>Hash tags</td><td><code>TapLeaf</code>, <code>TapBranch</code>, <code>TapTweak</code>, <code>Drops/Pact</code>, <code>Drops/PactTransition</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="fees">Fee and size considerations</h2>
+    <p>The leaf lives in the witness, so its bytes are discounted to one weight unit each instead of four. Virtual size is weight divided by four, so witness bytes cost roughly a quarter of what the same bytes would cost in an output script.</p>
+
+    <h3>Leaf size arithmetic</h3>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>leafBytes = (1 + markerLen)          # marker push
+          + 1                        # OP_DROP
+          + (1 + mimeLen)            # content type push
+          + 1                        # OP_DROP
+          + 33                       # 32-byte hash push
+          + 1                        # OP_DROP
+          + pushOverhead(bodyLen) + bodyLen
+          + 1                        # OP_DROP
+          + 33                       # 32-byte key push
+          + 1                        # OP_CHECKSIG
+
+pushOverhead(n) = 1 for n &lt;= 75, 2 for 76..255, 3 for 256</code></pre>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Worked sizes, marker <code>drops</code>, content type <code>text/plain</code></caption>
+        <thead><tr><th scope="col">Body</th><th scope="col">Leaf bytes</th><th scope="col">Witness total</th><th scope="col">Approximate vbytes</th></tr></thead>
+        <tbody>
+          <tr><td>11 bytes</td><td>100</td><td>201</td><td>51</td></tr>
+          <tr><td>75 bytes</td><td>164</td><td>265</td><td>67</td></tr>
+          <tr><td>128 bytes</td><td>218</td><td>319</td><td>80</td></tr>
+          <tr><td>256 bytes, the maximum</td><td>347</td><td>450</td><td>113</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Witness total assumes a 64-byte signature and a 33-byte control block, plus the witness item count and one compactSize length prefix per item. A leaf of 253 bytes or more needs a three-byte prefix rather than one, which is why the last row gains more than the body alone. Add 32 bytes to the control block for each merkle sibling, which is 8 vbytes each. Add the transaction's own base cost, roughly 42 to 60 vbytes for a one-input, one-output transaction, plus the commit transaction that funded it.</p>
+
+    <div class="note">
+      <span class="note__title">The two-transaction cost</span>
+      <p>A Drop always costs two transactions: the commit that creates the Taproot output, and the reveal that spends it. Batch where you can. One reveal transaction may carry several Drops on several inputs, and each gets its own identity from its own input index.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="limitations">Limitations</h2>
+    <p>Stated plainly, because a protocol that hides its limits gets used for things it cannot do.</p>
+
+    <div class="grid grid--2">
+      <div class="card">
+        <h3>Structural</h3>
+        <ul>
+          <li>256 bytes is a hard ceiling. There is no chunking, continuation or multi-part convention, and adding one would be a different protocol.</li>
+          <li>No revision or deletion. A confirmed Drop is permanent, mistakes included.</li>
+          <li>No on-chain link between an artifact and a creator identity beyond the key that signed the reveal.</li>
+          <li>Custody follows output 0 only. A wallet that spends the custody outpoint into a change position destroys custody.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Operational</h3>
+        <ul>
+          <li>No mempool view for artifacts. Nothing exists before the confirmation depth.</li>
+          <li>Marketplace actions are feature-gated and off by default; <code>sell</code> is not supported at all.</li>
+          <li>Pacts is reference-only. There is no live Cell, no settlement authority and no custody of value.</li>
+          <li>Deployment-scoped values such as activation heights and rebuild budgets differ between operators.</li>
+          <li>Support outside Bitcoin Universe is not claimed, and other implementations may read records differently.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 id="checklist">Implementation checklist, short form</h2>
+    <ul>
+      <li>Parse the leaf structurally before interpreting any field.</li>
+      <li>Enforce minimal push encoding and re-serialization equality.</li>
+      <li>Reject markers you do not own, including <code>bip110-op-drop</code>.</li>
+      <li>Validate the content type grammar, ASCII, and the 80-byte cap.</li>
+      <li>Recompute SHA-256 of the body and compare.</li>
+      <li>Validate the creator key as a curve point, not just a length.</li>
+      <li>Verify the Taproot commitment against the spent output, in full.</li>
+      <li>Require a three-item witness and reject an annex.</li>
+      <li>Record only at or beyond your confirmation depth; on mainnet at least six.</li>
+      <li>Derive identity from the reveal input index.</li>
+      <li>Track custody at output 0 with the P2WPKH and P2TR value test.</li>
+      <li>Rebuild projections after a reorg; never patch them.</li>
+      <li>Serve bodies under the passive-content policy.</li>
+      <li>Publish your network, confirmation depth and indexed height with every answer.</li>
+    </ul>
+    <p>The <a href="conformance.html">conformance page</a> expands each of these into a testable statement.</p>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/reference.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/reference.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
