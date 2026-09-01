@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bitcoinuniverseio.github.io/drops-protocol-docs/sitemap.xml
+Sitemap: https://bitcoinuniverseio.github.io/drops-protocol-docs/sitemap-index.xml

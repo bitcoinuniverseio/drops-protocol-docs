@@ -1,37 +1,54 @@
 {
   "schemaVersion": 1,
   "id": "drops-protocol-docs",
-  "name": "Drops documentation",
-  "classification": "product-docs",
+  "name": "Drops protocol",
+  "classification": "protocol",
   "repository": "bitcoinuniverseio/drops-protocol-docs",
-  "documentationUrl": "https://docs.bitcoinuniverse.io/products/drops/",
+  "documentationUrl": "https://docs.bitcoinuniverse.io/protocols/drops-protocol-docs/",
   "docsRoot": ".",
   "sourceRef": "main",
-  "releasedRef": "2ecc8e3ac6c70fd3ba338345756355cdb1da5a73",
+  "releasedRef": "f7bd2a22b3f4ea9517fc8653f8ef431e478aba51",
   "releaseVersion": "continuous",
   "lifecycle": "stable",
   "chains": [
     {
       "chain": "bitcoin",
       "networks": [
-        "mainnet"
+        "mainnet",
+        "testnet",
+        "signet",
+        "regtest"
       ]
     }
   ],
   "protocols": [
+    "drops",
     "op-drop"
   ],
   "audiences": [
     "user",
     "collector",
-    "protocol-implementer"
+    "app-developer",
+    "protocol-implementer",
+    "indexer-operator",
+    "security-verifier"
+  ],
+  "specifications": [
+    "pages/drops-specification.html",
+    "pages/carriers.html",
+    "pages/pacts.html",
+    "pages/validation.html",
+    "pages/conformance.html"
   ],
   "owners": [
     "bitcoinuniverseio"
   ],
+  "redirects": [
+    { "from": "/products/drops/", "to": "https://docs.bitcoinuniverse.io/protocols/drops-protocol-docs/" }
+  ],
   "lastVerified": {
-    "commit": "2ecc8e3ac6c70fd3ba338345756355cdb1da5a73",
-    "timestamp": "2026-09-01T02:00:00Z"
+    "commit": "f7bd2a22b3f4ea9517fc8653f8ef431e478aba51",
+    "timestamp": "2026-09-01T12:00:00Z"
   },
   "securityClassification": "public"
 }

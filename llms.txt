@@ -1,0 +1,62 @@
+# Drops protocol documentation
+
+> Drops is an original Bitcoin Universe application protocol for two kinds of permanent
+> Bitcoin record: media-first artifacts, and Drop Pacts, which are agreements whose terms
+> are committed on chain. Both travel in an OP_DROP Tapscript leaf and are counted only
+> after the Taproot commitment verifies against confirmed chain data.
+
+Site: https://bitcoinuniverseio.github.io/drops-protocol-docs/
+Repository: https://github.com/bitcoinuniverseio/drops-protocol-docs
+Portal: https://docs.bitcoinuniverse.io
+Chain: Bitcoin. Networks: mainnet, testnet, signet, regtest.
+Lifecycle: stable. Document revision: 2026-09-01.
+
+Availability, stated plainly: the Bitcoin Universe capability registry records both `drops`
+and `op_drop` as feature-gated with mode `external-execution`. The code is implemented and
+switched off unless an operator enables the gate (`dropsMarketplaceV1` for Drops,
+`opDropTrading` for OP_DROP). The `sell` action is not supported on any deployment.
+Drop Pacts are reference-only: the indexer's capability contract reports `mode: reference`
+with every execution, custody, authorization, signature, broadcast, live-Cell and
+value-bearing field set to false.
+
+The carrier protocol OP_DROP is documented separately at
+https://github.com/bitcoinuniverseio/op-drop and is summarised here rather than duplicated.
+
+## Specification
+
+- [Drops specification](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/drops-specification.html): 49 numbered normative rules. The five-push leaf grammar, field constraints, minimal push encoding, Taproot commitment verification, the `drops:<network>:<txid>:d<input>` identity, reveal and custody operations, and every invalid condition with the reference implementation's message.
+- [Carrier model, transaction anatomy and payload encoding](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/carriers.html): commit and reveal structure, the three-item witness, the control block, the marker registry (`drops`, `drops-pact`, `bip110-op-drop`, plus `drops-cell` and `DPC1`), minimal push opcodes, and a worked leaf byte by byte.
+- [Artifacts: media model, custody and serving](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/artifact.html): what fits in 256 bytes, content-type handling, the passive-content serving policy, the artifact lifecycle from committed to burned, and the fields an implementation records.
+- [Drop Pacts](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/pacts.html): the reference-only capability contract, the 184-byte Pact Seed record and its byte layout, pact identity derivation, the three enforcement floors (`recorded`, `co-signed`, `template-enforced`), the 176-byte Cell descriptor, the 245-byte transition preimage, outcome rules P-1 to P-9, and the Pacts reference JSON profile.
+- [OP_DROP, in summary](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/op-drop.html): the boundary between the two protocols, the three token events, the token lifecycle, `$DROP` terms, and what the BIP-110 badge does and does not mean. Links to the owning repository.
+- [Validation, indexing and finality](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/validation.html): the ten-step verification order, the six-confirmation mainnet floor, the `tip - (N - 1)` finalized target, mempool behaviour, reorganisation budgets and operator-required codes, scanner leadership states, and custody integrity counters.
+
+## Build and verify
+
+- [Create a Drop](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/create.html): a six-step walkthrough from choosing the body to checking the recorded result, with the leaf, commitment and witness constructions written out.
+- [Integration guide](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/integrate.html): the verified Bitcoin Universe support matrix, a nine-stage implementation order, patterns worth copying, and the mistakes that produce a wrong ledger.
+- [Payload decoder](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/decoder.html): an interactive client-side tool that decodes a leaf script or a whole transaction, checks every field rule including live SHA-256 and secp256k1 point validation, and decodes both Pact body profiles.
+- [Pact outcome verifier](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/verifier.html): an interactive client-side tool that checks whether a recorded outcome matches its stated terms, recomputing the transition commitment as a BIP 340 tagged hash.
+- [Test vectors](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/test-vectors.html): four valid leaves and ten invalid ones as real hex with expected messages, ten Taproot commitment cases, and twelve Pact record cases.
+- [Conformance](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/conformance.html): three implementation classes (Reader, Verifier, Indexer) with testable requirements, plus a Pacts annex.
+
+## Reference
+
+- [API reference](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/api.html): the public unauthenticated read endpoints for artifacts, Pacts and health, with exact parameter constraints, enum values, pagination defaults and response schemas, grounded in the service's OpenAPI 3.1 definition.
+- [Terminology, sizing and limitations](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/reference.html): glossary, every constant in one table, leaf size and fee arithmetic with worked numbers, structural and operational limitations, and a short implementation checklist.
+- [Security and safety](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/security.html): the four things a confirmed Drop proves and the six things it does not, a twelve-entry implementation threat model with mitigations, safety guidance for people, and private vulnerability reporting.
+- [Compared with adjacent protocols](https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/compare.html): how Drops differs from ordinal inscriptions, BRC-20, Runes, SRC-20 and Atomicals, with origins attributed honestly and tradeoffs stated as tradeoffs.
+- [Version history](https://bitcoinuniverseio.github.io/drops-protocol-docs/changelog.html): protocol rule changes and document revisions, kept separate.
+
+## Notes for machine readers
+
+- Every page is hand-authored static HTML with no build step, no framework and no external
+  requests. Page content is readable directly from the raw HTML.
+- [search-index.json](https://bitcoinuniverseio.github.io/drops-protocol-docs/search-index.json)
+  holds one entry per section: page title, heading, anchor URL, a text snippet and aliases.
+- [docs.manifest.json](https://bitcoinuniverseio.github.io/drops-protocol-docs/docs.manifest.json)
+  is the portal ingestion manifest for this repository.
+- Only Drops and OP_DROP originated at Bitcoin Universe. BRC-20, Runes, SRC-20, Atomicals and
+  ordinal inscriptions originated elsewhere and are described as their own ecosystems define them.
+- Do not report capability this documentation does not claim. Where support could not be
+  verified in the organization's own code, it is omitted rather than assumed.

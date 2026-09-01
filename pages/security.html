@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security and safety | Drops protocol</title>
+<meta name="description" content="What a confirmed Drop proves and does not prove, the threat model for implementers, safety guidance for people creating or holding records, and how to report a vulnerability privately.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/security.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Security and safety">
+<meta property="og:description" content="What a confirmed Drop proves and does not prove, the threat model for implementers, safety guidance for people creating or holding records, and how to report a vulnerability privately.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/security.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html" aria-current="page">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Security and safety</p>
+    <h1>What this <em>actually proves</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">A proof that is described accurately is more useful than a proof that is described impressively. This page states the guarantee precisely, lists the ways an implementation can weaken it, and gives the safety rules for anyone creating or holding a Drop.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="guarantee">The guarantee, precisely</h2>
+    <p>A confirmed, verified Drop proves exactly four things:</p>
+    <ol>
+      <li>These exact body bytes, this content type, this marker and this public key were committed together in a single Tapscript leaf.</li>
+      <li>That leaf is a leaf the spent Taproot output committed to, before the spend existed.</li>
+      <li>The declared SHA-256 equals the revealed body.</li>
+      <li>The spend appears in a block on the chain the reading implementation follows, at or beyond its confirmation depth.</li>
+    </ol>
+
+    <div class="caution">
+      <span class="caution__title">And nothing beyond that</span>
+      <ul>
+        <li><strong>Not authorship.</strong> The creator key is whoever signed the reveal. Anyone can commit to anyone's content.</li>
+        <li><strong>Not rights.</strong> Recording an image does not grant, transfer or evidence any right to it.</li>
+        <li><strong>Not value.</strong> The protocol has no opinion about what a record is worth.</li>
+        <li><strong>Not performance.</strong> A Pact with a <code>recorded</code> enforcement floor proves its terms were committed, not that anyone honoured them.</li>
+        <li><strong>Not agreement between implementations.</strong> Another indexer may read the same chain differently. Verify the implementation you rely on.</li>
+        <li><strong>Not availability of referenced content.</strong> If a body holds a pointer, Bitcoin proves the pointer and nothing about the thing pointed at.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="threats">Threat model for implementers</h2>
+    <p>Every entry below is a real way to turn a sound protocol into an unsound product.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Implementation threats</caption>
+        <thead><tr><th scope="col">Threat</th><th scope="col">Consequence</th><th scope="col">Mitigation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Recording a leaf without checking its Taproot commitment</td>
+            <td>Anyone can put any leaf in any witness. Records become forgeable at will.</td>
+            <td>Specification section 4 in full. Conformance C-B3 through C-B7.</td>
+          </tr>
+          <tr>
+            <td>Treating a verification exception as anything but a rejection</td>
+            <td>A malformed input that crashes the verifier is accepted by the error path.</td>
+            <td>Fail closed. Conformance C-B8.</td>
+          </tr>
+          <tr>
+            <td>Validating the creator key by length only</td>
+            <td>32 arbitrary bytes are treated as a key. Downstream signature logic behaves unpredictably.</td>
+            <td>Curve-point validation. Vector IV-8.</td>
+          </tr>
+          <tr>
+            <td>Accepting non-minimal push encodings</td>
+            <td>Two distinct byte strings decode to the same fields, so a record has more than one serialization and content-addressing breaks.</td>
+            <td>Re-serialization equality. Conformance C-A2.</td>
+          </tr>
+          <tr>
+            <td>Accepting another protocol's marker</td>
+            <td>Two ledgers merge. A token event becomes an artifact and no result is reproducible.</td>
+            <td>Marker allowlist. Vector IV-2.</td>
+          </tr>
+          <tr>
+            <td>Rendering a body with its declared content type</td>
+            <td>An SVG or HTML body executes script in your origin, with access to whatever that origin holds.</td>
+            <td>Passive-content policy: inline only <code>text/plain</code> and raster images, everything else an opaque attachment, with <code>nosniff</code> and a restrictive CSP.</td>
+          </tr>
+          <tr>
+            <td>Trusting a body's declared type when storing or scanning it</td>
+            <td>The declared type is attacker-controlled. A body labelled <code>text/plain</code> may be anything.</td>
+            <td>Treat the type as a claim; treat the bytes as hostile.</td>
+          </tr>
+          <tr>
+            <td>Serving a record without stating the confirmation depth or indexed height</td>
+            <td>A consumer cannot tell whether an absent record is absent or merely not yet scanned.</td>
+            <td>Publish network, depth and height. Conformance C-C10.</td>
+          </tr>
+          <tr>
+            <td>Patching a projection after a reorganisation</td>
+            <td>Custody drifts from immutable history and cannot be reproduced by a second implementation.</td>
+            <td>Roll back and rebuild. Conformance C-C8.</td>
+          </tr>
+          <tr>
+            <td>Guessing at an ambiguous reorganisation ancestor</td>
+            <td>An unreproducible history that no audit can confirm.</td>
+            <td>Stop with a named reason. Conformance C-C9.</td>
+          </tr>
+          <tr>
+            <td>Presenting a partial Pact outcome check as a full one</td>
+            <td>A user believes an outcome was verified when only its structure was checked.</td>
+            <td>State which of P-1 through P-9 were applied, every time. Conformance C-P4.</td>
+          </tr>
+          <tr>
+            <td>Presenting Pacts as having authority it does not have</td>
+            <td>Someone signs or sends funds on the strength of a reference-only surface.</td>
+            <td>Surface <code>mode: reference</code> and the enforcement floor. Conformance C-P5 and C-P6.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="safety">Safety for people, not implementations</h2>
+
+    <div class="grid grid--2">
+      <div class="note">
+        <span class="note__title">Always true</span>
+        <ul>
+          <li>No Drops or Pacts interface ever needs your seed phrase or private key. Any request for one is an attack, without exception.</li>
+          <li>Review the body, the network, the destination and the fee before signing. A confirmed Bitcoin transaction is difficult to reverse.</li>
+          <li>A wallet preview, a draft, or an unconfirmed transaction is not a record. For Drops artifacts there is no pending state at all.</li>
+          <li>Rehearse on <code>signet</code> or <code>regtest</code>. It costs nothing.</li>
+        </ul>
+      </div>
+      <div class="caution">
+        <span class="caution__title">If something looks wrong</span>
+        <ul>
+          <li>If a screen says a Pact transaction is pending: do not sign, do not send funds. The reference service holds no funds and no live Pact state.</li>
+          <li>Keep the full blueprint and the plan hash together. They are what let you prove later which document you agreed to.</li>
+          <li>Verify any Bitcoin transaction independently, in a wallet or explorer you chose yourself.</li>
+          <li>If two screens disagree, believe the chain. Fetch the record, fetch its body, and check the hash yourself with the <a href="decoder.html">decoder</a>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 id="content">A note on content</h2>
+    <p>Anyone can commit anything to Bitcoin, and a Drops indexer records what it finds. An implementation that serves bodies is publishing third-party content it did not choose and cannot remove from the chain. Serving decisions, including refusing to serve particular records, are a matter for the operator and the law that applies to them. The protocol has no removal mechanism, and adding one would not remove anything from Bitcoin.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="reporting">Reporting a vulnerability</h2>
+    <p>Report privately, not in a public issue. Use GitHub's private vulnerability reporting on the repository that holds the affected code.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">If the issue is in</th><th scope="col">Report at</th></tr></thead>
+        <tbody>
+          <tr><td>This documentation: a rule stated wrongly, a vector that is wrong, a tool that reports a false result</td><td><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">drops-protocol-docs advisories</a></td></tr>
+          <tr><td>The OP_DROP carrier protocol or its documentation</td><td><a href="https://github.com/bitcoinuniverseio/op-drop/security/advisories/new">op-drop advisories</a></td></tr>
+          <tr><td>A Bitcoin Universe product or service</td><td>The security policy on <a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>A useful report includes what you did, what you expected, what happened, and the smallest input that reproduces it. For a protocol-level finding, a test vector in the style of the <a href="test-vectors.html">test vectors page</a> is the most useful thing you can send.</p>
+
+    <div class="note">
+      <span class="note__title">Especially wanted</span>
+      <p>A byte string that this documentation says is invalid but the reference implementation accepts, or the reverse. A disagreement between the specification and the code is the most valuable bug either can have, and it is worth reporting even when neither behaviour is obviously dangerous.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/security.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/security.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,245 +1,269 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="A plain-language comparison of op-drop, OP-20, BRC-20, CBRC-20, SRC-20, Runes, Alkanes, Mezcal, ARC-20, TAP, Block-20, and DUST-20 on Bitcoin." />
-    <title>Compare Bitcoin token protocols | Drops Documentation</title>
-    <link rel="stylesheet" href="../assets/pages.css" />
-    <link rel="stylesheet" href="../assets/translation-toggle.css" />
-    <script defer src="../assets/translation-toggle.js"></script>
-  </head>
-  <body>
-    <header class="page-nav">
-      <a class="page-brand" href="../index.html"><b>D</b> Drops</a>
-      <nav class="page-nav-links" aria-label="Primary navigation">
-        <a href="discover.html">Discover</a>
-        <a href="op-drop.html">op-drop</a>
-        <a href="pacts.html">Pacts</a>
-        <a href="protocol.html">Protocol</a>
-      </nav>
-      <a class="page-button" href="https://inscribe.bitcoinuniverse.io/op-drop">Mint $DROP</a>
-    </header>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drops compared with adjacent protocols | Drops protocol</title>
+<meta name="description" content="How Drops differs from ordinal inscriptions, BRC-20, Runes, SRC-20, Atomicals and its own neighbour OP_DROP, with the origin of each protocol attributed honestly and the tradeoffs stated as tradeoffs.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/compare.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Compared with adjacent protocols">
+<meta property="og:description" content="How Drops differs from ordinal inscriptions, BRC-20, Runes, SRC-20, Atomicals and its own neighbour OP_DROP, with the origin of each protocol attributed honestly and the tradeoffs stated as tradeoffs.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/compare.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
 
-    <main>
-      <section class="page-hero">
-        <img class="page-hero-art" src="../assets/opdrop-luxe-hero.png" width="1821" height="864" alt="Chrome token discs and a pink electric supercar under fuchsia city lights" />
-        <div class="page-hero-copy">
-          <p class="eyebrow">Choose your Bitcoin token model</p>
-          <h1>One Bitcoin.<br /><em>Different ways to create a token.</em></h1>
-          <p>You do not need to be technical to understand the important part: a token protocol decides what is written to Bitcoin, how ownership changes, and what a wallet needs to check. This guide puts the choices side by side so you can choose with confidence.</p>
-          <p><code>op-drop</code> is built for clear fungible-token launches with a direct Bitcoin proof trail. <code>$DROP</code>, the first token on op-drop, shows how a fixed supply, visible mint rules, and a verified <code>OP_DROP</code> commitment can live together on Bitcoin L1.</p>
-          <div class="page-actions">
-            <a class="page-button" href="op-drop.html">Explore op-drop</a>
-            <a class="page-button quiet" href="https://inscribe.bitcoinuniverse.io/op-drop">Mint $DROP</a>
-          </div>
-          <div class="proof-belt"><span>Bitcoin confirmation</span><b>+</b><span>exact record</span><b>+</b><span>independent verification</span><b>=</b><strong>an asset people can inspect</strong></div>
-        </div>
-      </section>
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html" aria-current="page">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
 
-      <section class="page-main">
-        <div class="page-intro">
-          <p class="eyebrow">The simple answer</p>
-          <h2>Pick the experience you want people to have.</h2>
-          <p>All of these protocols create meaning from data confirmed on Bitcoin. They are not interchangeable. Some center on inscription conventions, some direct balances between Bitcoin outputs, and some enable general-purpose programs. op-drop focuses on the middle ground: fixed fungible-token rules that are easy for people to read and easy for compatible software to prove.</p>
-        </div>
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Comparison &middot; not a ranking</p>
+    <h1>Compared with <em>adjacent protocols</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">Every protocol on this page solved a real problem and made a real tradeoff. This page describes those tradeoffs so you can pick the one that matches what you are building. It is not a claim that Drops is better, and it does not describe any of them as insecure.</p>
+  </div>
+</section>
 
-        <div class="feature-grid" aria-label="Bitcoin token protocol choices">
-          <article><span>Fixed-rule launch</span><h3>op-drop</h3><p>For a token with clear deploy, mint, and transfer events, a verified OP_DROP commitment, and an optional image paired with its deploy reveal.</p></article>
-          <article><span>Inscription convention</span><h3>BRC-20</h3><p>For projects that want token meaning carried through the established Ordinals inscription-token convention.</p></article>
-          <article><span>Media-aware inscription convention</span><h3>CBRC-20</h3><p>For Ordinal projects that want BRC-20-style token operations alongside flexible inscription content.</p></article>
-          <article><span>Bitcoin Stamps model</span><h3>SRC-20</h3><p>For the Bitcoin Stamps ecosystem, where a dedicated indexer validates direct-to-Bitcoin token events.</p></article>
-          <article><span>Output-directed assets</span><h3>Runes</h3><p>For fungible assets expressed through runestones that direct balances to Bitcoin transaction outputs.</p></article>
-          <article><span>OP_RETURN token model</span><h3>OP-20</h3><p>For the OP20 Labs model that records deploy, mint, and transfer operations with OP_RETURN.</p></article>
-          <article><span>Programmable applications</span><h3>Alkanes</h3><p>For application-specific WebAssembly logic that goes beyond a fixed token rule set.</p></article>
-          <article><span>JSON output records</span><h3>Mezcal</h3><p>For output-directed assets that use readable JSON mezcalstones in OP_RETURN, including priced-mint terms.</p></article>
-          <article><span>Satoshi-backed units</span><h3>ARC-20</h3><p>For Atomicals assets where token units are represented by satoshis and followed through Bitcoin outputs.</p></article>
-          <article><span>Extended OrdFi</span><h3>TAP</h3><p>For projects using an Ordinals-based protocol with BRC-20-compatible basics and extended token features.</p></article>
-          <article><span>Block-linked inscriptions</span><h3>Block-20</h3><p>For JSON inscription events that connect token minting to the protocol's block-hash rules.</p></article>
-          <article><span>Dust-backed outputs</span><h3>DUST-20</h3><p>For token events that pair units with dust-sized Bitcoin outputs for a UTXO-aware asset model.</p></article>
-          <article><span>Start with $DROP</span><h3>See op-drop in action</h3><p><code>$DROP</code>, the first token on op-drop, is a simple place to see a Bitcoin-native fungible token before launching your own.</p></article>
-        </div>
-      </section>
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <div class="note">
+      <span class="note__title">Attribution first</span>
+      <p>Of the protocols below, only <strong>Drops</strong> and <strong>OP_DROP</strong> originated at Bitcoin Universe. Ordinal inscriptions, BRC-20, Runes, SRC-20 and Atomicals all originated outside this organization, and each is described here as its own ecosystem defines it. Where Bitcoin Universe makes an indexing decision of its own about one of them, that is a Universe decision and is labelled as such elsewhere in the docs platform, not attributed to the protocol's authors.</p>
+    </div>
 
-      <section class="split-section paper">
-        <figure>
-          <img src="../assets/drops-luxe-hero.png" width="1822" height="863" alt="A pearl-and-chrome proof artifact connected by luminous data lines" />
-          <figcaption>op-drop makes the token record and its Bitcoin commitment part of the same verification story.</figcaption>
-        </figure>
-        <div>
-          <p class="eyebrow">Why op-drop exists</p>
-          <h2>Simple to use. Explicit enough to verify.</h2>
-          <p>People launching a token should not need to explain a maze of hidden rules. An op-drop token is a compact, canonical record for deploy, mint, and transfer. A compatible indexer accepts it only after the matching Bitcoin transaction and Taproot commitment check out.</p>
-          <div class="step-list">
-            <div><b>Immutable by confirmation:</b> a valid record can be rechecked from Bitcoin chain data instead of a changing app database.</div>
-            <div><b>OP_DROP native:</b> the token designator is <code>op-drop</code>; <code>OP_DROP</code> is the Bitcoin Script opcode that carries its canonical commitment.</div>
-            <div><b>BIP-110 ready:</b> the format uses a compact, strict grammar designed for the BIP-110 OP_DROP compatibility boundary.</div>
-            <div><b>Designed for real launches:</b> a deploy can carry its token image in the same reveal, so the asset identity follows the token from day one.</div>
-          </div>
-          <div class="page-actions"><a class="page-button" href="https://inscribe.bitcoinuniverse.io/op-drop">Mint $DROP</a><a class="page-button quiet" href="op-drop.html">Read op-drop</a></div>
-        </div>
-      </section>
+    <h2 id="axes">The axes that actually differ</h2>
+    <div class="table-scroll">
+      <table>
+        <caption>Design comparison</caption>
+        <thead>
+          <tr>
+            <th scope="col">Question</th>
+            <th scope="col">Drops</th>
+            <th scope="col">Ordinal inscriptions</th>
+            <th scope="col">BRC-20</th>
+            <th scope="col">Runes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">What is recorded</th>
+            <td>A media artifact or an agreement record</td>
+            <td>Arbitrary content attached to a satoshi</td>
+            <td>Token events written as inscribed JSON</td>
+            <td>Token issuance and transfers</td>
+          </tr>
+          <tr>
+            <th scope="row">Where the data sits</th>
+            <td>A Tapscript leaf, in the witness</td>
+            <td>A Tapscript envelope, in the witness</td>
+            <td>Inside an ordinal inscription</td>
+            <td>An <code>OP_RETURN</code> output</td>
+          </tr>
+          <tr>
+            <th scope="row">Size of one record</th>
+            <td>1 to 256 bytes, hard limit</td>
+            <td>Effectively bounded by block and standardness limits</td>
+            <td>Small, bounded by its JSON</td>
+            <td>Small, bounded by the OP_RETURN</td>
+          </tr>
+          <tr>
+            <th scope="row">Identity comes from</th>
+            <td>The reveal transaction and input index</td>
+            <td>Inscription identity plus satoshi tracking</td>
+            <td>The underlying inscription</td>
+            <td>An assigned rune identity</td>
+          </tr>
+          <tr>
+            <th scope="row">Ownership follows</th>
+            <td>Output 0, by explicit rule</td>
+            <td>The satoshi, by ordinal theory</td>
+            <td>The inscription's satoshi</td>
+            <td>Protocol-defined output allocation</td>
+          </tr>
+          <tr>
+            <th scope="row">Commitment check</th>
+            <td>Required: the leaf must be the leaf the spent output committed to</td>
+            <td>Envelope recognition within the reveal</td>
+            <td>Inherited from the inscription layer</td>
+            <td>Output parsing, no Taproot commitment involved</td>
+          </tr>
+          <tr>
+            <th scope="row">Mempool view</th>
+            <td>None for artifacts</td>
+            <td>Commonly shown by indexers</td>
+            <td>Commonly shown by indexers</td>
+            <td>Commonly shown by indexers</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-      <section class="page-main">
-        <div class="page-intro">
-          <p class="eyebrow">The full comparison</p>
-          <h2>Twelve approaches, explained without the fog.</h2>
-          <p>There is no universal winner. The right protocol depends on whether you value an inscription convention, satoshi-backed ownership, the Bitcoin Stamps ecosystem, output-based asset movement, open-ended program logic, or a fixed rule set with an explicit proof path. The table names what each model is made to do, and what you should verify before using it.</p>
-        </div>
+    <div class="table-scroll">
+      <table>
+        <caption>Two more, and the neighbour</caption>
+        <thead><tr><th scope="col">Protocol</th><th scope="col">Origin</th><th scope="col">Carrier</th><th scope="col">The distinctive choice</th></tr></thead>
+        <tbody>
+          <tr>
+            <th scope="row">SRC-20</th><td>Bitcoin Stamps ecosystem, outside this org</td><td>Data encoded in transaction outputs</td>
+            <td>Storing data in outputs rather than the witness makes it unprunable, at a much higher cost per byte.</td>
+          </tr>
+          <tr>
+            <th scope="row">Atomicals and ARC-20</th><td>Atomicals ecosystem, outside this org</td><td>Tapscript envelope with a coloured-coin model</td>
+            <td>Ties token units to satoshis directly, so a unit is a satoshi rather than a ledger row.</td>
+          </tr>
+          <tr>
+            <th scope="row">OP_DROP</th><td>Bitcoin Universe</td><td>The same five-push leaf as Drops, marker <code>bip110-op-drop</code></td>
+            <td>Shares the carrier and nothing else: a token ledger with two-stage transfers. See the <a href="op-drop.html">summary</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
 
-        <div class="protocol-table-wrap">
-          <table class="comparison-table">
-            <caption>Full comparison of common Bitcoin token protocol approaches</caption>
-            <thead>
-              <tr><th>Protocol</th><th>What gets written</th><th>How state is read</th><th>Good fit</th><th>What to check</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><strong class="protocol-name drop-name">op-drop</strong></td><td>Canonical JSON token events inside a verified <code>OP_DROP</code> Taproot leaf. A deploy may also include its image in the same reveal.</td><td>A compatible verifier checks the exact leaf, body hash, Taproot commitment, and confirmed transaction before it updates supply or balances.</td><td>Clear fungible-token launches, inscriptions with a token identity, and readable Bitcoin L1 agreements.</td><td>The compatible Drops verifier or indexer, the canonical event, and the Bitcoin confirmation.</td></tr>
-              <tr><td><strong class="protocol-name">OP-20</strong></td><td>Deploy, mint, and transfer operation data carried through <code>OP_RETURN</code> by OP20 Labs.</td><td>The OP-20 rules aggregate events and use UTXO ownership for transfer receipts.</td><td>OP_RETURN token activity following the OP20 Labs model.</td><td>The exact OP-20 rules and project identity. The same name is also used by unrelated projects.</td></tr>
-              <tr><td><strong class="protocol-name">BRC-20</strong></td><td>JSON operations inscribed through the Ordinals inscription convention.</td><td>Compatible indexers interpret deploy, mint, and transfer inscriptions to calculate token state.</td><td>Projects that want the established BRC-20 inscription-token model.</td><td>The indexer policy and transfer-inscription lifecycle your wallet or marketplace uses.</td></tr>
-              <tr><td><strong class="protocol-name">CBRC-20</strong></td><td>Ordinals <code>metaprotocol</code> operations, with CBOR metadata for deployment and content still available for other media.</td><td>Its convention follows the BRC-20-style deploy, mint, and transfer model while using Ordinals envelope fields.</td><td>Ordinal projects that want token operations paired with flexible inscription content.</td><td>The CBRC-20 convention, the Ordinals client behavior it expects, and indexer support.</td></tr>
-              <tr><td><strong class="protocol-name">SRC-20</strong></td><td>Direct-to-Bitcoin SRC-20 JSON token events in the Stamps format. Current OLGA-era construction uses P2WSH framing; bare-multisig public-key data belongs to historical carrier paths.</td><td>A Bitcoin Stamps-compatible indexer validates the event, source and destination rules, then calculates indexed balances.</td><td>Projects that want a fungible token in the Stamps, SRC-20 and SRC-101 ecosystem.</td><td>The target SRC-20 specification, its applicable carrier era, and the wallet or indexer that supports it.</td></tr>
-              <tr><td><strong class="protocol-name">Runes</strong></td><td>A runestone in a Bitcoin transaction output, using <code>OP_RETURN</code> followed by <code>OP_13</code> and encoded data pushes.</td><td>Runestones direct rune balances from transaction inputs to outputs, including etching, minting, and edicts.</td><td>Output-directed fungible assets built around the Runes model.</td><td>The <code>ord</code> rules and malformed-runestone, or cenotaph, behavior.</td></tr>
-              <tr><td><strong class="protocol-name">Alkanes</strong></td><td>WebAssembly smart-contract programs and calls through the Protorunes-based Alkanes metaprotocol.</td><td>The Alkanes runtime and indexing infrastructure process application-specific execution and state.</td><td>Apps that need custom logic such as AMMs, lending, governance, or programmable token behavior.</td><td>The contract code, runtime behavior, and indexer or node you rely on.</td></tr>
-              <tr><td><strong class="protocol-name">Mezcal</strong></td><td>UTF-8 JSON mezcalstones pushed directly after <code>OP_RETURN</code>, with etching, mint, and output edict data.</td><td>A compatible Mezcal indexer strictly decodes the JSON record and follows its etching, mint, and output-routing rules.</td><td>Readable OP_RETURN token records, output-directed balances, and launches that use priced mints.</td><td>The active Mezcal rules, strict JSON validation, output edicts, and the indexer or wallet your users use.</td></tr>
-              <tr><td><strong class="protocol-name">ARC-20</strong></td><td>Atomicals records and satoshi-backed token outputs. Each token unit is represented by a satoshi in the ARC-20 model.</td><td>UTXO ownership follows the satoshi-backed units, using the Atomicals rules for direct or decentralized minting.</td><td>Assets whose units remain tied to Bitcoin satoshis and move with compatible UTXO-aware wallets.</td><td>The Atomicals rules, UTXO selection support, ticker claim, and whether the asset uses direct or decentralized minting.</td></tr>
-              <tr><td><strong class="protocol-name">TAP</strong></td><td>TAP operations built on the Ordinals model, with BRC-20-compatible basics and extended protocol functions.</td><td>A TAP-compatible indexer follows the Ordinals record lifecycle and TAP's additional token, authority, and transfer rules.</td><td>OrdFi assets that need extended capabilities such as mass-send, peer-to-peer trading, or TAP's authority features.</td><td>The current TAP specification, the exact function being used, and compatible wallet, indexer, and marketplace support.</td></tr>
-              <tr><td><strong class="protocol-name">Block-20</strong></td><td>JSON deploy, mint, and transfer inscriptions. Mint records can include the block hash required by the Block-20 rule set.</td><td>A compatible Block-20 indexer checks the inscription event order and block-linked mint rules before calculating balances.</td><td>Block-linked token launches and mints using the Block-20 inscription convention.</td><td>The block-anchor rules, canonical JSON fields, and the indexer and wallet you choose.</td></tr>
-              <tr><td><strong class="protocol-name">DUST-20</strong></td><td>JSON deploy, mint, and transfer inscriptions with satoshi values that define its dust-backed token units.</td><td>A compatible DUST-20 indexer follows the event data and the associated dust-sized output values to calculate balances.</td><td>Assets that want a token event model paired with UTXO-aware, dust-backed output units.</td><td>The unit-satoshi and limit-satoshi rules, inscription data, output values, and indexer support.</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="comparison-note">This is a design and user-experience comparison, not an investment recommendation or a security ranking. Always inspect the specific wallet, indexer, marketplace, and protocol rules you choose.</p>
-      </section>
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="tradeoffs">The three tradeoffs Drops made</h2>
 
-      <section class="page-main comparison-lens">
-        <div class="page-intro">
-          <p class="eyebrow">At a glance</p>
-          <h2>See the design choice before you choose a ticker.</h2>
-          <p>Here is the practical view. It tells you where each protocol puts its token instruction, how the token story is followed, and whether the protocol is meant for fixed rules or open-ended applications.</p>
-        </div>
+    <div class="grid grid--3">
+      <article class="card card--sealed">
+        <span class="seal" aria-hidden="true">1</span>
+        <h3>Size for self-containment</h3>
+        <p><strong>Gave up:</strong> large media on chain. <strong>Got:</strong> an artifact whose content, hash and commitment all arrive together, with no reassembly and no partial states.</p>
+      </article>
+      <article class="card card--sealed">
+        <span class="seal" aria-hidden="true">2</span>
+        <h3>Convention for commitment</h3>
+        <p><strong>Gave up:</strong> the ability to recognise a record from the reveal alone. <strong>Got:</strong> a proof that the record was committed in advance by the output that was spent, rather than merely present in a witness.</p>
+      </article>
+      <article class="card card--sealed">
+        <span class="seal" aria-hidden="true">3</span>
+        <h3>Immediacy for finality</h3>
+        <p><strong>Gave up:</strong> a pending view. <strong>Got:</strong> a record set with no state that can evaporate, and no interface temptation to show unconfirmed activity as though it counted.</p>
+      </article>
+    </div>
 
-        <div class="protocol-table-wrap">
-          <table class="comparison-table">
-            <caption>Launch and verification lens across all twelve protocols</caption>
-            <thead>
-              <tr><th>Protocol</th><th>Primary carrier</th><th>How balances or state are followed</th><th>Media and identity</th><th>Logic model</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><strong class="protocol-name drop-name">op-drop</strong></td><td>A canonical token record in a Taproot leaf using <code>OP_DROP</code>.</td><td>A compatible verifier proves the leaf and confirmed transaction, then follows deploy, mint, and transfer events.</td><td>An optional token image can be inscribed with the deploy reveal, so the launch identity starts on Bitcoin with the token.</td><td>Fixed fungible-token rules. Custom game or agreement logic belongs in an app or Drops Pact.</td></tr>
-              <tr><td><strong class="protocol-name">OP-20</strong></td><td>Operation data in <code>OP_RETURN</code>.</td><td>Its rules aggregate events and use UTXO ownership for transfer receipts.</td><td>Media is not a required part of the token operation format.</td><td>Fixed deploy, mint, and transfer operations in the OP20 Labs model.</td></tr>
-              <tr><td><strong class="protocol-name">BRC-20</strong></td><td>JSON operation inscriptions in the Ordinals convention.</td><td>Indexers interpret the token inscription lifecycle to calculate balances.</td><td>The token operation is an inscription record. Any richer media experience depends on the surrounding Ordinals tooling.</td><td>Fixed token operations interpreted by compatible indexers.</td></tr>
-              <tr><td><strong class="protocol-name">CBRC-20</strong></td><td>Ordinals <code>metaprotocol</code> fields with CBOR metadata.</td><td>Indexers follow BRC-20-style operations using the CBRC-20 convention.</td><td>Designed to pair token metadata with flexible inscription content.</td><td>Fixed token operations within the Ordinals ecosystem.</td></tr>
-              <tr><td><strong class="protocol-name">SRC-20</strong></td><td>Bitcoin Stamps-formatted SRC-20 data carried directly in Bitcoin transactions.</td><td>Bitcoin Stamps-compatible indexers validate operations and address rules to calculate balances.</td><td>Part of the Bitcoin Stamps ecosystem, which has its own artifact and token conventions.</td><td>Fixed SRC-20 deploy, mint, and transfer operations.</td></tr>
-              <tr><td><strong class="protocol-name">Runes</strong></td><td>A runestone using <code>OP_RETURN</code> with encoded data.</td><td>Balances are routed from inputs to outputs by etching, minting, and edict rules.</td><td>Media is separate from the runestone token instruction.</td><td>Fixed runestone semantics for fungible assets.</td></tr>
-              <tr><td><strong class="protocol-name">Alkanes</strong></td><td>WebAssembly programs and calls in the Alkanes metaprotocol.</td><td>Its runtime executes application-defined code and state transitions.</td><td>Application-defined.</td><td>Open-ended application logic for contracts, games, and other programmable systems.</td></tr>
-              <tr><td><strong class="protocol-name">Mezcal</strong></td><td>A JSON mezcalstone pushed directly after <code>OP_RETURN</code>.</td><td>Its indexer decodes strict JSON records and routes balances through etch, mint, and edict rules.</td><td>Token names and terms are readable in the mezcalstone. Media is a separate choice.</td><td>Fixed output-directed rules with optional priced-mint terms.</td></tr>
-              <tr><td><strong class="protocol-name">ARC-20</strong></td><td>Atomicals records paired with satoshi-backed token outputs.</td><td>Compatible tools follow the UTXO that holds the satoshi-backed units.</td><td>Metadata can carry an image and asset details alongside the Atomicals identity.</td><td>Direct and decentralized mint models with satoshi-backed units.</td></tr>
-              <tr><td><strong class="protocol-name">TAP</strong></td><td>Ordinals-based TAP records and protocol operations.</td><td>A TAP indexer follows basic operations plus the protocol's extended transfer and authority rules.</td><td>Supports OrdFi extensions including Digital Matter Theory and Bitmap integrations.</td><td>Extended token functionality, including authority features and TAP smart-contract tooling.</td></tr>
-              <tr><td><strong class="protocol-name">Block-20</strong></td><td>JSON token inscriptions with a block-linked mint field.</td><td>A compatible indexer reads the event sequence and validates the matching block-hash rules.</td><td>Media is separate from the JSON token event.</td><td>Fixed deploy, mint, and transfer rules with block-linked mints.</td></tr>
-              <tr><td><strong class="protocol-name">DUST-20</strong></td><td>JSON token inscriptions paired with satoshi-valued dust outputs.</td><td>A compatible indexer reads event data and the dust-backed output values for the token state.</td><td>Media is separate from the token event and output-unit record.</td><td>Fixed deploy, mint, and transfer rules with dust-backed units.</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="comparison-note">The categories are intentionally simple. A protocol can be useful outside its typical fit, but every launch should be checked against the exact rules and services people will rely on.</p>
-      </section>
+    <h2 id="choose">Choosing between them</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">If you need</th><th scope="col">Consider</th></tr></thead>
+        <tbody>
+          <tr><td>A large image or file recorded on chain</td><td>An inscription-style protocol. Drops cannot do this and does not pretend to.</td></tr>
+          <tr><td>A small artifact whose commitment you can verify from one transaction</td><td>Drops.</td></tr>
+          <tr><td>A fungible token with a large existing ecosystem</td><td>BRC-20 or Runes, depending on your indexer and wallet requirements.</td></tr>
+          <tr><td>A fungible token with strict two-stage transfers and a published decision path</td><td>OP_DROP.</td></tr>
+          <tr><td>An agreement whose terms and enforcement boundary are both on chain</td><td>Drop Pacts, keeping the <a href="pacts.html#capability">reference-only boundary</a> in view.</td></tr>
+          <tr><td>Units that are satoshis</td><td>An ARC-20 style coloured-coin model.</td></tr>
+          <tr><td>Data that survives even aggressive witness pruning</td><td>An output-based protocol such as SRC-20, at a higher cost.</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-      <section class="model-atlas" aria-labelledby="model-atlas-title">
-        <div class="model-atlas__intro">
-          <div>
-            <p class="eyebrow">How the models differ</p>
-            <h2 id="model-atlas-title">One Bitcoin block. <em>Six ways to give it meaning.</em></h2>
-            <p>A protocol is the shared reading rule that turns a confirmed Bitcoin transaction into a token event. The transaction is the same. What changes is where the instruction lives, how compatible software follows state, and what each verifier must prove before it treats that instruction as meaningful.</p>
-          </div>
-          <aside class="model-atlas__thesis" aria-label="How to compare token protocols">
-            <span class="model-atlas__thesis-label">One confirmed transaction</span>
-            <strong>Different protocols, different promises.</strong>
-            <p>Compare the carrier, the state rule, and the verification path before you compare a ticker.</p>
-            <div class="model-atlas__legend" aria-label="Comparison lenses">
-              <span>Carrier</span>
-              <span>State rule</span>
-              <span>Proof path</span>
-            </div>
-          </aside>
-        </div>
+    <div class="caution">
+      <span class="caution__title">One thing that is not a tradeoff</span>
+      <p>Whatever protocol you choose, verify the implementation you rely on rather than the specification you read. Two indexers for the same protocol can disagree, and the one your money depends on is the one whose rules matter. That advice applies to Drops as much as to anything on this page.</p>
+    </div>
+  </div>
+</section>
+</main>
 
-        <ol class="model-atlas__grid" aria-label="Six Bitcoin token state models">
-          <li class="model-card model-card--inscription">
-            <span class="model-card__number">01</span>
-            <span class="model-card__eyebrow">Read the inscription</span>
-            <h3>Inscription-first</h3>
-            <p>Compatible indexers read the token instruction from an inscription convention and follow that convention's lifecycle.</p>
-            <strong>BRC-20 · CBRC-20 · TAP · Block-20 · DUST-20</strong>
-          </li>
-          <li class="model-card model-card--output">
-            <span class="model-card__number">02</span>
-            <span class="model-card__eyebrow">Follow the UTXO</span>
-            <h3>Output ownership</h3>
-            <p>Each unit is tied to a satoshi-backed output, so compatible tools follow UTXO ownership rather than an inscription event history.</p>
-            <strong>ARC-20</strong>
-          </li>
-          <li class="model-card model-card--stamps">
-            <span class="model-card__number">03</span>
-            <span class="model-card__eyebrow">Decode the carrier</span>
-            <h3>Bitcoin Stamps</h3>
-            <p>A Stamps-compatible indexer validates the applicable SRC-20 transaction format and then applies its source and destination rules.</p>
-            <strong>SRC-20</strong>
-          </li>
-          <li class="model-card model-card--return">
-            <span class="model-card__number">04</span>
-            <span class="model-card__eyebrow">Parse output data</span>
-            <h3>OP_RETURN grammars</h3>
-            <p>Token instructions live in transaction output data. Each protocol supplies its own strict grammar and state transition rules.</p>
-            <strong>OP-20 · Runes · Mezcal</strong>
-          </li>
-          <li class="model-card model-card--programs">
-            <span class="model-card__number">05</span>
-            <span class="model-card__eyebrow">Run the program</span>
-            <h3>Programmable state</h3>
-            <p>An application runtime executes contract-defined logic, so state depends on the program and the runtime behavior it declares.</p>
-            <strong>Alkanes</strong>
-          </li>
-          <li class="model-card model-card--opdrop">
-            <span class="model-card__number">06</span>
-            <span class="model-card__eyebrow">Prove the commitment</span>
-            <h3>Taproot proof</h3>
-            <p>A canonical token record is checked against its exact <code>OP_DROP</code> commitment and confirmed Bitcoin proof before it updates state.</p>
-            <strong>op-drop</strong>
-          </li>
-        </ol>
-      </section>
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
 
-      <section class="dark-cta">
-        <div>
-          <p class="eyebrow">A better starting point for fixed-rule tokens</p>
-          <h2>Launch a token people can understand at a glance.</h2>
-          <p>op-drop keeps the launch story visible: a token name, supply terms, mint limit, optional image, confirmed Bitcoin record, and a proof a compatible verifier can repeat. Start by minting <code>$DROP</code>, the first token on op-drop, then bring the same simple experience to your own launch.</p>
-          <div class="page-actions"><a class="page-button" href="https://inscribe.bitcoinuniverse.io/op-drop">Mint $DROP</a><a class="page-button quiet" href="op-drop.html">Explore op-drop and $DROP</a></div>
-        </div>
-      </section>
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/compare.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
 
-      <section class="page-main sources-section">
-        <div class="page-intro">
-          <p class="eyebrow">Read every protocol in its own words</p>
-          <h2>Useful source material before you choose.</h2>
-          <p>This page summarizes the published documentation for each model. Before a launch, read the original rules and check the exact wallet and services you plan to use.</p>
-        </div>
-        <div class="page-links">
-          <a href="op-drop.html"><strong>op-drop and $DROP</strong><span>Canonical token events, OP_DROP commitments, and the $DROP launch experience.</span></a>
-          <a href="https://op20labs.gitbook.io/op-20-experiment"><strong>OP20 Labs OP-20</strong><span>Its OP_RETURN fungibility and UTXO transfer model.</span></a>
-          <a href="https://domo-2.gitbook.io/brc-20-experiment"><strong>Domo's BRC-20 origin</strong><span>The original BRC-20 inscription-token convention.</span></a>
-          <a href="https://ordinals.com/preview/130c79034450163f36fcde8e27f96904dc42e535f28aacd5af3b9a18d0b1c7f9i0"><strong>CBRC-20 convention</strong><span>CBOR metadata and metaprotocol fields in Ordinals inscriptions.</span></a>
-          <a href="https://docs.openstamp.io/introduction/src20-protocol/src20-on-bitcoin"><strong>SRC-20 and Bitcoin Stamps</strong><span>Direct-to-Bitcoin SRC-20 token events, transaction rules, and indexer validation.</span></a>
-          <a href="https://docs.ordinals.com/runes.html"><strong>Runes handbook</strong><span>Runestones, etching, minting, and output-directed transfers.</span></a>
-          <a href="https://alkanes.build/en/docs"><strong>Alkanes documentation</strong><span>WASM-based smart contracts and the Alkanes execution model.</span></a>
-          <a href="https://mezcal.sh/"><strong>Mezcal</strong><span>JSON mezcalstones, output-directed balances, and priced-mint terms.</span></a>
-          <a href="https://atomicals-community.github.io/atomicals-guide/arc20-tokens/"><strong>ARC-20 and Atomicals</strong><span>Satoshi-backed ARC-20 units, direct minting, and decentralized minting.</span></a>
-          <a href="https://docs.tap-protocol.com/"><strong>TAP Protocol</strong><span>OrdFi functions, extended token features, and TAP smart-contract tooling.</span></a>
-          <a href="https://inscribe.bitcoinuniverse.io/"><strong>Block-20 and DUST-20</strong><span>Check compatible tools and the exact indexer rules before you launch or trade.</span></a>
-        </div>
-      </section>
-    </main>
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/compare.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
 
-    <footer class="page-footer"><span>(c) 2026 Drops Protocol contributors</span><span>Clear tradeoffs. Explicit proof. Bitcoin-native records.</span></footer>
-  </body>
+</body>
 </html>

@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API reference | Drops protocol</title>
+<meta name="description" content="The public read API for Drops artifacts and Pacts: endpoints, path and query parameters with their exact constraints, response schemas, enum values, pagination defaults and error shapes.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/api.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drops API reference">
+<meta property="og:description" content="The public read API for Drops artifacts and Pacts: endpoints, path and query parameters with their exact constraints, response schemas, enum values, pagination defaults and error shapes.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/api.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html" aria-current="page">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Grounded in the service's own OpenAPI 3.1 definition</p>
+    <h1>API reference</h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">Every parameter constraint, enum value and response field below is taken from the indexer's published interface definition. Paths are relative to the base URL of whichever Drops indexer you are pointed at; this page names no host, because the endpoints are the contract and the deployment is yours to choose.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="conventions">Conventions</h2>
+    <div class="table-scroll">
+      <table>
+        <tbody>
+          <tr><th scope="row">Definition</th><td>OpenAPI 3.1, served by the indexer itself</td></tr>
+          <tr><th scope="row">Authentication</th><td>None. Every endpoint on this page is an unauthenticated public read.</td></tr>
+          <tr><th scope="row">Pagination</th><td>Offset based: <code>start</code> and <code>limit</code>. Defaults differ per endpoint and are stated in each table.</td></tr>
+          <tr><th scope="row">Ordering</th><td>Lists are newest first unless an endpoint says otherwise.</td></tr>
+          <tr><th scope="row">Hex casing</th><td>Responses emit lowercase hex, except <code>dropmark</code>, which is uppercase by definition.</td></tr>
+          <tr><th scope="row">Rate limits</th><td>No rate-limit headers and no 429 response are declared for any Drops or Pacts read endpoint.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <span class="note__title">Administrative and operator surfaces are out of scope</span>
+      <p>The service also exposes authenticated operator endpoints for scanning, replay, reconciliation and metrics. They are not part of the protocol, are not public, and are deliberately not documented here.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="artifacts">Artifacts</h2>
+
+    <h3 id="list-inscriptions"><code>GET /drops/inscriptions</code></h3>
+    <p>List confirmed Drops artifacts.</p>
+    <div class="table-scroll">
+      <table>
+        <caption>Query parameters</caption>
+        <thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Constraint</th><th scope="col">Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>mime</code></td><td>string</td><td>Maximum 80 characters</td><td>none</td></tr>
+          <tr><td><code>address</code></td><td>string</td><td>Matches current or initial owner</td><td>none</td></tr>
+          <tr><td><code>txid</code></td><td>string</td><td><code>^[0-9a-fA-F]{64}$</code></td><td>none</td></tr>
+          <tr><td><code>marker</code></td><td>enum</td><td><code>drops</code> or <code>drops-pact</code>. <code>bip110-op-drop</code> is deliberately excluded.</td><td>none</td></tr>
+          <tr><td><code>planHash</code></td><td>string</td><td><code>^[0-9a-f]{64}$</code>, matches a Pacts reference plan hash</td><td>none</td></tr>
+          <tr><td><code>start</code></td><td>integer</td><td>0 to 10000000</td><td>0</td></tr>
+          <tr><td><code>limit</code></td><td>integer</td><td>1 to 100</td><td>20</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Returns an object with <code>total</code> (integer, zero or more) and <code>inscriptions</code> (array of <a href="#schema-inscription">DropsInscription</a>).</p>
+
+    <h3 id="get-inscription"><code>GET /drops/inscriptions/{dropId}</code></h3>
+    <p>Fetch one artifact with its proof material. The path segment accepts several forms and the response always emits the full portable identity.</p>
+    <div class="table-scroll">
+      <table>
+        <caption>Accepted <code>dropId</code> forms</caption>
+        <thead><tr><th scope="col">Form</th><th scope="col">Example</th></tr></thead>
+        <tbody>
+          <tr><td>Full portable identity</td><td><code>drops:mainnet:6b1f&hellip;91aa:d0</code></td></tr>
+          <tr><td>Shorthand</td><td><code>6b1f&hellip;91aa:d0</code></td></tr>
+          <tr><td>Historical alias</td><td><code>i0</code> style input alias</td></tr>
+          <tr><td>Display sequence</td><td>The deployment-local <code>sequence</code> number</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Responses: <code>200</code> with a <a href="#schema-inscription">DropsInscription</a>, or <code>404</code> with an <a href="#schema-error">Error</a>.</p>
+    <div class="caution">
+      <span class="caution__title">Only the full identity is portable</span>
+      <p>The shorthand, alias and sequence forms are conveniences for one deployment. Store and exchange the full <code>drops:&lt;network&gt;:&lt;txid&gt;:d&lt;input&gt;</code> form.</p>
+    </div>
+
+    <h3 id="get-body"><code>GET /drops/inscriptions/{dropId}/body</code></h3>
+    <p>The exact immutable body bytes, at most 256 of them. The response applies the <a href="artifact.html#serving">passive-content serving policy</a>: <code>text/plain</code> and the raster image types keep their declared media type and render inline; SVG, HTML, JavaScript, XML, JSON, PDF and any unknown type are served as an <code>application/octet-stream</code> attachment.</p>
+    <div class="table-scroll">
+      <table>
+        <caption>Response headers</caption>
+        <thead><tr><th scope="col">Header</th><th scope="col">Value</th></tr></thead>
+        <tbody>
+          <tr><td><code>ETag</code></td><td>The body SHA-256, quoted</td></tr>
+          <tr><td><code>Cache-Control</code></td><td>Long-lived and immutable; the bytes at a Drop identity can never change</td></tr>
+          <tr><td><code>Content-Disposition</code></td><td><code>inline</code> or <code>attachment</code>, per the serving policy</td></tr>
+          <tr><td><code>Content-Security-Policy</code></td><td><code>default-src 'none'; sandbox</code></td></tr>
+          <tr><td><code>X-Content-Type-Options</code></td><td><code>nosniff</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 id="get-transfers"><code>GET /drops/inscriptions/{dropId}/transfers</code></h3>
+    <p>List confirmed <code>drops-custody-v1</code> custody transitions for one artifact, newest first. Query parameters: <code>start</code> (integer 0 to 10000000, default 0) and <code>limit</code> (integer 1 to 100, default 20). Responses: <code>200</code>, or <code>404</code> with an <a href="#schema-error">Error</a>.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="pacts">Pacts</h2>
+
+    <div class="note">
+      <span class="note__title">The Pacts surface is read-only by contract</span>
+      <p>Any method other than <code>GET</code> on a Pacts path returns <code>405</code> with the error code <code>PACTS_REFERENCE_READ_ONLY</code> and a copy of the capability contract. This is the API-level expression of the <a href="pacts.html#capability">reference-only boundary</a>.</p>
+    </div>
+
+    <h3 id="get-capabilities"><code>GET /drops/pacts/capabilities</code></h3>
+    <p>The machine-readable capability boundary. Read this before building anything against Pacts. Every execution, custody, authorization, signature, broadcast, live-Cell, off-chain-policy and value-bearing authority field is <code>false</code>.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>{
+  "schemaVersion": 1,
+  "mode": "reference",
+  "supported": {
+    "verifiedDrops": true,
+    "recordedPactSeeds": true,
+    "pactsReferences": true,
+    "deterministicPrimitives": true,
+    "localProofPackValidation": true
+  },
+  "authority": {
+    "pactCell": false,
+    "liveCells": false,
+    "transaction": false,
+    "authorization": false,
+    "signature": false,
+    "signatures": false,
+    "broadcast": false,
+    "custody": false,
+    "contractExecution": false,
+    "enforceableOffChainPolicy": false,
+    "valueBearingPacts": false,
+    "valueBearingAuthority": false
+  },
+  "recovery": {
+    "status": "reference_only",
+    "message": "...",
+    "actions": ["..."]
+  }
+}</code></pre>
+    </div>
+    <p>Every value shown is a constant in the interface definition, not an example. An implementation that returns anything else for these fields is not the reference Pacts surface.</p>
+
+    <h3 id="list-pacts"><code>GET /drops/pacts</code></h3>
+    <p>List recorded immutable Pact Seeds, newest first. One query parameter: <code>limit</code> (integer 1 to 100, <strong>default 50</strong>). There is no offset parameter on this endpoint. The response carries <code>data</code> (array of <a href="#schema-pact">PactDropRecord</a>), <code>count</code> (0 to 100), <code>notice</code> (the reference-only notice string), and <code>capability</code> (the full capability object above).</p>
+
+    <h3 id="get-pact"><code>GET /drops/pacts/{pactId}</code></h3>
+    <p>Fetch one Pact Seed record. Path parameter <code>pactId</code> must match <code>^[0-9a-f]{64}$</code>. Responses: <code>200</code> with a <a href="#schema-pact">PactDropRecord</a>, or <code>404</code>.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="health">Health and status</h2>
+
+    <h3 id="drops-health"><code>GET /drops/health</code></h3>
+    <p>Returns <code>status: "ok"</code>, <code>protocol: "drops"</code>, <code>ready: true</code>, plus two objects. A <code>503</code> means a dependency is unavailable, or the scanner does not hold leadership or a current finalized state.</p>
+    <div class="table-scroll">
+      <table>
+        <caption>Fields worth reading before you trust a response</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">Type</th><th scope="col">Why it matters</th></tr></thead>
+        <tbody>
+          <tr><td><code>data.network</code></td><td>string</td><td>Which network these answers are about.</td></tr>
+          <tr><td><code>data.confirmationsRequired</code></td><td>integer, at least 1</td><td>The depth at which this deployment records state. Six or more on mainnet.</td></tr>
+          <tr><td><code>data.totalInscriptions</code>, <code>data.totalPacts</code></td><td>integer</td><td>Recorded totals.</td></tr>
+          <tr><td><code>data.custodyIntegrity</code></td><td>object</td><td>Projection drift counters and a <code>custodyHealthy</code> boolean.</td></tr>
+          <tr><td><code>indexer.serviceRole</code></td><td><code>api</code>, <code>scanner</code>, <code>all</code></td><td>Whether this process scans, serves, or both.</td></tr>
+          <tr><td><code>indexer.state</code></td><td>string</td><td>Only <code>synced</code> means current to the finalized target.</td></tr>
+          <tr><td><code>indexer.scanner</code></td><td>object</td><td>Leadership state, one of eight values. See <a href="validation.html#scanner">validation</a>.</td></tr>
+          <tr><td><code>indexer.tipFresh</code>, <code>tipAgeSeconds</code>, <code>lagBlocks</code></td><td>boolean, integer or null</td><td>How far behind the chain tip this view is.</td></tr>
+          <tr><td><code>indexer.operatorActionRequired</code></td><td>boolean</td><td>True when the indexer has stopped and is waiting for a decision.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 id="drops-status"><code>GET /drops/status</code></h3>
+    <p>Totals and diagnostic counters, including in-memory rejection counts. The interface definition marks this payload as open and explicitly not authoritative. Use it for operations, not for protocol decisions.</p>
+
+    <h3 id="root-health">Service-level endpoints</h3>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Endpoint</th><th scope="col">Returns</th></tr></thead>
+        <tbody>
+          <tr><td><code>GET /live</code></td><td>Liveness only: <code>status: "ok"</code>, <code>protocol: "op-drop"</code>. Says nothing about readiness.</td></tr>
+          <tr><td><code>GET /ready</code></td><td>Readiness, <code>200</code> or <code>503</code>.</td></tr>
+          <tr><td><code>GET /health</code></td><td>Combined health: database, indexer, schema identity, and per-dependency status.</td></tr>
+          <tr><td><code>GET /version</code></td><td>Release provenance, including <code>minimumMainnetConfirmations</code>, which is at least 6.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="schemas">Schemas</h2>
+
+    <h3 id="schema-inscription">DropsInscription</h3>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Field</th><th scope="col">Type and constraint</th></tr></thead>
+        <tbody>
+          <tr><td><code>dropId</code> <span class="chip chip--info">required</span></td><td>string, <code>drops:&lt;network&gt;:&lt;txid&gt;:d&lt;input&gt;</code></td></tr>
+          <tr><td><code>marker</code></td><td>enum: <code>drops</code>, <code>drops-pact</code></td></tr>
+          <tr><td><code>mime</code></td><td>string</td></tr>
+          <tr><td><code>bodyBytes</code></td><td>integer, 1 to 256</td></tr>
+          <tr><td><code>bodySha256</code></td><td><code>^[a-f0-9]{64}$</code></td></tr>
+          <tr><td><code>bodyUrl</code></td><td>string</td></tr>
+          <tr><td><code>dropmark</code></td><td><code>^[0-9A-F]{10}$</code>, decorative</td></tr>
+          <tr><td><code>creatorPubkey</code></td><td><code>^[a-f0-9]{64}$</code></td></tr>
+          <tr><td><code>sequence</code>, <code>displayName</code></td><td>integer at least 0, string. Presentation only.</td></tr>
+          <tr><td><code>initialOwnerAddress</code> <span class="chip chip--info">required</span></td><td>string or null</td></tr>
+          <tr><td><code>currentOwnerAddress</code> <span class="chip chip--info">required</span></td><td>string or null</td></tr>
+          <tr><td><code>custodyStatus</code> <span class="chip chip--info">required</span></td><td>enum: <code>active</code>, <code>burned</code>, <code>legacy_unresolved</code></td></tr>
+          <tr><td><code>currentCustodyOutpoint</code> <span class="chip chip--info">required</span></td><td>null, or an object with <code>txid</code>, <code>vout</code>, <code>scriptHex</code>, <code>valueSats</code></td></tr>
+          <tr><td><code>custody</code> <span class="chip chip--info">required</span></td><td>object; <code>profile</code> is the constant <code>drops-custody-v1</code>, plus <code>status</code>, <code>currentOutpoint</code>, <code>scriptHex</code>, <code>valueSats</code>, <code>transferCount</code>, <code>lastTransferHeight</code>, <code>lastTransferTxid</code>, <code>verifiedAt</code>, <code>verifiedHeight</code>, <code>verifiedBlockHash</code>, <code>projectionVersion</code>, <code>verificationSource</code></td></tr>
+          <tr><td><code>reveal</code> <span class="chip chip--info">required</span></td><td>object: <code>txid</code>, <code>input</code>, <code>height</code>, <code>blockHash</code></td></tr>
+          <tr><td><code>pactSeed</code>, <code>pactsReference</code></td><td>Present when the body matched a Pact body profile</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 id="schema-pact">PactDropRecord</h3>
+    <p>Required: <code>id</code>, <code>number</code>, <code>marker</code>, <code>network</code>, <code>contentType</code>, <code>contentHash</code>, <code>dropmark</code>, <code>bodyHex</code>, <code>creatorPubkey</code>, <code>reveal</code>, <code>anchor</code>, <code>verification</code>, <code>finality</code>, <code>indexedAt</code>.</p>
+    <ul>
+      <li><code>network</code> is one of <code>mainnet</code>, <code>testnet</code>, <code>signet</code>, <code>regtest</code>.</li>
+      <li><code>number</code> is a presentation number, explicitly not an identity.</li>
+      <li><code>contentHash</code> and <code>creatorPubkey</code> match <code>^[0-9a-f]{64}$</code>; <code>bodyHex</code> matches <code>^(?:[0-9a-f]{2})+$</code>.</li>
+      <li><code>verification.taprootCommitted</code> is the constant <code>true</code>. A record only exists if its commitment verified.</li>
+      <li><code>finality.status</code> is the constant <code>finalized</code>. Note that <code>finalizedAt</code> is typed as always null in the current definition, so do not rely on it for a timestamp; use <code>reveal.height</code> instead.</li>
+      <li><code>pactSeed</code> and <code>pactsReference</code> appear when the body decoded as one of those profiles.</li>
+    </ul>
+
+    <h3 id="schema-pactseed">PactSeed</h3>
+    <p>All of <code>pactId</code>, <code>rulesetHash</code>, <code>abiHash</code>, <code>genesisStateRoot</code>, <code>policyRoot</code> and <code>dataAvailabilityPolicyHash</code> match <code>^[0-9a-f]{64}$</code>. <code>engineId</code> matches <code>^[a-z][a-z0-9-]{0,15}$</code>. <code>enforcementFloor</code> is one of <code>recorded</code>, <code>co-signed</code>, <code>template-enforced</code>. Every field is required.</p>
+
+    <h3 id="schema-pactsref">PactsReference</h3>
+    <p><code>template</code> matches <code>^[a-z][a-z0-9-]{0,40}$</code>; <code>planHash</code> and <code>blueprintHash</code> each match <code>^[0-9a-f]{64}$</code>. All three are required.</p>
+
+    <h3 id="schema-error">Error</h3>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>{ "statusCode": 404, "error": "Not Found", "message": "..." }</code></pre>
+    </div>
+    <p>The shape is open and none of the three fields is formally required, so a client should treat all three as optional and fall back to the HTTP status. The only structured error code on the Drops and Pacts surface is <code>PACTS_REFERENCE_READ_ONLY</code>, returned with <code>405</code>.</p>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/api.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/api.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

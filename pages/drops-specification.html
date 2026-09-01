@@ -1,23 +1,447 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="The canonical Drops artifact format and its exact Bitcoin proof path." />
-    <title>Drops artifact rules | Drops Documentation</title>
-    <link rel="stylesheet" href="../assets/pages.css?v=20260718" />
-    <link rel="stylesheet" href="../assets/afterglow.css" />
-    <link rel="stylesheet" href="../assets/translation-toggle.css" />
-    <script defer src="../assets/translation-toggle.js"></script>
-    <script defer src="../assets/reference-page.js"></script>
-  </head>
-  <body class="afterglow afterglow-drops" data-reference-source="../protocol/drops.md">
-    <header class="page-nav"><a class="page-brand" href="../index.html"><b>D</b> Drops</a><nav class="page-nav-links" aria-label="Primary navigation"><a href="discover.html">Discover</a><a href="op-drop.html">op-drop</a><a href="pacts.html">Pacts</a></nav><a class="page-button" href="verifier.html">Verify a Drop</a></header>
-    <main>
-      <section class="reference-hero"><div><p class="eyebrow">Canonical artifact rules</p><h1>Small record. <em>Exact Bitcoin proof.</em></h1><p>A Drop is a compact artifact with a clear identity and a Taproot commitment that an independent verifier can check directly from Bitcoin.</p></div></section>
-      <section class="reference-shell"><aside class="reference-rail"><span>Explore Drops</span><a href="protocol.html">Protocol overview</a><a href="carrier-registry.html">Carrier registry</a><a href="why-drops.html">Why Drops</a><a href="verifier-guide.html">Verification guide</a></aside><article class="reference-content" data-reference-content><p class="reference-loading">Loading the canonical artifact rules...</p></article></section>
-      <section class="reference-footer-cta"><div><p class="eyebrow">Built for verification</p><h2>Publish a compact record that lives with Bitcoin.</h2><p>Explore the visible proof path, then create your own immutable Drops artifact.</p><a class="page-button" href="discover.html">Explore Drops</a></div></section>
-    </main>
-    <footer class="page-footer"><span>(c) 2026 Drops Protocol contributors</span><span>Exact bytes. Clear proof. Bitcoin history.</span></footer>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drops specification | Drops protocol</title>
+<meta name="description" content="The normative Drops specification: leaf grammar, field rules, minimal push encoding, Taproot commitment, identity, custody transitions, and every condition that makes a candidate invalid.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/drops-specification.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drops specification">
+<meta property="og:description" content="The normative Drops specification: leaf grammar, field rules, minimal push encoding, Taproot commitment, identity, custody transitions, and every condition that makes a candidate invalid.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/drops-specification.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html" aria-current="page">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Normative &middot; revision 2026-09-01</p>
+    <h1>Drops specification</h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">This page is the normative description of a Drop: the exact script a Drops leaf must be, the exact commitment it must satisfy, the identity it receives, and the conditions under which a candidate is not a Drop at all.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="scope">1. Scope and status</h2>
+    <p>Drops is an original Bitcoin Universe application protocol. It defines how a compact media artifact, or a Drop Pact record, is committed to Bitcoin inside a Taproot script-path spend and how an indexer decides whether that commitment counts.</p>
+    <p>This document describes the behaviour implemented by the Bitcoin Universe reference indexer for Drops and OP_DROP. Where the reference implementation makes a choice that another implementation could reasonably make differently, this document says so.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Status of this specification</caption>
+        <tbody>
+          <tr><th scope="row">Protocol</th><td>Drops (application layer)</td></tr>
+          <tr><th scope="row">Carrier</th><td><a href="carriers.html">OP_DROP Tapscript leaf</a>, Tapleaf version <code>0xc0</code></td></tr>
+          <tr><th scope="row">Chain</th><td>Bitcoin</td></tr>
+          <tr><th scope="row">Networks</th><td><code>mainnet</code>, <code>testnet</code>, <code>signet</code>, <code>regtest</code></td></tr>
+          <tr><th scope="row">Lifecycle</th><td>stable</td></tr>
+          <tr><th scope="row">Availability</th><td>Feature-gated in Bitcoin Universe products. <a href="../index.html#availability">See what that means</a>.</td></tr>
+          <tr><th scope="row">Document revision</th><td>2026-09-01</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="conventions">2. Conventions</h2>
+    <p>The words <span class="must">must</span> and <span class="must">must not</span> mark an absolute requirement. A candidate that violates one is not a Drop and is not recorded. <span class="should">should</span> marks a strong recommendation for producers. <span class="may">may</span> marks a genuine option.</p>
+    <p>Byte lengths are exact. Hexadecimal is lowercase unless a rule says otherwise. <code>SHA256</code> means one single pass of SHA-256 over the raw bytes, not a double hash.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="leaf">3. The Drops leaf</h2>
+    <p>A Drop lives in exactly one Tapscript leaf. The leaf is a fixed sequence of five data pushes, each of the first four consumed by <code>OP_DROP</code>, with the fifth push spent by <code>OP_CHECKSIG</code>.</p>
+
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>PUSH &lt;marker&gt;         OP_DROP
+PUSH &lt;content type&gt;   OP_DROP
+PUSH SHA256(body)     OP_DROP
+PUSH &lt;body&gt;           OP_DROP
+PUSH &lt;x-only pubkey&gt;  OP_CHECKSIG</code></pre>
+    </div>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 880 330" role="img" aria-labelledby="leaf-t leaf-d">
+        <title id="leaf-t">Byte layout of a Drops Tapscript leaf</title>
+        <desc id="leaf-d">Five rows. Row one, marker, one to eleven bytes, followed by OP_DROP. Row two, content type, one to eighty bytes, followed by OP_DROP. Row three, SHA-256 of the body, exactly thirty-two bytes, followed by OP_DROP. Row four, body, one to two hundred and fifty-six bytes, followed by OP_DROP. Row five, x-only public key, exactly thirty-two bytes, followed by OP_CHECKSIG. A bracket on the right shows that rows three and four are bound together because the hash must equal SHA-256 of the body.</desc>
+
+        <g class="d-text-sm">
+          <rect x="4" y="16" width="470" height="46" rx="3" class="d-fill-2 d-stroke"/>
+          <text x="20" y="38" class="d-text">marker</text>
+          <text x="20" y="54">1 to 11 bytes &middot; drops or drops-pact</text>
+          <rect x="482" y="16" width="118" height="46" rx="3" class="d-fill-3 d-stroke"/>
+          <text x="498" y="45" class="d-text-mono">OP_DROP</text>
+
+          <rect x="4" y="70" width="470" height="46" rx="3" class="d-fill-2 d-stroke"/>
+          <text x="20" y="92" class="d-text">content type</text>
+          <text x="20" y="108">1 to 80 bytes &middot; lowercase type/subtype</text>
+          <rect x="482" y="70" width="118" height="46" rx="3" class="d-fill-3 d-stroke"/>
+          <text x="498" y="99" class="d-text-mono">OP_DROP</text>
+
+          <rect x="4" y="124" width="470" height="46" rx="3" class="d-fill-2 d-stroke"/>
+          <text x="20" y="146" class="d-text">SHA256(body)</text>
+          <text x="20" y="162">exactly 32 bytes</text>
+          <rect x="482" y="124" width="118" height="46" rx="3" class="d-fill-3 d-stroke"/>
+          <text x="498" y="153" class="d-text-mono">OP_DROP</text>
+
+          <rect x="4" y="178" width="470" height="46" rx="3" class="d-fill-2 d-stroke"/>
+          <text x="20" y="200" class="d-text">body</text>
+          <text x="20" y="216">1 to 256 bytes</text>
+          <rect x="482" y="178" width="118" height="46" rx="3" class="d-fill-3 d-stroke"/>
+          <text x="498" y="207" class="d-text-mono">OP_DROP</text>
+
+          <rect x="4" y="232" width="470" height="46" rx="3" class="d-fill-2 d-stroke"/>
+          <text x="20" y="254" class="d-text">x-only public key</text>
+          <text x="20" y="270">exactly 32 bytes, a valid curve point</text>
+          <rect x="482" y="232" width="118" height="46" rx="3" class="d-fill-3 d-stroke"/>
+          <text x="498" y="261" class="d-text-mono">OP_CHECKSIG</text>
+
+          <path d="M616 130v88" class="d-stroke-seal"/>
+          <path d="M616 130h-10M616 218h-10" class="d-stroke-seal"/>
+          <text x="628" y="170" class="d-label">BOUND</text>
+          <text x="628" y="188">hash must equal</text>
+          <text x="628" y="204">SHA256 of the body</text>
+
+          <text x="4" y="306" class="d-text-sm">Total decompiled chunks: exactly 10. Five data pushes at even positions, five opcodes at odd positions.</text>
+          <text x="4" y="322" class="d-text-sm">Any extra chunk, missing chunk, reordering or trailing byte makes the script something other than a Drop.</text>
+        </g>
+      </svg>
+      <figcaption>The leaf is a shape, not a search pattern. A parser that greps a transaction for the string <code>drops</code> has not read this specification.</figcaption>
+    </figure>
+
+    <h3 id="rules-leaf">3.1 Leaf structure rules</h3>
+    <ol class="rules">
+      <li><span class="rid">D-1</span><div class="rbody"><p>A Drops leaf <span class="must">must</span> decompile to exactly ten chunks: data pushes at positions 0, 2, 4, 6 and 8, opcodes at positions 1, 3, 5, 7 and 9.</p></div></li>
+      <li><span class="rid">D-2</span><div class="rbody"><p>The opcodes <span class="must">must</span> be <code>OP_DROP</code>, <code>OP_DROP</code>, <code>OP_DROP</code>, <code>OP_DROP</code>, <code>OP_CHECKSIG</code> in that order.</p></div></li>
+      <li><span class="rid">D-3</span><div class="rbody"><p>Every one of the five fields <span class="must">must</span> be a data push. An opcode that produces a value, such as <code>OP_1</code> or <code>OP_1NEGATE</code>, is not a data push and does not satisfy any field.</p></div></li>
+      <li><span class="rid">D-4</span><div class="rbody"><p>Every push <span class="must">must</span> use the minimal encoding for its length. Re-serializing the parsed fields <span class="must">must</span> reproduce the leaf script byte for byte.</p></div></li>
+      <li><span class="rid">D-5</span><div class="rbody"><p>The Tapleaf version <span class="must">must</span> be <code>0xc0</code>. No other leaf version is accepted.</p></div></li>
+    </ol>
+
+    <h3 id="rules-marker">3.2 Marker</h3>
+    <ol class="rules">
+      <li><span class="rid">D-6</span><div class="rbody"><p>The marker <span class="must">must</span> be exactly one of two ASCII strings: <code>drops</code> for an artifact, or <code>drops-pact</code> for a Pact Seed record.</p></div></li>
+      <li><span class="rid">D-7</span><div class="rbody"><p>The OP_DROP carrier marker <code>bip110-op-drop</code> uses the same five-field shape but <span class="must">must not</span> be accepted as a Drop. Markers are namespaces, not decoration. <a href="carriers.html#registry">See the marker registry</a>.</p></div></li>
+    </ol>
+
+    <h3 id="rules-mime">3.3 Content type</h3>
+    <ol class="rules">
+      <li><span class="rid">D-8</span><div class="rbody"><p>The content type <span class="must">must</span> match <code>^[a-z0-9][a-z0-9!#$&amp;^_.+-]*\/[a-z0-9][a-z0-9!#$&amp;^_.+-]*$</code>. This is the RFC 6838 restricted-name grammar, lowercased.</p></div></li>
+      <li><span class="rid">D-9</span><div class="rbody"><p>The content type <span class="must">must</span> be at most 80 bytes and <span class="must">must</span> be pure ASCII.</p></div></li>
+      <li><span class="rid">D-10</span><div class="rbody"><p>Parameters <span class="must">must not</span> appear. <code>text/plain; charset=utf-8</code> is invalid; <code>text/plain</code> is valid. Uppercase is invalid: <code>TEXT/plain</code> is rejected.</p></div></li>
+      <li><span class="rid">D-11</span><div class="rbody"><p>There is no allowlist of media types at the protocol layer. <code>image/svg+xml</code> is a valid Drops content type. How a <em>serving</em> implementation renders it is a separate, deliberately narrower policy: see <a href="artifact.html#serving">artifact serving</a>.</p></div></li>
+    </ol>
+
+    <h3 id="rules-hash">3.4 Body hash</h3>
+    <ol class="rules">
+      <li><span class="rid">D-12</span><div class="rbody"><p>The hash field <span class="must">must</span> be exactly 32 bytes.</p></div></li>
+      <li><span class="rid">D-13</span><div class="rbody"><p>The hash field <span class="must">must</span> equal <code>SHA256(body)</code> computed over the raw body push bytes, single pass.</p></div></li>
+    </ol>
+
+    <h3 id="rules-body">3.5 Body</h3>
+    <ol class="rules">
+      <li><span class="rid">D-14</span><div class="rbody"><p>The body <span class="must">must</span> be one push of 1 to 256 bytes. An empty body is invalid.</p></div></li>
+      <li><span class="rid">D-15</span><div class="rbody"><p>A one-byte body whose single byte is <code>0x81</code>, or in the range <code>0x01</code> to <code>0x10</code>, <span class="must">must</span> be rejected. Those values have no minimal data-push encoding, because Bitcoin Script folds them into <code>OP_1NEGATE</code> and <code>OP_1</code> through <code>OP_16</code>. A one-byte body of <code>0x00</code> is valid.</p></div></li>
+      <li><span class="rid">D-16</span><div class="rbody"><p>The body is opaque bytes. The protocol assigns it no structure beyond the declared content type. Two application profiles do define structure inside the body: <a href="pacts.html#seed">Pact Seed</a> and <a href="pacts.html#reference">Pacts reference</a>.</p></div></li>
+      <li><span class="rid">D-17</span><div class="rbody"><p>Content larger than 256 bytes <span class="should">should</span> be referenced by an explicit content-addressed pointer inside the body, never implied by convention.</p></div></li>
+    </ol>
+
+    <h3 id="rules-key">3.6 Creator key</h3>
+    <ol class="rules">
+      <li><span class="rid">D-18</span><div class="rbody"><p>The final push <span class="must">must</span> be a 32-byte x-only secp256k1 public key.</p></div></li>
+      <li><span class="rid">D-19</span><div class="rbody"><p>The key <span class="must">must</span> be a valid point on the curve. A length check alone is not sufficient; an implementation <span class="must">must</span> perform point validation.</p></div></li>
+      <li><span class="rid">D-20</span><div class="rbody"><p>The creator key is the key that <code>OP_CHECKSIG</code> checks the reveal signature against. It is a claim by the spender, not an attestation of authorship by anyone else.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="commitment">4. Taproot commitment</h2>
+    <p>The leaf is only meaningful if the Taproot output that was spent actually committed to it. This is the step that separates Drops from formats that trust whatever a witness happens to contain.</p>
+
+    <ol class="rules">
+      <li><span class="rid">D-21</span><div class="rbody"><p>The spent previous output <span class="must">must</span> be a native P2TR script: exactly 34 bytes, <code>0x51 0x20</code> followed by the 32-byte output key.</p></div></li>
+      <li><span class="rid">D-22</span><div class="rbody"><p>The control block length <span class="must">must</span> be at least 33 bytes, and <code>(length - 33)</code> <span class="must">must</span> be a multiple of 32.</p></div></li>
+      <li><span class="rid">D-23</span><div class="rbody"><p>The merkle path <span class="may">may</span> contain up to 128 hashes. The Drops leaf is permitted to sit anywhere in a Taproot script tree; it does not have to be the only leaf.</p></div></li>
+      <li><span class="rid">D-24</span><div class="rbody"><p><code>controlBlock[0] &amp; 0xfe</code> <span class="must">must</span> equal <code>0xc0</code>.</p></div></li>
+      <li><span class="rid">D-25</span><div class="rbody"><p>The internal key, bytes 1 through 32 of the control block, <span class="must">must</span> be a valid x-only point.</p></div></li>
+      <li><span class="rid">D-26</span><div class="rbody"><p>The tapleaf hash <span class="must">must</span> be computed as <code>taggedHash("TapLeaf", leafVersion || compactSize(len(script)) || script)</code>, folded up the merkle path with <code>taggedHash("TapBranch", min(a,b) || max(a,b))</code>, then tweaked with <code>taggedHash("TapTweak", internalKey || merkleRoot)</code>.</p></div></li>
+      <li><span class="rid">D-27</span><div class="rbody"><p>The resulting output key parity <span class="must">must</span> equal <code>controlBlock[0] &amp; 1</code>, and the resulting x-only key <span class="must">must</span> equal the 32 bytes of the spent P2TR script.</p></div></li>
+      <li><span class="rid">D-28</span><div class="rbody"><p>Any error raised while performing these steps <span class="must">must</span> be treated as failure to verify, never as success.</p></div></li>
+    </ol>
+
+    <p>Tagged hashing throughout is <code>SHA256(SHA256(tag) || SHA256(tag) || data)</code>, as defined by BIP 340 and BIP 341.</p>
+
+    <h3 id="witness">4.1 Witness shape</h3>
+    <ol class="rules">
+      <li><span class="rid">D-29</span><div class="rbody"><p>The reveal input witness <span class="must">must</span> contain exactly three items: a Schnorr signature, the leaf script, and the control block.</p></div></li>
+      <li><span class="rid">D-30</span><div class="rbody"><p>The signature item <span class="must">must</span> be 64 or 65 bytes. A 65-byte signature carries an explicit sighash byte.</p></div></li>
+      <li><span class="rid">D-31</span><div class="rbody"><p>A Taproot annex <span class="must not">must not</span> be present. An annex is recognised by a final witness item whose first byte is <code>0x50</code>.</p></div></li>
+      <li><span class="rid">D-32</span><div class="rbody"><p>Every witness item <span class="must">must</span> be an even-length hexadecimal string when read from a node's transaction representation.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="identity">5. Identity</h2>
+
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>drops:&lt;network&gt;:&lt;reveal-txid&gt;:d&lt;reveal-input-index&gt;</code></pre>
+    </div>
+
+    <ol class="rules">
+      <li><span class="rid">D-33</span><div class="rbody"><p>A Drop's identity <span class="must">must</span> be derived from the <em>input</em> that revealed it, not from an output. One transaction with two Drops-revealing inputs produces two distinct Drops.</p></div></li>
+      <li><span class="rid">D-34</span><div class="rbody"><p>The transaction id <span class="must">must</span> be lowercase hex, 64 characters.</p></div></li>
+      <li><span class="rid">D-35</span><div class="rbody"><p>The input index <span class="must">must</span> be written without leading zeros. <code>d0</code> and <code>d3</code> are valid; <code>d01</code> is not.</p></div></li>
+      <li><span class="rid">D-36</span><div class="rbody"><p>The accepting form is <code>^drops:([a-z]+):([0-9a-fA-F]{64}):d(0|[1-9][0-9]*)$</code>. An implementation <span class="should">should</span> accept mixed-case transaction ids on input and <span class="must">must</span> emit lowercase.</p></div></li>
+      <li><span class="rid">D-37</span><div class="rbody"><p>The network segment <span class="must">must</span> match the network the reading implementation is indexing. A mainnet indexer <span class="must">must not</span> resolve a <code>drops:signet:</code> identity.</p></div></li>
+    </ol>
+
+    <h3 id="derived">5.1 Derived labels</h3>
+    <div class="table-scroll">
+      <table>
+        <caption>Labels an implementation derives, and what they are for</caption>
+        <thead><tr><th scope="col">Label</th><th scope="col">Derivation</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>dropmark</code></th><td>First 10 hex characters of the body SHA-256, uppercased. Matches <code>^[0-9A-F]{10}$</code>.</td><td>Decorative. Never an identity.</td></tr>
+          <tr><th scope="row"><code>sequence</code></th><td>Zero-based, network-scoped ordering counter assigned by the indexer.</td><td>Presentation only. Must not replace the Drop identity.</td></tr>
+          <tr><th scope="row"><code>displayName</code></th><td>Indexer-local, for example <code>Drop #42</code>.</td><td>Presentation only.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="caution">
+      <span class="caution__title">Do not key on presentation fields</span>
+      <p>Two indexers that started scanning at different heights will disagree about <code>sequence</code> and <code>displayName</code>. They will agree about the Drop identity, because it comes from the chain.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="operations">6. Operations and state</h2>
+    <p>Drops has no deploy or mint step. There are exactly two on-chain operations: revealing an artifact, and moving the custody of one that already exists.</p>
+
+    <h3 id="reveal">6.1 Reveal</h3>
+    <ol class="rules">
+      <li><span class="rid">D-38</span><div class="rbody"><p>A reveal is a confirmed transaction input that spends a P2TR output on the script path and satisfies every rule in sections 3 and 4.</p></div></li>
+      <li><span class="rid">D-39</span><div class="rbody"><p>The initial owner of the artifact is the address of the reveal transaction's output 0.</p></div></li>
+      <li><span class="rid">D-40</span><div class="rbody"><p>An artifact <span class="must">must</span> only be recorded once its reveal transaction is at the implementation's configured confirmation depth. See <a href="validation.html#confirmation">confirmation policy</a>.</p></div></li>
+    </ol>
+
+    <h3 id="custody">6.2 Custody transitions</h3>
+    <p>Custody follows the profile <code>drops-custody-v1</code>. The rule is deliberately narrow so that custody is never ambiguous.</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 880 210" role="img" aria-labelledby="cust-t cust-d">
+        <title id="cust-t">Drops custody state transitions</title>
+        <desc id="cust-d">A recorded artifact begins in the active state holding a custody outpoint at output zero of its reveal transaction. Spending that outpoint moves custody to output zero of the spending transaction and the artifact stays active, provided output zero is a pay to witness public key hash or pay to Taproot output with a positive value. If output zero does not satisfy that test the artifact moves to the burned state, which is terminal. Records whose custody chain the projection cannot resolve are recorded as legacy unresolved.</desc>
+
+        <rect x="20" y="70" width="180" height="66" rx="4" class="d-seal-soft" stroke="none"/>
+        <rect x="20" y="70" width="180" height="66" rx="4" class="d-stroke-seal"/>
+        <text x="38" y="96" class="d-text">active</text>
+        <text x="38" y="116" class="d-text-sm">holds one custody outpoint</text>
+
+        <path d="M110 60c60-46 160-46 200 12" class="d-stroke-seal"/>
+        <path d="M310 72l-2-11-8 7Z" class="d-seal"/>
+        <text x="150" y="34" class="d-text-sm">spend output 0 to a P2WPKH or P2TR output</text>
+        <text x="150" y="50" class="d-text-sm">with a positive value: custody moves, still active</text>
+
+        <path d="M204 103h150" class="d-stroke"/>
+        <path d="M354 103l-9-5v10Z" class="d-seal"/>
+        <text x="216" y="96" class="d-text-sm">spend output 0 to anything else</text>
+        <text x="216" y="112" class="d-text-sm">(no address, zero value, other script)</text>
+
+        <rect x="362" y="70" width="150" height="66" rx="4" class="d-fill-2 d-stroke"/>
+        <text x="380" y="96" class="d-text">burned</text>
+        <text x="380" y="116" class="d-text-sm">terminal</text>
+
+        <rect x="600" y="70" width="250" height="66" rx="4" class="d-fill-3 d-stroke"/>
+        <text x="618" y="96" class="d-text">legacy_unresolved</text>
+        <text x="618" y="116" class="d-text-sm">custody chain not resolvable by the projection</text>
+
+        <text x="20" y="180" class="d-text-sm">Successor output index is always 0. No later output, change output, or witness-derived address can take custody.</text>
+        <text x="20" y="198" class="d-text-sm">Custody projection version 1. The projection is rebuilt from immutable rows after a chain reorganisation.</text>
+      </svg>
+      <figcaption>Custody is an output-zero rule, on purpose. Ambiguity about which output holds an artifact is the failure mode this design refuses.</figcaption>
+    </figure>
+
+    <ol class="rules">
+      <li><span class="rid">D-41</span><div class="rbody"><p>The custody outpoint of a newly recorded artifact <span class="must">must</span> be output 0 of its reveal transaction.</p></div></li>
+      <li><span class="rid">D-42</span><div class="rbody"><p>When the custody outpoint is spent, custody <span class="must">must</span> move to output 0 of the spending transaction, and only output 0.</p></div></li>
+      <li><span class="rid">D-43</span><div class="rbody"><p>A successor output is supported only if it has a resolvable address, a script hex, a value greater than zero satoshis, and a script matching <code>^0014[0-9a-f]{40}$</code> (P2WPKH) or <code>^5120[0-9a-f]{64}$</code> (P2TR).</p></div></li>
+      <li><span class="rid">D-44</span><div class="rbody"><p>If the successor output is not supported, the artifact's custody status <span class="must">must</span> become <code>burned</code>. The record itself remains; only its custody ends.</p></div></li>
+      <li><span class="rid">D-45</span><div class="rbody"><p>Custody status <span class="must">must</span> be one of <code>active</code>, <code>burned</code>, or <code>legacy_unresolved</code>. The last is recorded when the projection cannot resolve a custody chain, for example for a record predating the custody activation height of that deployment.</p></div></li>
+      <li><span class="rid">D-46</span><div class="rbody"><p>Custody is a projection over confirmed history. After a chain reorganisation it <span class="must">must</span> be rebuilt from the surviving immutable records rather than patched.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="invalid">7. Invalid conditions</h2>
+    <p>Every condition below means the candidate is not a Drop. There is no partial acceptance and no repair. The reference implementation raises the message shown; the messages are stable enough to use as diagnostic keys.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Leaf and field rejections</caption>
+        <thead><tr><th scope="col">Condition</th><th scope="col">Rejection reason</th><th scope="col">Rule</th></tr></thead>
+        <tbody>
+          <tr><td>Chunk count is not 10, or decompilation failed</td><td><code>Drops leaf must contain exactly five pushes and five opcodes.</code></td><td>D-1</td></tr>
+          <tr><td>A field position holds an opcode rather than a data push</td><td>The named field is not a data push</td><td>D-3</td></tr>
+          <tr><td>Opcode at an odd position is not the required one</td><td><code>Drops leaf does not use the required OP_DROP/OP_CHECKSIG grammar.</code></td><td>D-2</td></tr>
+          <tr><td>Marker is neither <code>drops</code> nor <code>drops-pact</code></td><td><code>Drops leaf has an unknown marker.</code></td><td>D-6, D-7</td></tr>
+          <tr><td>Content type fails the grammar or exceeds 80 bytes</td><td><code>Drops MIME type must be lowercase ASCII type/subtype with no parameters and at most 80 bytes.</code></td><td>D-8, D-9, D-10</td></tr>
+          <tr><td>Content type contains non-ASCII bytes</td><td><code>Drops MIME type must be ASCII.</code></td><td>D-9</td></tr>
+          <tr><td>Hash field is not 32 bytes</td><td><code>Drops leaf sha256 field must be exactly 32 bytes.</code></td><td>D-12</td></tr>
+          <tr><td>Body length is 0 or above 256</td><td><code>Drops body must be one push of 1 to 256 bytes.</code></td><td>D-14</td></tr>
+          <tr><td>One-byte body with no minimal push encoding</td><td>The body has no minimal data-push encoding</td><td>D-15</td></tr>
+          <tr><td>Hash field does not equal SHA256 of the body</td><td><code>Drops leaf sha256 does not match its body.</code></td><td>D-13</td></tr>
+          <tr><td>Final push is not a valid x-only point</td><td><code>Drops leaf requires a valid 32-byte x-only secp256k1 public key.</code></td><td>D-18, D-19</td></tr>
+          <tr><td>Re-serialization does not reproduce the script</td><td>A push does not use its minimal encoding</td><td>D-4</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Taproot commitment rejections</caption>
+        <thead><tr><th scope="col">Condition</th><th scope="col">Rejection reason</th><th scope="col">Rule</th></tr></thead>
+        <tbody>
+          <tr><td>Leaf script is not a valid Drops leaf</td><td>The leaf failed section 3</td><td>D-1 to D-20</td></tr>
+          <tr><td>Spent output is not native P2TR</td><td><code>previous output is not P2TR</code></td><td>D-21</td></tr>
+          <tr><td>Control block length or path length is wrong</td><td><code>invalid Taproot control block structure</code></td><td>D-22, D-23</td></tr>
+          <tr><td>Leaf version byte is not <code>0xc0</code></td><td><code>unsupported Taproot leaf version</code></td><td>D-5, D-24</td></tr>
+          <tr><td>Internal key is not a curve point</td><td><code>invalid Taproot internal key</code></td><td>D-25</td></tr>
+          <tr><td>Output key parity disagrees with the control block</td><td><code>Taproot control block parity mismatch</code></td><td>D-27</td></tr>
+          <tr><td>Recomputed output key differs from the spent script</td><td><code>Taproot leaf does not commit to previous output</code></td><td>D-27</td></tr>
+          <tr><td>Verification raised an error</td><td><code>Taproot commitment could not be verified</code></td><td>D-28</td></tr>
+          <tr><td>The spent output could not be fetched</td><td><code>missing_previous_output</code></td><td>D-21</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><a href="test-vectors.html">Test vectors</a> gives concrete valid and invalid inputs for these conditions. <a href="validation.html">Validation and indexing</a> covers the order in which a conforming implementation performs the checks, and what it does about confirmations and reorganisations.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="versioning">8. Versioning and change policy</h2>
+    <ol class="rules">
+      <li><span class="rid">D-47</span><div class="rbody"><p>The leaf grammar carries no version field. A change to the grammar would be a new marker, not a new version byte inside the existing one.</p></div></li>
+      <li><span class="rid">D-48</span><div class="rbody"><p>A confirmed Drop keeps the meaning it had when it was created. A later revision of this document <span class="must not">must not</span> retroactively invalidate a record that was valid under the rules in force at its confirmation height.</p></div></li>
+      <li><span class="rid">D-49</span><div class="rbody"><p>Deployment-scoped activation heights, such as the height at which custody projection becomes authoritative, are operator configuration rather than protocol constants. Two deployments <span class="may">may</span> differ, and an implementation <span class="should">should</span> publish the heights it uses.</p></div></li>
+    </ol>
+    <p>Document revisions are listed in the <a href="../changelog.html">version history</a>.</p>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/drops-specification.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/drops-specification.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
 </html>
