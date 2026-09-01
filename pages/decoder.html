@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drops payload decoder | Drops protocol</title>
+<meta name="description" content="Paste a Drops leaf script or a reveal transaction and see every field decoded and explained, with each specification rule checked. Runs entirely in your browser, with nothing transmitted or logged.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/decoder.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drops payload decoder">
+<meta property="og:description" content="Paste a Drops leaf script or a reveal transaction and see every field decoded and explained, with each specification rule checked. Runs entirely in your browser, with nothing transmitted or logged.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/decoder.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+<script defer src="../assets/decoder.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html" aria-current="page">Tools</a>
+      <a href="../pages/reference.html">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Interactive &middot; client-side only</p>
+    <h1>Payload <em>decoder</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">Paste a Drops leaf script, or a whole reveal transaction, and this page pulls it apart field by field: what each push is, which rule governs it, and whether it passes. It also decodes the two Pact body profiles.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <div class="note">
+      <span class="note__title">Your input stays in your browser</span>
+      <p>This tool is one static JavaScript file with no network calls and no storage. Nothing you paste is transmitted, logged, cached or sent to any server, including the one serving this page. You can read <a href="../assets/decoder.js">the source</a>, or work offline: save this page and its stylesheet and script, and it still runs.</p>
+    </div>
+
+    <form class="tool js-only" id="decoder-form">
+      <label for="decoder-input">Leaf script hex, or full transaction hex</label>
+      <p class="hint">If you paste more than a leaf, the decoder scans the input for a Drops leaf and reports where it found one. Whitespace, colons and a leading <code>0x</code> are ignored.</p>
+      <textarea id="decoder-input" spellcheck="false" autocomplete="off" placeholder="0564726f7073750a746578742f706c61696e75 &hellip;"></textarea>
+      <div class="tool__controls">
+        <button class="btn" type="submit">Decode</button>
+        <button class="btn btn--quiet" type="reset">Clear</button>
+      </div>
+    </form>
+
+    <div class="no-js-note">
+      <p><strong>This tool needs JavaScript.</strong> Everything it checks is written out as normative rules on the <a href="drops-specification.html">specification page</a>, and the same cases appear with expected results on the <a href="test-vectors.html">test vectors page</a>. Nothing here is available only through the tool.</p>
+    </div>
+
+    <div class="result" id="decoder-result" role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="band band--tint js-only">
+  <div class="wrap wrap--narrow">
+    <h2 id="samples">Worked samples</h2>
+    <p>Each button loads a real, self-consistent leaf. The hashes are genuine SHA-256 values and the creator key is a valid secp256k1 point, so the checks below are doing real work rather than replaying a stored answer.</p>
+
+    <div class="grid grid--2">
+      <article class="card">
+        <h3>A plain text artifact</h3>
+        <p>Marker <code>drops</code>, content type <code>text/plain</code>, a 45-byte body. The simplest valid Drop.</p>
+        <button class="btn btn--quiet" type="button" data-sample="0564726f7073750a746578742f706c61696e7520e5581b84546ba9dfdedf87d77a8de5a4ab1541d157711bda4ef8299147097d30752e5365616c6564206f6e20426974636f696e2e2044726f70706564206f6e63652c206b65707420666f72657665722e7520f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9ac">Load</button>
+      </article>
+
+      <article class="card">
+        <h3>A Pact Seed</h3>
+        <p>Marker <code>drops-pact</code>, content type <code>application/vnd.drops.pact-seed</code>, a 184-byte record. The decoder also unpacks the Seed's eight fields.</p>
+        <button class="btn btn--quiet" type="button" data-sample="0a64726f70732d70616374751f6170706c69636174696f6e2f766e642e64726f70732e706163742d73656564752010dbce24ef481d5cb15945dea8acc43f57404a19fce53753c9a4b1de73f80824754cb84450534500000100657363726f7700000000000000000000da08c96d9d2efadfd6da2242f984c31cf2d5046507616215dbd0969ce33790b162f445a2e58ecf42925f188e33028cbc719a49e3578791d0fb0187c7c96f5af88c49e9067dc29780e25488c5057f17159c361a093608d9b54ae50733ad7ce80c6ad54489e2c67d7abadfca03b41c3ab69ad6429337a9a3df09f375ef6323d21f22cc683dc491cbafafcce796d5923c04f41b357f031c57dec1a8c1fc68961f127520f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9ac">Load</button>
+      </article>
+
+      <article class="card">
+        <h3>A Pacts reference</h3>
+        <p>Marker <code>drops</code> with the reference content type. The body is 176 bytes of strictly serialized JSON, and the decoder checks the serialization too.</p>
+        <button class="btn btn--quiet" type="button" data-sample="0564726f7073752a6170706c69636174696f6e2f766e642e64726f70732e70616374732d7265666572656e63652b6a736f6e7520a7574cfeb0d02a7df69cfc98483c8a64399dc5ac162f62223735c95e0d8defc9754cb07b226268223a2262316563653066336662346637626530373235343331383066663033653231623762303934623639666236613766346434386362313730323832636439363761222c2270223a227061637473222c227068223a2236343837396637643662393630613031393039373632643931316133326434353832633230303130633536343165653930323738623634346139653362353235222c2274223a22657363726f772d6261736963227d7520f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9ac">Load</button>
+      </article>
+
+      <article class="card">
+        <h3>A tampered body hash</h3>
+        <p>The first sample with one bit changed in the hash push. Structurally perfect, cryptographically wrong, and therefore not a Drop.</p>
+        <button class="btn btn--quiet" type="button" data-sample="0564726f7073750a746578742f706c61696e7520e4581b84546ba9dfdedf87d77a8de5a4ab1541d157711bda4ef8299147097d30752e5365616c6564206f6e20426974636f696e2e2044726f70706564206f6e63652c206b65707420666f72657665722e7520f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9ac">Load</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="what">What the decoder checks</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th scope="col">Check</th><th scope="col">Rule</th></tr></thead>
+        <tbody>
+          <tr><td>Exactly ten chunks: five data pushes and the OP_DROP, OP_CHECKSIG sequence, with no trailing bytes</td><td>D-1, D-2, D-3</td></tr>
+          <tr><td>Every push uses its minimal opcode, and no field is a one-byte value that Script would fold into <code>OP_1</code> to <code>OP_16</code> or <code>OP_1NEGATE</code></td><td>D-4, D-15</td></tr>
+          <tr><td>Marker is <code>drops</code> or <code>drops-pact</code>, and <code>bip110-op-drop</code> is refused with an explanation</td><td>D-6, D-7</td></tr>
+          <tr><td>Content type is ASCII, at most 80 bytes, and matches the restricted-name grammar with no parameters</td><td>D-8, D-9, D-10</td></tr>
+          <tr><td>Hash field is 32 bytes and equals SHA-256 of the body, computed live from your input</td><td>D-12, D-13</td></tr>
+          <tr><td>Body is 1 to 256 bytes</td><td>D-14</td></tr>
+          <tr><td>Creator key is 32 bytes and a real point on secp256k1, tested by evaluating the curve equation</td><td>D-18, D-19</td></tr>
+          <tr><td>Pact Seed bodies: 184 bytes, <code>DPSE</code> magic, zero reserved bytes, known network and floor tags, valid engine id with zero padding</td><td><a href="pacts.html#seed">Pacts 1</a></td></tr>
+          <tr><td>Pacts reference bodies: exactly four keys, sorted order, no whitespace, and a byte-exact re-serialization</td><td><a href="pacts.html#reference">Pacts 5</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="cannot">What it cannot check</h2>
+    <p>A leaf script does not contain its own commitment. Two things therefore stay out of reach of any tool that is given only the leaf:</p>
+    <ul>
+      <li><strong>The Taproot commitment.</strong> Proving that this leaf is the leaf the spent output committed to needs the control block and the previous output script from the reveal transaction, plus secp256k1 point arithmetic. That check is <a href="drops-specification.html#commitment">specification section 4</a>, and it is the one that actually makes a Drop trustworthy.</li>
+      <li><strong>Confirmation.</strong> Whether the reveal is in a block, and whether that block is deep enough under the indexer's <a href="validation.html#confirmation">confirmation policy</a>.</li>
+    </ul>
+    <p>A leaf that decodes cleanly here is a well-formed candidate. It is not yet a Drop.</p>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/decoder.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/decoder.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

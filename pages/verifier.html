@@ -1,13 +1,235 @@
 <!doctype html>
 <html lang="en">
-  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="See how every confirmed Drop connects its content to an exact Bitcoin proof." /><title>Verify a Drop</title><link rel="stylesheet" href="../assets/pages.css" /><link rel="stylesheet" href="../assets/translation-toggle.css" /><script defer src="../assets/translation-toggle.js"></script></head>
-  <body>
-    <header class="page-nav"><a class="page-brand" href="../index.html"><b>D</b> Drops</a><nav class="page-nav-links" aria-label="Primary navigation"><a href="discover.html">Discover</a><a href="protocol.html">Protocol</a><a href="pacts.html">Pacts</a></nav><a class="page-button" href="verifier-guide.html">Follow the proof</a></header>
-    <main>
-      <section class="page-hero page-hero--visual"><div class="page-hero-copy"><p class="eyebrow">Proof, made visible</p><h1>Do not just see a record. <em>Know what Bitcoin confirmed.</em></h1><p>Drops connects the exact content you see with its body hash, canonical leaf, Taproot commitment, and confirmed transaction.</p><div class="page-actions"><a class="page-button" href="verifier-guide.html">Follow the proof</a><a class="page-button quiet" href="protocol.html">See the protocol</a></div><div class="proof-belt"><span>Exact content</span><b>+</b><span>Body hash</span><b>+</b><span>Taproot proof</span><b>=</b><strong>Verified Drop</strong></div></div><ol class="verifier-proof-route" aria-label="Drop proof route"><li><span>01</span><strong>Confirmed transaction</strong><p>Begin with the Bitcoin record that made the Drop permanent.</p></li><li><span>02</span><strong>Canonical content</strong><p>Match the displayed body with its committed SHA256 hash.</p></li><li><span>03</span><strong>Taproot proof</strong><p>Connect the exact leaf to the spent Taproot output.</p></li></ol></section>
-      <section class="page-main"><div class="page-intro"><p class="eyebrow">Confidence without guesswork</p><h2>Every visible fact has a place in the proof.</h2><p>A confirmed Drop is more than a transaction label. Its content, identity, and commitment agree, so anyone can follow the same evidence.</p></div><div class="proof-map"><article><span>01</span><strong>Read the content</strong><p>Know exactly what the record says.</p></article><article><span>02</span><strong>Match the hash</strong><p>Confirm the body has not changed.</p></article><article><span>03</span><strong>Check the commitment</strong><p>Connect the leaf to Bitcoin through Taproot.</p></article><article><span>04</span><strong>Wait for confirmation</strong><p>Treat the record as permanent only after Bitcoin confirms it.</p></article></div></section>
-      <section class="callout"><div><p class="eyebrow">Your wallet stays yours</p><h2>Review first. Sign only when every detail is clear.</h2><p>Confirm the network, destination, content, and miner fee. Never enter a seed phrase or private key into a website, message, or support form.</p><a class="page-button" href="verifier-guide.html">Open the verification guide</a></div></section>
-    </main>
-    <footer class="page-footer"><span>(c) 2026 Drops Protocol contributors</span><span>Confirmed data. Exact proof. Bitcoin L1.</span></footer>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pact outcome verifier | Drops protocol</title>
+<meta name="description" content="Check whether a Drop Pact's recorded outcome matches its stated terms. Decodes the cell descriptors and transition preimage, recomputes the transition commitment, and reports which rule failed. Client-side only.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/verifier.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pact outcome verifier">
+<meta property="og:description" content="Check whether a Drop Pact's recorded outcome matches its stated terms. Decodes the cell descriptors and transition preimage, recomputes the transition commitment, and reports which rule failed. Client-side only.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/verifier.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+<script defer src="../assets/verifier.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html" aria-current="page">Tools</a>
+      <a href="../pages/reference.html">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div>
+      <p class="kicker"><span class="dot"></span>Interactive &middot; client-side only</p>
+      <h1>Pact outcome <em>verifier</em></h1>
+      <div class="hero__rule" role="presentation"></div>
+      <p class="lede">A recorded outcome claims that a Pact moved from one state to the next. This tool checks that the claim holds together: same Pact, sequence advanced by one, roots that line up, and a successor that commits to this exact transition and no other.</p>
+    </div>
+    <figure class="hero__figure">
+      <img src="../assets/img/verification.jpg" width="1100" height="619" alt="A dark studio scene: a magnifying glass over a glowing droplet outline, a stack of illuminated ledger blocks with a bronze Bitcoin disc on top, a chain of small blocks, and a shield bearing a checkmark." loading="lazy">
+      <figcaption>Checking an outcome is arithmetic on records, not a judgement about people.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <div class="note">
+      <span class="note__title">Your input stays in your browser</span>
+      <p>One static JavaScript file, no network calls, no storage. Nothing you paste is transmitted, logged or cached anywhere, including on the server hosting this page. <a href="../assets/verifier.js">Read the source</a>. It works offline once the page is saved.</p>
+    </div>
+
+    <form class="tool js-only" id="verifier-form">
+      <div class="field">
+        <label for="v-parent">Parent cell descriptor, 176 bytes of hex</label>
+        <p class="hint">The state the Pact was in before this outcome.</p>
+        <textarea id="v-parent" spellcheck="false" autocomplete="off" style="min-height:86px"></textarea>
+      </div>
+      <div class="field" style="margin-top:18px">
+        <label for="v-successor">Successor cell descriptor, 176 bytes of hex</label>
+        <p class="hint">The state the outcome claims the Pact reached.</p>
+        <textarea id="v-successor" spellcheck="false" autocomplete="off" style="min-height:86px"></textarea>
+      </div>
+      <div class="field" style="margin-top:18px">
+        <label for="v-transition">Transition preimage, 245 bytes of hex</label>
+        <p class="hint">The stated terms of the move: which Pact, from which outpoint, from which state to which state, under which policy.</p>
+        <textarea id="v-transition" spellcheck="false" autocomplete="off" style="min-height:104px"></textarea>
+      </div>
+      <div class="field" style="margin-top:18px">
+        <label for="v-anchor">DPC1 anchor script, 38 bytes of hex (optional)</label>
+        <p class="hint">The <code>OP_RETURN</code> output that marks the transition on chain. Supply it to also check rule P-9.</p>
+        <textarea id="v-anchor" spellcheck="false" autocomplete="off" style="min-height:64px"></textarea>
+      </div>
+      <div class="tool__controls">
+        <button class="btn" type="submit">Verify outcome</button>
+        <button class="btn btn--quiet" type="reset">Clear</button>
+      </div>
+    </form>
+
+    <div class="no-js-note">
+      <p><strong>This tool needs JavaScript.</strong> The rules it applies are written out as P-1 through P-9 on the <a href="pacts.html#outcomes">Drop Pacts page</a>, and the same worked cases appear with expected results under <a href="test-vectors.html#pacts">Pact test vectors</a>. Nothing here is available only through the tool.</p>
+    </div>
+
+    <div class="result" id="verifier-result" role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="band band--tint js-only">
+  <div class="wrap wrap--narrow">
+    <h2 id="samples">Worked outcomes</h2>
+    <p>Both samples are real records built with the same encoding the reference implementation uses. The commitment is recomputed in your browser from the preimage you load, so the pass and the failure are both genuine.</p>
+
+    <div class="grid grid--2">
+      <article class="card">
+        <h3>A consistent outcome</h3>
+        <p>A Pact moving from sequence 7 to sequence 8, with a matching DPC1 anchor. Every check this tool can perform passes.</p>
+        <button class="btn btn--quiet" type="button" data-fill='{"v-parent":"4450434c000000006bf9cd8175241aeb1c4006851ac4a87930b8f156d71d1adedee78f9a3673b67f0000000000000007dba6c576f54e6be4d42834ddf5716198c645dae9a1165c45f4048aff6cfa85b04ceceb0b4e3206bc00207e903f5b1f7456e746a8afcb933f159194f1d6c673862d15e5e0c60b1aa15a375feeb8a4920edc1e5a5181815f2dc9a4dcbb72acaf8039ad7ce74cacf6ad4f27b8f771ddfcab85ddbf6b2c16e1d7b3a61c9ba1cdcd98","v-successor":"4450434c000000006bf9cd8175241aeb1c4006851ac4a87930b8f156d71d1adedee78f9a3673b67f0000000000000008eb51cc2a22e9a74f20fe4b9876864feb0dbd154505df2c541d78586705db500521c7fa1068eadbf4113056bd59c57d44039c8e1ae40ad7d560dfcd7fd8123a307346527eb959330388f415962bfc7d581fe6e28a8945a4d768ed99d7b4c7f4a47d048cb0e10dcf5026dd4a8dc02088c75167e26110e10d647fe54dbde0913840","v-transition":"006bf9cd8175241aeb1c4006851ac4a87930b8f156d71d1adedee78f9a3673b67f4742aef9cae92bf36f4ed30cf8571ef75242f693e7b171b0b15634897d0635160000000000000000000000000000000000000007dba6c576f54e6be4d42834ddf5716198c645dae9a1165c45f4048aff6cfa85b0eb51cc2a22e9a74f20fe4b9876864feb0dbd154505df2c541d78586705db500521c7fa1068eadbf4113056bd59c57d44039c8e1ae40ad7d560dfcd7fd8123a30464c335956bb0380a88e83f132cd88d6a7db6b9d7ce6a868ddf533d7506f65780000000000000000000000000000000000000000000000000000000000000000","v-anchor":"6a24445043317d048cb0e10dcf5026dd4a8dc02088c75167e26110e10d647fe54dbde0913840"}'>Load</button>
+      </article>
+
+      <article class="card">
+        <h3>A tampered outcome</h3>
+        <p>The same records with one byte changed in the successor's transition commitment. Rules P-7 and P-9 both fail, and the tool names the mismatch.</p>
+        <button class="btn btn--quiet" type="button" data-fill='{"v-parent":"4450434c000000006bf9cd8175241aeb1c4006851ac4a87930b8f156d71d1adedee78f9a3673b67f0000000000000007dba6c576f54e6be4d42834ddf5716198c645dae9a1165c45f4048aff6cfa85b04ceceb0b4e3206bc00207e903f5b1f7456e746a8afcb933f159194f1d6c673862d15e5e0c60b1aa15a375feeb8a4920edc1e5a5181815f2dc9a4dcbb72acaf8039ad7ce74cacf6ad4f27b8f771ddfcab85ddbf6b2c16e1d7b3a61c9ba1cdcd98","v-successor":"4450434c000000006bf9cd8175241aeb1c4006851ac4a87930b8f156d71d1adedee78f9a3673b67f0000000000000008eb51cc2a22e9a74f20fe4b9876864feb0dbd154505df2c541d78586705db500521c7fa1068eadbf4113056bd59c57d44039c8e1ae40ad7d560dfcd7fd8123a307346527eb959330388f415962bfc7d581fe6e28a8945a4d768ed99d7b4c7f4a47c048cb0e10dcf5026dd4a8dc02088c75167e26110e10d647fe54dbde0913840","v-transition":"006bf9cd8175241aeb1c4006851ac4a87930b8f156d71d1adedee78f9a3673b67f4742aef9cae92bf36f4ed30cf8571ef75242f693e7b171b0b15634897d0635160000000000000000000000000000000000000007dba6c576f54e6be4d42834ddf5716198c645dae9a1165c45f4048aff6cfa85b0eb51cc2a22e9a74f20fe4b9876864feb0dbd154505df2c541d78586705db500521c7fa1068eadbf4113056bd59c57d44039c8e1ae40ad7d560dfcd7fd8123a30464c335956bb0380a88e83f132cd88d6a7db6b9d7ce6a868ddf533d7506f65780000000000000000000000000000000000000000000000000000000000000000","v-anchor":"6a24445043317d048cb0e10dcf5026dd4a8dc02088c75167e26110e10d647fe54dbde0913840"}'>Load</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="scope">Scope, stated plainly</h2>
+    <p>This tool runs five of the nine outcome rules. It says so in its own output, every time, rather than presenting a partial check as a complete one.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Coverage against the outcome rules</caption>
+        <thead><tr><th scope="col">Rule</th><th scope="col">Checked here</th><th scope="col">Why</th></tr></thead>
+        <tbody>
+          <tr><td>P-1 Pact ids agree</td><td><span class="chip chip--ok">yes</span></td><td>All three records carry it.</td></tr>
+          <tr><td>P-2 Sequence advances by one</td><td><span class="chip chip--ok">yes</span></td><td>Both descriptors carry a sequence.</td></tr>
+          <tr><td>P-3 Roots line up</td><td><span class="chip chip--ok">yes</span></td><td>State and policy roots are in the records.</td></tr>
+          <tr><td>P-4 Ruleset result equals the next state root</td><td><span class="chip chip--warn">no</span></td><td rowspan="3">Needs the deterministic CBOR proof pack, which is off-chain material rather than a record.</td></tr>
+          <tr><td>P-5 OP_DROP effect hash matches its payload</td><td><span class="chip chip--warn">no</span></td></tr>
+          <tr><td>P-6 Proof pack payload hash matches</td><td><span class="chip chip--warn">no</span></td></tr>
+          <tr><td>P-7 Successor commits to this transition</td><td><span class="chip chip--ok">yes</span></td><td>Recomputed from the preimage with a BIP 340 tagged hash.</td></tr>
+          <tr><td>P-8 Successor proves its Taproot commitment</td><td><span class="chip chip--warn">no</span></td><td>Needs the control block, the successor output script, and secp256k1 point arithmetic.</td></tr>
+          <tr><td>P-9 DPC1 anchor carries the same commitment</td><td><span class="chip chip--ok">yes</span></td><td>Checked when you supply the anchor script.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="caution">
+      <span class="caution__title">A pass is a consistency result, not a performance result</span>
+      <p>Every rule here asks the same kind of question: do these records agree with each other? None of them can tell you that money moved, that goods arrived, or that a party did what they said they would. What Bitcoin itself guarantees for a given Pact is written in its <a href="pacts.html#floors">enforcement floor</a>, and for a <code>recorded</code> floor the honest answer is: that these terms were committed and not edited afterwards.</p>
+    </div>
+
+    <h2 id="how">How the commitment is computed</h2>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>tag        = SHA256("Drops/PactTransition")
+commitment = SHA256(tag || tag || preimage)</code></pre>
+    </div>
+    <p>That is the BIP 340 tagged-hash construction. The successor cell descriptor carries the result in its last 32 bytes, and the DPC1 anchor carries it in its last 32 bytes. Both must equal the value computed from the preimage, which is why changing a single byte anywhere in the stated terms breaks the outcome.</p>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/verifier.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/verifier.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
 </html>

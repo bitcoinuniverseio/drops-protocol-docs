@@ -1,14 +1,309 @@
 <!doctype html>
 <html lang="en">
-  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="Explore the strict carrier registry that keeps Drops, BIP-110, tokens, and Pacts unambiguous on Bitcoin." /><title>Drops carrier registry, clear meaning on Bitcoin</title><link rel="stylesheet" href="../assets/pages.css" /><link rel="stylesheet" href="../assets/translation-toggle.css" /><script defer src="../assets/translation-toggle.js"></script></head>
-  <body>
-    <header class="page-nav"><a class="page-brand" href="../index.html"><b>D</b> Drops</a><nav class="page-nav-links" aria-label="Primary navigation"><a href="discover.html">Discover</a><a href="protocol.html">Protocol</a><a href="pacts.html">Pacts</a></nav><a class="page-button" href="carrier-registry.html">Canonical registry</a></header>
-    <main>
-      <section class="page-hero page-hero--visual light"><div class="page-hero-copy"><p class="eyebrow">Supported carriers</p><h1>Every Bitcoin artifact deserves <em>one clear meaning.</em></h1><p>The Drops carrier registry keeps formats distinct, strict, and verifiable. That means an app can support compact artifacts, BIP-110-compatible records, token events, and Pacts without confusing one for another.</p><div class="page-actions"><a class="page-button" href="protocol.html">Read the protocol</a><a class="page-button quiet" href="pacts.html">Explore Pacts</a></div><div class="proof-belt"><span>One marker</span><b>+</b><span>One grammar</span><b>+</b><span>One validator</span><b>=</b><strong>One meaning</strong></div></div><div class="carrier-registry-grid" role="group" aria-label="Carrier registry"><article><span>drops</span><strong>Generic artifact</strong><p>Exact body, MIME type, creator key, and Taproot proof.</p></article><article><span>bip110-op-drop</span><strong>Compatibility carrier</strong><p>A separate strict decoding path preserves its registered meaning.</p></article><article><span>drops-pact and DPC1</span><strong>Pact records</strong><p>Immutable Seeds and transition commitments follow their own verification route.</p></article></div></section>
-      <section class="page-main"><div class="page-intro"><p class="eyebrow">Interoperable by being exact</p><h2>Compatibility works best when no parser has to guess.</h2><p>For you, this means the name of a record tells a wallet how to read it. A Drops artifact, an op-drop event like <code>$DROP</code>, the first token on op-drop, and a Pact record stay distinct instead of blending into one confusing data type.</p></div><table class="comparison-table"><thead><tr><th>Carrier</th><th>What it carries</th><th>What stays clear</th></tr></thead><tbody><tr><td><code>drops</code></td><td>Compact generic artifact</td><td>Exact body, MIME type, creator key, and Taproot proof.</td></tr><tr><td><code>bip110-op-drop</code></td><td>Registered compatibility carrier</td><td>Its own strict decoding path, separate from native Drops meaning.</td></tr><tr><td><code>drops-pact</code></td><td>Immutable Pact Seed</td><td>Agreement identity, ruleset, policy, and initial-state commitment.</td></tr><tr><td><code>DPC1</code></td><td>Pact transition commitment</td><td>Compact pointer to a verified Cell state change and Proof Pack.</td></tr></tbody></table></section>
-      <section class="split-section"><div class="carrier-boundary-map" role="group" aria-label="Strict carrier boundaries"><article><span>Generic Drop</span><strong>Not a token</strong><p>Generic artifacts do not create balances without op-drop validation.</p></article><article><span>op-drop event</span><strong>Strict decoder</strong><p>Token rules stay separate from Pact actions and generic records.</p></article><article><span>DPC1 commitment</span><strong>Verified transition</strong><p>Strict carrier boundaries let products evolve without rewriting an existing Bitcoin record.</p></article></div><div><p class="eyebrow">BIP-110 ready</p><h2>Support compatible records without dissolving their boundaries.</h2><p>The registered <code>bip110-op-drop</code> carrier is available to products that need it. Drops keeps that compatibility explicit: a generic record is not automatically a token, and a token event is not automatically a Pact action.</p><div class="step-list"><div><b>No accidental token balances:</b> op-drop rules must pass their own strict decoder.</div><div><b>No accidental Pact transitions:</b> a DPC1 commitment must verify against its Cell and Proof Pack.</div><div><b>No retroactive rewriting:</b> a confirmed marker retains the meaning its registered grammar defines.</div></div></div></section>
-      <section class="dark-cta"><div><p class="eyebrow">Clear formats create better experiences</p><h2>Create a richer Bitcoin record without giving up unambiguous proof.</h2><p>See how the canonical Drops carrier works, then explore the Pacts and Studio experiences that grow from it.</p><div class="page-actions"><a class="page-button" href="protocol.html">See Drops protocol</a><a class="page-button quiet" href="pacts.html">Use Pacts</a></div></div></section>
-    </main>
-    <footer class="page-footer"><span>© 2026 Drops Protocol contributors</span><span>Strict grammar. Clear meaning. Bitcoin L1.</span></footer>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrier model, transaction anatomy and payload encoding | Drops protocol</title>
+<meta name="description" content="How a Drops record rides on Bitcoin: the commit and reveal transactions, the witness layout, the Taproot control block, the marker registry, and minimal push encoding rules for every field.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/carriers.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Carrier and transaction anatomy">
+<meta property="og:description" content="How a Drops record rides on Bitcoin: the commit and reveal transactions, the witness layout, the Taproot control block, the marker registry, and minimal push encoding rules for every field.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/carriers.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html" aria-current="page">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Carrier model</p>
+    <h1>The carrier, the transaction, <em>the bytes</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">Drops does not invent a transaction format. It reuses the Taproot script path exactly as BIP 341 defines it, and adds one rule: the leaf you reveal must be a Drops leaf, and it must be the leaf the output actually committed to.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="model">The carrier model in one paragraph</h2>
+    <p>A carrier is a way of putting bytes into a Bitcoin transaction such that a reader can recover them exactly. The <code>OP_DROP</code> carrier does this with data pushes that are immediately discarded by <code>OP_DROP</code>, leaving a plain single-signature script behind. The bytes are in the witness of the spending transaction, so they cost witness-discounted weight, and they are only revealed when the output is spent. The carrier says nothing about what the bytes mean. That is what a marker is for.</p>
+
+    <figure class="diagram">
+      <svg viewBox="0 0 880 400" role="img" aria-labelledby="anat-t anat-d">
+        <title id="anat-t">Anatomy of a Drops commit and reveal</title>
+        <desc id="anat-d">On the left, the commit transaction has one output: a pay to Taproot script of thirty-four bytes, OP_1 followed by a thirty-two byte output key Q. Q is the internal key P tweaked by the merkle root of a script tree that contains the Drops leaf. On the right, the reveal transaction spends that output. Its input witness holds three items: a Schnorr signature of sixty-four or sixty-five bytes, the Drops leaf script, and a control block of thirty-three bytes plus thirty-two bytes per merkle path element. The reveal transaction's output zero becomes the custody outpoint of the recorded artifact. A dashed line connects the leaf in the witness back to the script tree that Q committed to.</desc>
+
+        <text x="4" y="20" class="d-label">COMMIT TRANSACTION</text>
+        <rect x="4" y="30" width="330" height="120" rx="4" class="d-fill-2 d-stroke"/>
+        <text x="20" y="56" class="d-text">output 0</text>
+        <text x="20" y="78" class="d-text-mono">OP_1 &lt;32-byte Q&gt;</text>
+        <text x="20" y="98" class="d-text-sm">34 bytes, native P2TR</text>
+        <text x="20" y="122" class="d-text-sm">Q = P + taggedHash("TapTweak", P || root)&middot;G</text>
+        <text x="20" y="140" class="d-text-sm">root = merkle root of the script tree</text>
+
+        <text x="4" y="186" class="d-label">SCRIPT TREE</text>
+        <rect x="4" y="196" width="330" height="86" rx="4" class="d-fill-3 d-stroke"/>
+        <text x="20" y="222" class="d-text-sm">leaf version 0xc0</text>
+        <text x="20" y="242" class="d-text-mono">&lt;marker&gt; OP_DROP ... OP_CHECKSIG</text>
+        <text x="20" y="264" class="d-text-sm">up to 128 sibling hashes may sit alongside it</text>
+
+        <path d="M340 90h56" class="d-stroke-seal"/>
+        <path d="M396 90l-9-5v10Z" class="d-seal"/>
+        <text x="342" y="80" class="d-text-sm">spent by</text>
+
+        <text x="404" y="20" class="d-label">REVEAL TRANSACTION</text>
+        <rect x="404" y="30" width="472" height="252" rx="4" class="d-fill-2 d-stroke"/>
+        <text x="420" y="56" class="d-text">input i, witness stack</text>
+
+        <rect x="420" y="68" width="440" height="40" rx="3" class="d-fill d-stroke"/>
+        <text x="434" y="93" class="d-text-mono">[0] Schnorr signature, 64 or 65 bytes</text>
+
+        <rect x="420" y="114" width="440" height="40" rx="3" class="d-seal-soft" stroke="none"/>
+        <rect x="420" y="114" width="440" height="40" rx="3" class="d-stroke-seal"/>
+        <text x="434" y="139" class="d-text-mono">[1] Drops leaf script</text>
+
+        <rect x="420" y="160" width="440" height="40" rx="3" class="d-fill d-stroke"/>
+        <text x="434" y="185" class="d-text-mono">[2] control block, 33 + 32n bytes</text>
+
+        <text x="420" y="228" class="d-text">output 0</text>
+        <text x="420" y="248" class="d-text-sm">becomes the custody outpoint of the recorded artifact</text>
+        <text x="420" y="268" class="d-text-sm">no annex item is permitted anywhere in the witness</text>
+
+        <path d="M420 134 L370 134 L370 239 L334 239" class="d-stroke" stroke-dasharray="4 4"/>
+        <text x="352" y="316" class="d-text-sm">The dashed path is the whole point: the leaf in the witness must be a leaf that Q committed to.</text>
+        <text x="4" y="316" class="d-label">MUST MATCH</text>
+        <text x="4" y="348" class="d-text-sm">Bytes live in the witness, so they are discounted to one weight unit per byte rather than four.</text>
+        <text x="4" y="368" class="d-text-sm">Nothing is revealed until the output is spent. An unspent commit output tells an observer nothing.</text>
+        <text x="4" y="388" class="d-text-sm">The reveal input index, not any output, gives the artifact its identity.</text>
+      </svg>
+      <figcaption>Commit and reveal, with the commitment check that makes the reveal trustworthy.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="registry">The marker registry</h2>
+    <p>The first push of the leaf is a namespace. One marker means one thing. A parser that accepts a marker it does not own is a parser that will eventually credit the wrong record.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Markers carried by the OP_DROP leaf shape</caption>
+        <thead><tr><th scope="col">Marker</th><th scope="col">Owned by</th><th scope="col">Carries</th><th scope="col">Documented in</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>drops</code></th><td>Drops</td><td>A media-first artifact body with a declared content type.</td><td><a href="drops-specification.html">Drops specification</a></td></tr>
+          <tr><th scope="row"><code>drops-pact</code></th><td>Drops</td><td>A Pact Seed: the agreement identity and the hashes that pin its terms.</td><td><a href="pacts.html#seed">Drop Pacts</a></td></tr>
+          <tr><th scope="row"><code>bip110-op-drop</code></th><td>OP_DROP</td><td>A token event: deploy, mint or transfer.</td><td><a href="op-drop.html">OP_DROP summary</a>, and the <a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP repository</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Related Pact structures that are not leaf markers</caption>
+        <thead><tr><th scope="col">Name</th><th scope="col">Where it lives</th><th scope="col">Purpose</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><code>drops-cell</code></th><td>A separate Tapscript leaf in a Pact state output</td><td>Identifies the live state cell of a Pact in the future execution model. Not accepted as a Drop.</td></tr>
+          <tr><th scope="row"><code>DPC1</code></th><td>An <code>OP_RETURN</code> anchor output</td><td>Marks a candidate Pact state transition. A transition still has to be proved; the anchor alone proves nothing.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <span class="note__title">Separation is a rule, not a convention</span>
+      <p>A Drops indexer must reject <code>bip110-op-drop</code>. An OP_DROP indexer must reject <code>drops</code> and <code>drops-pact</code>. They share a carrier shape and nothing else. An artifact never becomes a token balance, and a token event never becomes an artifact.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="encoding">Payload encoding</h2>
+    <p>Bitcoin Script has more than one way to push most values. Drops accepts exactly one: the shortest. This removes an entire class of ambiguity, because two scripts that decode to the same fields are byte-identical.</p>
+
+    <h3 id="pushes">Minimal push encoding</h3>
+    <div class="table-scroll">
+      <table>
+        <caption>Which push opcode is required for which length</caption>
+        <thead><tr><th scope="col">Data length</th><th scope="col">Required encoding</th><th scope="col">Prefix bytes</th></tr></thead>
+        <tbody>
+          <tr><td>1 byte, value <code>0x00</code></td><td><code>OP_PUSHBYTES_1</code></td><td><code>01</code></td></tr>
+          <tr><td>1 byte, value <code>0x01</code> to <code>0x10</code></td><td>No data push exists. <strong>Invalid as a Drops field.</strong></td><td>Script folds these to <code>OP_1</code> to <code>OP_16</code></td></tr>
+          <tr><td>1 byte, value <code>0x81</code></td><td>No data push exists. <strong>Invalid as a Drops field.</strong></td><td>Script folds this to <code>OP_1NEGATE</code></td></tr>
+          <tr><td>1 byte, any other value</td><td><code>OP_PUSHBYTES_1</code></td><td><code>01</code></td></tr>
+          <tr><td>2 to 75 bytes</td><td><code>OP_PUSHBYTES_N</code></td><td><code>02</code> to <code>4b</code></td></tr>
+          <tr><td>76 to 255 bytes</td><td><code>OP_PUSHDATA1</code></td><td><code>4c</code> then one length byte</td></tr>
+          <tr><td>256 bytes</td><td><code>OP_PUSHDATA2</code></td><td><code>4d</code> then two little-endian length bytes</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Because the fixed-length fields are 32 bytes and the content type is at most 80, only the body can reach the <code>OP_PUSHDATA</code> range. The 256-byte body limit sits exactly one byte past the <code>OP_PUSHDATA1</code> ceiling, so a maximum-size body is encoded with <code>OP_PUSHDATA2</code>.</p>
+
+    <h3 id="worked">A worked leaf, byte by byte</h3>
+    <p>A minimal artifact carrying the eleven ASCII bytes <code>hello drops</code> as <code>text/plain</code>.</p>
+
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>field         encoding            bytes
+----------------------------------------------------------------
+marker        OP_PUSHBYTES_5      05 64726f7073
+                                     "drops"
+              OP_DROP             75
+
+content type  OP_PUSHBYTES_10     0a 746578742f706c61696e
+                                     "text/plain"
+              OP_DROP             75
+
+body hash     OP_PUSHBYTES_32     20 &lt;32 bytes of SHA256(body)&gt;
+              OP_DROP             75
+
+body          OP_PUSHBYTES_11     0b 68656c6c6f2064726f7073
+                                     "hello drops"
+              OP_DROP             75
+
+creator key   OP_PUSHBYTES_32     20 &lt;32-byte x-only pubkey&gt;
+              OP_CHECKSIG         ac</code></pre>
+    </div>
+
+    <p>Leaf script length here is 6 + 1 + 11 + 1 + 33 + 1 + 12 + 1 + 33 + 1 = 100 bytes. Paste the assembled hex into the <a href="decoder.html">payload decoder</a> to see it broken apart with each field explained.</p>
+
+    <h3 id="tapleaf">Computing the tapleaf hash</h3>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>tag(t)          = SHA256(t)
+taggedHash(t,m) = SHA256(tag(t) || tag(t) || m)
+
+leafHash   = taggedHash("TapLeaf",
+                        0xc0 || compactSize(len(script)) || script)
+
+for each 32-byte sibling h in the control block path:
+    leafHash = taggedHash("TapBranch", min(leafHash,h) || max(leafHash,h))
+
+tweak      = taggedHash("TapTweak", internalKey || leafHash)
+Q          = internalKey + tweak*G
+
+assert xOnly(Q) == spentOutputKey
+assert parity(Q) == controlBlock[0] &amp; 1</code></pre>
+    </div>
+    <p>A <code>compactSize</code> length prefix is one byte for scripts under 253 bytes, which covers every possible Drops leaf, since the largest is bounded by a 256-byte body and an 80-byte content type.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap split">
+    <div>
+      <h2 id="sizing">Weight and fee behaviour</h2>
+      <p>Witness bytes are discounted: one weight unit per byte instead of four. A Drops reveal therefore costs far less than putting the same bytes in an output script, and the commit output stays a plain 34-byte P2TR.</p>
+      <p>The dominant variable cost is the body. A 256-byte body adds roughly 259 witness bytes once its <code>OP_PUSHDATA2</code> prefix is counted, which is about 65 virtual bytes. The control block adds 33 bytes plus 32 per merkle sibling, so a deep script tree is the other thing worth watching.</p>
+      <p>Concrete numbers and a sizing table are in the <a href="reference.html#fees">reference</a>.</p>
+    </div>
+    <figure>
+      <img src="../assets/img/carrier-registry.jpg" width="1100" height="619" alt="A dark studio still life of a glass artifact on a metal plinth, with a chain of small illuminated blocks running toward it." loading="lazy">
+      <figcaption>One carrier shape, several registries, each with its own owner and its own rules.</figcaption>
+    </figure>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/carriers.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/carriers.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
 </html>

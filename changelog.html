@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Version history | Drops protocol</title>
+<meta name="description" content="Specification and document revisions for the Drops protocol documentation, with what changed, why, and what it means for existing records.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/changelog.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Version history">
+<meta property="og:description" content="Specification and document revisions for the Drops protocol documentation, with what changed, why, and what it means for existing records.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/changelog.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/drops.css">
+<script defer src="assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="pages/drops-specification.html">Specification</a>
+      <a href="pages/pacts.html">Pacts</a>
+      <a href="pages/carriers.html">Carrier</a>
+      <a href="pages/create.html">Guides</a>
+      <a href="pages/decoder.html">Tools</a>
+      <a href="pages/reference.html" aria-current="page">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Version history</p>
+    <h1>What changed, <em>and why</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">Two things are versioned here: the protocol rules themselves, and this document's description of them. They move at different speeds, so they are listed separately.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="policy">Versioning policy</h2>
+    <ol class="rules">
+      <li><span class="rid">CH-1</span><div class="rbody"><p>A confirmed Drop keeps the meaning it had at its confirmation height. No revision of this document retroactively invalidates a record that was valid under the rules in force when it confirmed.</p></div></li>
+      <li><span class="rid">CH-2</span><div class="rbody"><p>The leaf grammar has no version field. A change to the grammar would take a new marker, not a version byte inside the existing one.</p></div></li>
+      <li><span class="rid">CH-3</span><div class="rbody"><p>Document revisions are dated. Every page footer states the revision it belongs to and the commit at which it was last verified against the implementation.</p></div></li>
+      <li><span class="rid">CH-4</span><div class="rbody"><p>A correction that changes what an implementation should do is listed as a <strong>rule change</strong>. A correction that changes only how a rule is described is listed as a <strong>document change</strong>.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="protocol">Protocol rules</h2>
+
+    <h3 id="p-2026-09-01">Drops leaf grammar, current</h3>
+    <p>The five-push leaf, the 256-byte body limit, Tapleaf version <code>0xc0</code>, the two markers, and the full Taproot commitment requirement. No change has been made to the grammar since it was first implemented, and none is planned. Rule CH-2 explains why a change would arrive as a new marker rather than as a revision.</p>
+
+    <h3 id="p-custody">Custody profile <code>drops-custody-v1</code>, projection version 1</h3>
+    <p>Custody follows output 0, with the P2WPKH and P2TR positive-value test, and three statuses. Activation heights for the projection are deployment configuration rather than a protocol constant, so two operators may differ and should each publish the heights they use.</p>
+
+    <h3 id="p-finality">Mainnet confirmation floor raised to six</h3>
+    <p><strong>Rule change.</strong> The mainnet confirmation depth now has an enforced floor of six, and the reference indexer refuses to start with a shallower mainnet value. Earlier one-confirmation behaviour is not compatible with the current consumer readiness contract, and a legacy runtime at one confirmation is treated as transition input rather than as authority to weaken the floor. A depth change that intersects already-indexed history is an audited replay, never a silent reinterpretation of existing rows.</p>
+
+    <h3 id="p-pacts">Pacts capability contract, schema version 1</h3>
+    <p>The Pacts surface publishes a machine-readable boundary with <code>mode: reference</code>, five supported capabilities and twelve authority fields fixed at <code>false</code>. Any method other than <code>GET</code> on a Pacts path returns <code>405</code> with <code>PACTS_REFERENCE_READ_ONLY</code>. This contract is what a client should check rather than inferring capability from the presence of an endpoint.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="document">Document revisions</h2>
+
+    <h3 id="d-2026-09-01">Revision 2026-09-01</h3>
+    <p>A full rebuild of this site as an independent protocol documentation set, verified line by line against the reference indexer, the service interface definition and the Bitcoin Universe capability registry.</p>
+
+    <h4>Added</h4>
+    <ul>
+      <li>A <a href="pages/drops-specification.html">normative specification</a> with 49 numbered rules covering the leaf grammar, field constraints, the Taproot commitment, identity, operations, custody transitions and every invalid condition with its reference message.</li>
+      <li><a href="pages/carriers.html">Carrier and transaction anatomy</a>: commit and reveal structure, witness layout, the marker registry, minimal push encoding, and a worked leaf byte by byte.</li>
+      <li><a href="pages/pacts.html">Drop Pacts</a>: the 184-byte Seed layout, pact identity derivation, the three enforcement floors, the Cell descriptor, the 245-byte transition preimage, and outcome rules P-1 through P-9.</li>
+      <li><a href="pages/validation.html">Validation and indexing</a>: the ten-step verification order, confirmation policy, mempool behaviour, reorganisation budgets and the operator-required codes.</li>
+      <li><a href="pages/api.html">An API reference</a> grounded in the service's own OpenAPI 3.1 definition, with exact parameter constraints, enum values and pagination defaults.</li>
+      <li><a href="pages/test-vectors.html">Test vectors</a>: four valid leaves and ten invalid ones with real bytes, ten Taproot commitment cases, and twelve Pact record cases.</li>
+      <li><a href="pages/decoder.html">A payload decoder</a> and <a href="pages/verifier.html">a Pact outcome verifier</a>, both entirely client-side, both stating what they do not check.</li>
+      <li><a href="pages/conformance.html">A conformance specification</a> with three implementation classes and a Pacts annex.</li>
+      <li><a href="pages/create.html">A creation guide</a>, <a href="pages/integrate.html">an integration guide</a> with the verified support matrix, <a href="pages/reference.html">terminology and sizing</a>, <a href="pages/security.html">security and safety</a>, and <a href="pages/compare.html">a protocol comparison</a>.</li>
+      <li>Local search, a site map, <code>llms.txt</code>, <code>sitemap.xml</code> and <code>robots.txt</code>.</li>
+    </ul>
+
+    <h4>Corrected</h4>
+    <ul>
+      <li><strong>Control block.</strong> Earlier material implied a single-leaf tree. A Drops leaf may sit anywhere in a Taproot script tree and the control block may carry up to 128 merkle path hashes.</li>
+      <li><strong>Confirmation depth.</strong> Earlier material referred to records existing at three or more confirmations. The enforced mainnet floor is six.</li>
+      <li><strong>Networks.</strong> Earlier material described mainnet only. The protocol defines four networks, and identities are network-scoped.</li>
+      <li><strong>Availability.</strong> Marketplace support is now stated as feature-gated and off by default, with the gate names and the one unsupported action quoted from the capability registry rather than described in general terms.</li>
+      <li><strong>Pacts.</strong> The reference-only boundary is now given as the full capability contract, field by field, rather than as a paragraph of prose.</li>
+    </ul>
+
+    <h4>Changed</h4>
+    <ul>
+      <li>The site's visual identity is kept and sharpened rather than replaced: the faceted magenta droplet, the high-contrast serif wordmark and the spectrum rule remain, now expressed as a documented design system with a seal motif, a restrained palette and WCAG 2.2 AA contrast in both themes.</li>
+      <li>Every raster image was replaced with an optimized derivative under 200KB, with descriptive alt text.</li>
+      <li>Page furniture now states the owning repository, source path, specification revision, lifecycle, chain and networks, last-verified commit and an edit link on every page.</li>
+    </ul>
+
+    <h4>Removed</h4>
+    <ul>
+      <li>Duplicate narrative pages that restated the same material in several places, folded into the pages above.</li>
+      <li>Claims of product support that could not be verified in the organization's own code.</li>
+    </ul>
+
+    <h3 id="d-earlier">Earlier revisions</h3>
+    <p>Before this revision the repository held an illustrated introduction to Drops, OP_DROP and Pacts with a protocol summary in Markdown. The accurate facts from that material are preserved in the pages above; the presentation and the completeness are what changed. The full history is in the <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/commits/main">repository commit log</a>.</p>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="pages/artifact.html">Artifacts</a></li>
+          <li><a href="pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="pages/create.html">Create a Drop</a></li>
+          <li><a href="pages/integrate.html">Integration guide</a></li>
+          <li><a href="pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="pages/conformance.html">Conformance</a></li>
+          <li><a href="pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="pages/decoder.html">Payload decoder</a></li>
+          <li><a href="pages/verifier.html">Pact verifier</a></li>
+          <li><a href="pages/reference.html">Terminology</a></li>
+          <li><a href="pages/compare.html">Protocol comparison</a></li>
+          <li><a href="changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>changelog.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/changelog.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

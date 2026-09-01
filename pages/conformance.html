@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conformance | Drops protocol</title>
+<meta name="description" content="What an implementation must do to call itself Drops-compatible, expressed as testable requirements across three conformance classes, with the tests each class should pass on demand.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/conformance.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drops conformance">
+<meta property="og:description" content="What an implementation must do to call itself Drops-compatible, expressed as testable requirements across three conformance classes, with the tests each class should pass on demand.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/conformance.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html" aria-current="page">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Conformance</p>
+    <h1>What compatible <em>actually means</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">Three classes, each a superset of the one before. Every requirement is written so that it either passes or fails against the <a href="test-vectors.html">test vectors</a>. If a statement here cannot be tested, it does not belong on this page.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="classes">The three classes</h2>
+    <div class="grid grid--3">
+      <article class="card card--sealed">
+        <span class="seal" aria-hidden="true">A</span>
+        <h3>Class A: Reader</h3>
+        <p>Decodes a Drops leaf and reports its fields correctly. Suitable for a wallet preview, an inspection tool, or a decoder. Makes no claim about whether a Drop exists on chain.</p>
+      </article>
+      <article class="card card--sealed">
+        <span class="seal" aria-hidden="true">B</span>
+        <h3>Class B: Verifier</h3>
+        <p>Everything in class A, plus full Taproot commitment verification against the spent output. May state that a given reveal input is a valid Drop.</p>
+      </article>
+      <article class="card card--sealed">
+        <span class="seal" aria-hidden="true">C</span>
+        <h3>Class C: Indexer</h3>
+        <p>Everything in class B, plus confirmation policy, identity assignment, custody projection and reorganisation handling. May serve a record set that others rely on.</p>
+      </article>
+    </div>
+    <p>An implementation should state which class it claims. A tool that decodes leaves is useful and honest as a class A implementation; a tool that decodes leaves and calls the results verified Drops is neither.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="class-a">Class A requirements</h2>
+    <ol class="rules">
+      <li><span class="rid">C-A1</span><div class="rbody"><p><span class="must">must</span> reject any script that does not decompile to exactly ten chunks in the required arrangement. Test: IV-9, IV-10.</p></div></li>
+      <li><span class="rid">C-A2</span><div class="rbody"><p><span class="must">must</span> require the minimal push encoding for every field, and <span class="must">must</span> reproduce the input script byte for byte when re-serializing the parsed fields.</p></div></li>
+      <li><span class="rid">C-A3</span><div class="rbody"><p><span class="must">must</span> reject a one-byte body of <code>0x81</code> or <code>0x01</code> through <code>0x10</code>, and <span class="must">must</span> accept a one-byte body of <code>0x00</code>. Test: IV-5.</p></div></li>
+      <li><span class="rid">C-A4</span><div class="rbody"><p><span class="must">must</span> accept only the markers <code>drops</code> and <code>drops-pact</code>, and <span class="must">must</span> reject <code>bip110-op-drop</code>. Test: IV-2.</p></div></li>
+      <li><span class="rid">C-A5</span><div class="rbody"><p><span class="must">must</span> enforce the content-type grammar, the ASCII requirement and the 80-byte cap, and <span class="must">must</span> reject parameters and uppercase. Test: IV-3, IV-4.</p></div></li>
+      <li><span class="rid">C-A6</span><div class="rbody"><p><span class="must">must</span> recompute SHA-256 of the body and compare it with the hash field. Test: IV-1.</p></div></li>
+      <li><span class="rid">C-A7</span><div class="rbody"><p><span class="must">must</span> validate the creator key as a point on secp256k1, not by length alone. Test: IV-8.</p></div></li>
+      <li><span class="rid">C-A8</span><div class="rbody"><p><span class="must">must</span> enforce the body length range of 1 to 256, and <span class="must">must</span> accept a 256-byte body encoded with <code>OP_PUSHDATA2</code>. Test: IV-6, IV-7.</p></div></li>
+      <li><span class="rid">C-A9</span><div class="rbody"><p><span class="must not">must not</span> describe a decoded leaf as a verified Drop, a confirmed Drop, or an owned Drop.</p></div></li>
+      <li><span class="rid">C-A10</span><div class="rbody"><p><span class="should">should</span> decode the Pact Seed and Pacts reference body profiles when the relevant content type is declared, applying the byte-exact re-encoding rules for both.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="class-b">Class B requirements</h2>
+    <ol class="rules">
+      <li><span class="rid">C-B1</span><div class="rbody"><p><span class="must">must</span> satisfy every class A requirement.</p></div></li>
+      <li><span class="rid">C-B2</span><div class="rbody"><p><span class="must">must</span> require a witness of exactly three items with a signature of 64 or 65 bytes, and <span class="must">must</span> reject an input carrying a Taproot annex. Test: CT-9.</p></div></li>
+      <li><span class="rid">C-B3</span><div class="rbody"><p><span class="must">must</span> verify that the spent previous output is a 34-byte native P2TR script. Test: CT-1.</p></div></li>
+      <li><span class="rid">C-B4</span><div class="rbody"><p><span class="must">must</span> validate the control block length rule and the 128-hash path limit. Test: CT-2, CT-3.</p></div></li>
+      <li><span class="rid">C-B5</span><div class="rbody"><p><span class="must">must</span> accept only Tapleaf version <code>0xc0</code>. Test: CT-4.</p></div></li>
+      <li><span class="rid">C-B6</span><div class="rbody"><p><span class="must">must</span> validate the internal key as a curve point. Test: CT-5.</p></div></li>
+      <li><span class="rid">C-B7</span><div class="rbody"><p><span class="must">must</span> compute the tapleaf hash, fold the merkle path with sorted branch hashing, apply the TapTweak, and compare both parity and the x-only output key. Test: CT-6, CT-7.</p></div></li>
+      <li><span class="rid">C-B8</span><div class="rbody"><p><span class="must">must</span> treat any error raised during verification as a rejection.</p></div></li>
+      <li><span class="rid">C-B9</span><div class="rbody"><p><span class="must">must</span> distinguish an unresolved candidate, where the previous output could not be fetched, from a proven rejection. Test: CT-8.</p></div></li>
+      <li><span class="rid">C-B10</span><div class="rbody"><p><span class="should">should</span> use a constant-time comparison for the output key.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="class-c">Class C requirements</h2>
+    <ol class="rules">
+      <li><span class="rid">C-C1</span><div class="rbody"><p><span class="must">must</span> satisfy every class B requirement.</p></div></li>
+      <li><span class="rid">C-C2</span><div class="rbody"><p><span class="must">must</span> record an artifact only at or beyond its configured confirmation depth, and <span class="must">must</span> refuse a mainnet depth below six. Test: CT-10.</p></div></li>
+      <li><span class="rid">C-C3</span><div class="rbody"><p><span class="must">must</span> derive identity from the reveal input index and emit it lowercase in the full portable form.</p></div></li>
+      <li><span class="rid">C-C4</span><div class="rbody"><p><span class="must">must</span> assign two distinct identities to a transaction that reveals two Drops on two inputs.</p></div></li>
+      <li><span class="rid">C-C5</span><div class="rbody"><p><span class="must">must</span> scope records by network and <span class="must not">must not</span> resolve an identity from another network.</p></div></li>
+      <li><span class="rid">C-C6</span><div class="rbody"><p><span class="must">must</span> set the initial custody outpoint to output 0 of the reveal, and <span class="must">must</span> apply the P2WPKH and P2TR positive-value test on every subsequent move.</p></div></li>
+      <li><span class="rid">C-C7</span><div class="rbody"><p><span class="must">must</span> mark custody <code>burned</code> when a spend does not produce a supported output 0, and <span class="must">must</span> keep the record itself readable.</p></div></li>
+      <li><span class="rid">C-C8</span><div class="rbody"><p><span class="must">must</span> maintain a block journal and, on divergence, <span class="must">must</span> roll back and rebuild projections from surviving immutable records rather than patching them.</p></div></li>
+      <li><span class="rid">C-C9</span><div class="rbody"><p><span class="must">must</span> stop with a named reason rather than guess when a reorganisation exceeds its budget or the common ancestor is ambiguous.</p></div></li>
+      <li><span class="rid">C-C10</span><div class="rbody"><p><span class="must">must</span> publish its network, confirmation depth and indexed height alongside the data it serves.</p></div></li>
+      <li><span class="rid">C-C11</span><div class="rbody"><p><span class="must not">must not</span> let a recorded rejection alter any other record's state.</p></div></li>
+      <li><span class="rid">C-C12</span><div class="rbody"><p><span class="must">must</span> apply the passive-content serving policy if it serves bodies over HTTP, defaulting unknown and active types to an opaque attachment.</p></div></li>
+      <li><span class="rid">C-C13</span><div class="rbody"><p><span class="should">should</span> publish custody integrity counters so that projection drift is measurable rather than assumed.</p></div></li>
+      <li><span class="rid">C-C14</span><div class="rbody"><p><span class="should">should</span> treat a change to confirmation depth that intersects indexed history as an audited replay, not a silent reinterpretation.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="pacts-class">Pacts conformance</h2>
+    <p>Optional, and independent of the classes above. An implementation that reads Pact records should be able to say which of these it does.</p>
+    <ol class="rules">
+      <li><span class="rid">C-P1</span><div class="rbody"><p><span class="must">must</span> enforce the 184-byte Seed length, the <code>DPSE</code> magic, zero reserved bytes at offsets 4 and 7, known network and floor tags, and zero engine padding. Test: PV-6 through PV-10.</p></div></li>
+      <li><span class="rid">C-P2</span><div class="rbody"><p><span class="must">must</span> enforce the 176-byte Cell descriptor length, the <code>DPCL</code> magic and zero reserved bytes. Test: PV-3 through PV-5.</p></div></li>
+      <li><span class="rid">C-P3</span><div class="rbody"><p><span class="must">must</span> enforce the 245-byte transition preimage length and compute the commitment as a tagged hash under <code>Drops/PactTransition</code>. Test: PV-12.</p></div></li>
+      <li><span class="rid">C-P4</span><div class="rbody"><p><span class="must">must</span> apply outcome rules P-1 through P-9 in full before describing an outcome as verified, and <span class="must">must</span> state which rules it applied when it applies only some. Test: PV-1, PV-2, PV-11.</p></div></li>
+      <li><span class="rid">C-P5</span><div class="rbody"><p><span class="must">must</span> surface the Seed's <code>enforcementFloor</code> anywhere it presents a Pact, and <span class="must not">must not</span> imply a stronger guarantee than the floor states.</p></div></li>
+      <li><span class="rid">C-P6</span><div class="rbody"><p><span class="must not">must not</span> present a Pacts surface as offering execution, custody, authorization, signing, broadcast or value-bearing authority while the capability contract reports <code>mode: reference</code>.</p></div></li>
+    </ol>
+
+    <div class="note">
+      <span class="note__title">Self-certification, honestly stated</span>
+      <p>There is no certification authority for Drops. What is available is a fixed set of vectors and a fixed set of requirements, so an implementation can publish exactly which class it claims and which vectors it passes. That is worth more than a badge.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/conformance.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/conformance.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

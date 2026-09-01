@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test vectors | Drops protocol</title>
+<meta name="description" content="Valid and invalid Drops leaf scripts and Pact records with expected outcomes, derived from the reference implementation's own rules. Every vector can be checked in the browser decoder and verifier.">
+<link rel="canonical" href="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/test-vectors.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drops test vectors">
+<meta property="og:description" content="Valid and invalid Drops leaf scripts and Pact records with expected outcomes, derived from the reference implementation's own rules. Every vector can be checked in the browser decoder and verifier.">
+<meta property="og:url" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/pages/test-vectors.html">
+<meta property="og:image" content="https://bitcoinuniverseio.github.io/drops-protocol-docs/assets/img/og-drops.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/drops.css">
+<script defer src="../assets/site.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="wordmark" href="../index.html" aria-label="Drops protocol documentation, home">
+      <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 1.6c0 0-7.9 9.3-7.9 13.6a7.9 7.9 0 0 0 15.8 0C19.9 10.9 12 1.6 12 1.6Z" class="d-seal"/>
+        <path d="M12 1.6 7.2 12.4l4.8 9.3 4.8-9.3Z" fill="rgba(255,255,255,.28)"/>
+        <path d="M4.1 15.2h15.8" stroke="rgba(255,255,255,.45)" stroke-width="1" fill="none"/>
+      </svg>
+      <span>
+        <span class="wordmark__text">Drops</span>
+        <span class="wordmark__sub">Protocol documentation</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="../pages/drops-specification.html">Specification</a>
+      <a href="../pages/pacts.html">Pacts</a>
+      <a href="../pages/carriers.html">Carrier</a>
+      <a href="../pages/create.html">Guides</a>
+      <a href="../pages/decoder.html">Tools</a>
+      <a href="../pages/reference.html" aria-current="page">Reference</a>
+    </nav>
+    <div class="tools">
+      <div class="search">
+        <label class="visually-hidden" for="site-search">Search the documentation</label>
+        <input id="site-search" type="search" placeholder="Search" data-base="../" autocomplete="off" spellcheck="false">
+        <ul id="search-results" class="search__results"></ul>
+      </div>
+      <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap wrap--narrow">
+    <p class="kicker"><span class="dot"></span>Conformance material</p>
+    <h1>Test <em>vectors</em></h1>
+    <div class="hero__rule" role="presentation"></div>
+    <p class="lede">Every vector below is a real byte string with a real SHA-256 and a real secp256k1 key. Paste any of them into the <a href="decoder.html">decoder</a> or the <a href="verifier.html">verifier</a> and you will get the outcome stated here, because both tools apply the same rules rather than replaying a stored answer.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="conventions">Conventions</h2>
+    <ul>
+      <li>All vectors use the creator key <code>f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9</code>, which is a valid x-only point, except where a vector is specifically about an invalid key.</li>
+      <li>Hex is the leaf script only: the second witness item of the reveal input. It does not include the signature or the control block.</li>
+      <li>Vectors named <code>VT-n</code> are expected to be accepted. Vectors named <code>IV-n</code> are expected to be rejected, with the stated reason.</li>
+      <li>Taproot commitment vectors are described rather than given as hex, because they need a full transaction and a chain context to be meaningful.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="valid">Valid leaves</h2>
+
+    <h3 id="vt-1">VT-1: minimal text artifact</h3>
+    <p>Marker <code>drops</code>, content type <code>text/plain</code>, an 11-byte body <code>hello drops</code>. Leaf script is 100 bytes.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>0564726f7073750a746578742f706c61696e7520493c9d63ae9ee515d32fedc2eb37
+23a1fd6c363fc5157180648d007f2a7cf0e1750b68656c6c6f2064726f7073752
+0f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9ac</code></pre>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <caption>Expected decode</caption>
+        <tbody>
+          <tr><th scope="row">marker</th><td><code>drops</code></td></tr>
+          <tr><th scope="row">mime</th><td><code>text/plain</code></td></tr>
+          <tr><th scope="row">bodyBytes</th><td>11</td></tr>
+          <tr><th scope="row">bodySha256</th><td><code>493c9d63ae9ee515d32fedc2eb3723a1fd6c363fc5157180648d007f2a7cf0e1</code></td></tr>
+          <tr><th scope="row">dropmark</th><td><code>493C9D63AE</code></td></tr>
+          <tr><th scope="row">Result</th><td><span class="chip chip--ok">accepted</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 id="vt-2">VT-2: longer text artifact</h3>
+    <p>The same shape with a 45-byte body, <code>Sealed on Bitcoin. Dropped once, kept forever.</code> Body hash <code>e5581b84546ba9dfdedf87d77a8de5a4ab1541d157711bda4ef8299147097d30</code>, dropmark <code>E5581B8454</code>. This is the first sample in the <a href="decoder.html#samples">decoder</a>.</p>
+
+    <h3 id="vt-3">VT-3: Pact Seed</h3>
+    <p>Marker <code>drops-pact</code>, content type <code>application/vnd.drops.pact-seed</code>, a 184-byte body. Leaf script is 300 bytes. Load it from the <a href="decoder.html#samples">decoder samples</a>. The body decodes to:</p>
+    <div class="table-scroll">
+      <table>
+        <tbody>
+          <tr><th scope="row">network</th><td><code>mainnet</code> (tag 0)</td></tr>
+          <tr><th scope="row">enforcementFloor</th><td><code>co-signed</code> (tag 1)</td></tr>
+          <tr><th scope="row">engineId</th><td><code>escrow</code></td></tr>
+          <tr><th scope="row">rulesetHash</th><td><code>da08c96d9d2efadfd6da2242f984c31cf2d5046507616215dbd0969ce33790b1</code></td></tr>
+          <tr><th scope="row">abiHash</th><td><code>62f445a2e58ecf42925f188e33028cbc719a49e3578791d0fb0187c7c96f5af8</code></td></tr>
+          <tr><th scope="row">genesisStateRoot</th><td><code>8c49e9067dc29780e25488c5057f17159c361a093608d9b54ae50733ad7ce80c</code></td></tr>
+          <tr><th scope="row">policyRoot</th><td><code>6ad54489e2c67d7abadfca03b41c3ab69ad6429337a9a3df09f375ef6323d21f</code></td></tr>
+          <tr><th scope="row">dataAvailabilityPolicyHash</th><td><code>22cc683dc491cbafafcce796d5923c04f41b357f031c57dec1a8c1fc68961f12</code></td></tr>
+          <tr><th scope="row">Result</th><td><span class="chip chip--ok">accepted</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 id="vt-4">VT-4: Pacts reference</h3>
+    <p>Marker <code>drops</code>, content type <code>application/vnd.drops.pacts-reference+json</code>, a 176-byte JSON body. Leaf script is 298 bytes. Available from the <a href="decoder.html#samples">decoder samples</a>. The body must be exactly:</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>{"bh":"b1ece0f3fb4f7be072543180ff03e21b7b094b69fb6a7f4d48cb170282cd967a",
+ "p":"pacts",
+ "ph":"64879f7d6b960a01909762d911a32d4582c20010c5641ee90278b644a9e3b525",
+ "t":"escrow-basic"}</code></pre>
+    </div>
+    <p>Serialized with no whitespace at all. The line breaks above are for reading only; adding them to the body makes the vector invalid, because the reference profile requires a byte-exact re-serialization.</p>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="invalid">Invalid leaves</h2>
+    <p>Each of these is one mutation away from a valid leaf. That is the point: the rules are designed so that a near miss is a clean rejection rather than an ambiguous partial result.</p>
+
+    <h3 id="iv-1">IV-1: body hash does not match the body</h3>
+    <p>VT-2 with one bit flipped in the hash push. Structure is perfect; the commitment is a lie.</p>
+    <p><strong>Expected:</strong> <code>Drops leaf sha256 does not match its body.</code> Rule D-13. Load it from the <a href="decoder.html#samples">decoder samples</a>.</p>
+
+    <h3 id="iv-2">IV-2: marker belongs to another protocol</h3>
+    <p>A well-formed OP_DROP token event carried under marker <code>bip110-op-drop</code>. It is a valid leaf for its own protocol and must be refused by a Drops indexer.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>0e6269703131302d6f702d64726f7075106170706c69636174696f6e2f6a736f6e
+75203c0153364dd98ded936f3d29a89959c6ca0e294540746e543037cbcfc33912
+e175367b2270223a226f702d64726f70222c226f70223a226d696e74222c227469
+636b223a2264726f70222c22616d74223a2231303030227d7520f9308a019258c3
+1049344f85f89d5229b531c845836f99b08601f113bce036f9ac</code></pre>
+    </div>
+    <p><strong>Expected:</strong> <code>Drops leaf has an unknown marker.</code> Rules D-6 and D-7.</p>
+
+    <h3 id="iv-3">IV-3: uppercase content type</h3>
+    <p>Content type <code>TEXT/plain</code>.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>0564726f7073750a544558542f706c61696e7520493c9d63ae9ee515d32fedc2eb
+3723a1fd6c363fc5157180648d007f2a7cf0e1750b68656c6c6f2064726f707375
+20f9308a019258c31049344f85f89d5229b531c845836f99b08601f113bce036f9ac</code></pre>
+    </div>
+    <p><strong>Expected:</strong> <code>Drops MIME type must be lowercase ASCII type/subtype with no parameters and at most 80 bytes.</code> Rules D-8 and D-10.</p>
+
+    <h3 id="iv-4">IV-4: content type with a parameter</h3>
+    <p>Content type <code>text/plain; charset=utf-8</code>. Parameters are never permitted, even correct ones.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>0564726f70737519746578742f706c61696e3b20636861727365743d7574662d38
+7520493c9d63ae9ee515d32fedc2eb3723a1fd6c363fc5157180648d007f2a7cf0
+e1750b68656c6c6f2064726f70737520f9308a019258c31049344f85f89d5229b5
+31c845836f99b08601f113bce036f9ac</code></pre>
+    </div>
+    <p><strong>Expected:</strong> same message as IV-3. Rule D-10.</p>
+
+    <h3 id="iv-5">IV-5: one-byte body with no minimal push encoding</h3>
+    <p>A body of the single byte <code>0x01</code>. Bitcoin Script folds that value into <code>OP_1</code>, so no data push can carry it minimally. The hash field is correct; the body is still unencodable.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>0564726f707375186170706c69636174696f6e2f6f637465742d73747265616d75
+204bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459a
+7501017520f9308a019258c31049344f85f89d5229b531c845836f99b08601f113
+bce036f9ac</code></pre>
+    </div>
+    <p><strong>Expected:</strong> the body has no minimal data-push encoding, so it is not a Drop. Rule D-15. A body of <code>0x00</code> is valid; <code>0x81</code> and <code>0x01</code> through <code>0x10</code> are not.</p>
+
+    <h3 id="iv-6">IV-6: empty body</h3>
+    <p><code>OP_0</code> in the body position. It is a zero-length push, and the minimum body length is one byte.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>0564726f7073750a746578742f706c61696e7520e3b0c44298fc1c149afbf4c899
+6fb92427ae41e4649b934ca495991b7852b85575007520f9308a019258c3104934
+4f85f89d5229b531c845836f99b08601f113bce036f9ac</code></pre>
+    </div>
+    <p><strong>Expected:</strong> <code>Drops body must be one push of 1 to 256 bytes.</code> Rule D-14.</p>
+
+    <h3 id="iv-7">IV-7: body over the limit</h3>
+    <p>Any leaf whose body push is 257 bytes or more. Encoded with <code>OP_PUSHDATA2</code>, it parses cleanly and is still rejected.</p>
+    <p><strong>Expected:</strong> <code>Drops body must be one push of 1 to 256 bytes.</code> Rule D-14. Note that a body of exactly 256 bytes is valid and must use <code>OP_PUSHDATA2</code>, since <code>OP_PUSHDATA1</code> tops out at 255.</p>
+
+    <h3 id="iv-8">IV-8: creator key is not a curve point</h3>
+    <p>32 bytes of <code>0xff</code>. That value is larger than the field prime, so it cannot be an x coordinate. A length check alone would let this through.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>0564726f7073750a746578742f706c61696e7520493c9d63ae9ee515d32fedc2eb
+3723a1fd6c363fc5157180648d007f2a7cf0e1750b68656c6c6f2064726f707375
+20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ac</code></pre>
+    </div>
+    <p><strong>Expected:</strong> <code>Drops leaf requires a valid 32-byte x-only secp256k1 public key.</code> Rule D-19.</p>
+
+    <h3 id="iv-9">IV-9: trailing byte after OP_CHECKSIG</h3>
+    <p>VT-1 with <code>0x51</code> appended. Eleven chunks, not ten.</p>
+    <p><strong>Expected:</strong> <code>Drops leaf must contain exactly five pushes and five opcodes.</code> Rule D-1.</p>
+
+    <h3 id="iv-10">IV-10: opcode where a push must be</h3>
+    <p><code>OP_1</code> in the body position instead of a data push. It produces the value 1 on the stack, which is not the same thing as a one-byte data push.</p>
+    <div class="code-block">
+      <button class="copy js-only" type="button">Copy</button>
+<pre><code>0564726f7073750a746578742f706c61696e75204bf5122f344554c53bde2ebb8c
+d2b7e3d1600ad631c385a5d7cce23c7785459a75517520f9308a019258c3104934
+4f85f89d5229b531c845836f99b08601f113bce036f9ac</code></pre>
+    </div>
+    <p><strong>Expected:</strong> the body field is not a data push. Rule D-3.</p>
+  </div>
+</section>
+
+<section class="band band--tint">
+  <div class="wrap wrap--narrow">
+    <h2 id="commitment">Taproot commitment cases</h2>
+    <p>These need a spent output and a control block, so they are described rather than given as leaf hex. Each is a distinct rejection with its own reason string.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Commitment-level vectors</caption>
+        <thead><tr><th scope="col">Case</th><th scope="col">Construction</th><th scope="col">Expected reason</th></tr></thead>
+        <tbody>
+          <tr><td>CT-1</td><td>Spend a P2WSH output, not a P2TR one, with an otherwise valid witness</td><td><code>previous output is not P2TR</code></td></tr>
+          <tr><td>CT-2</td><td>Control block of 40 bytes, so <code>(40 - 33)</code> is not a multiple of 32</td><td><code>invalid Taproot control block structure</code></td></tr>
+          <tr><td>CT-3</td><td>Control block with 129 path hashes, one past the limit</td><td><code>invalid Taproot control block structure</code></td></tr>
+          <tr><td>CT-4</td><td>Leaf version byte <code>0xc2</code>, so <code>byte &amp; 0xfe</code> is not <code>0xc0</code></td><td><code>unsupported Taproot leaf version</code></td></tr>
+          <tr><td>CT-5</td><td>Internal key set to 32 bytes of <code>0xff</code></td><td><code>invalid Taproot internal key</code></td></tr>
+          <tr><td>CT-6</td><td>Valid commitment, but the parity bit in <code>controlBlock[0]</code> flipped</td><td><code>Taproot control block parity mismatch</code></td></tr>
+          <tr><td>CT-7</td><td>A valid leaf and control block taken from a different Taproot output</td><td><code>Taproot leaf does not commit to previous output</code></td></tr>
+          <tr><td>CT-8</td><td>The spent output cannot be fetched from the node</td><td><code>missing_previous_output</code>, an unresolved candidate rather than a proven rejection</td></tr>
+          <tr><td>CT-9</td><td>A four-item witness with a final item beginning <code>0x50</code></td><td>Annex present, so the input is not a Drops reveal. Rule D-31</td></tr>
+          <tr><td>CT-10</td><td>Valid leaf and commitment, reveal confirmed at a depth below the deployment's policy</td><td>Not recorded yet. Not a rejection, a timing result. Rule D-40</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap wrap--narrow">
+    <h2 id="pacts">Pact outcome vectors</h2>
+    <p>These are the records the <a href="verifier.html">pact verifier</a> loads as samples. The transition preimage below hashes to the commitment shown, using <code>taggedHash("Drops/PactTransition", preimage)</code>.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>PV-1: a consistent outcome</caption>
+        <tbody>
+          <tr><th scope="row">Pact id</th><td><code>6bf9cd8175241aeb1c4006851ac4a87930b8f156d71d1adedee78f9a3673b67f</code></td></tr>
+          <tr><th scope="row">Network</th><td><code>mainnet</code> (tag 0)</td></tr>
+          <tr><th scope="row">Sequence</th><td>7 to 8</td></tr>
+          <tr><th scope="row">Parent state root</th><td><code>dba6c576f54e6be4d42834ddf5716198c645dae9a1165c45f4048aff6cfa85b0</code></td></tr>
+          <tr><th scope="row">Next state root</th><td><code>eb51cc2a22e9a74f20fe4b9876864feb0dbd154505df2c541d78586705db5005</code></td></tr>
+          <tr><th scope="row">Next policy root</th><td><code>21c7fa1068eadbf4113056bd59c57d44039c8e1ae40ad7d560dfcd7fd8123a30</code></td></tr>
+          <tr><th scope="row">opDropEffectHash</th><td>32 zero bytes, so no token effect</td></tr>
+          <tr><th scope="row">Transition commitment</th><td><code>7d048cb0e10dcf5026dd4a8dc02088c75167e26110e10d647fe54dbde0913840</code></td></tr>
+          <tr><th scope="row">DPC1 anchor script</th><td><code>6a24445043317d048cb0e10dcf5026dd4a8dc02088c75167e26110e10d647fe54dbde0913840</code></td></tr>
+          <tr><th scope="row">Result</th><td><span class="chip chip--ok">P-1, P-2, P-3, P-7 and P-9 all pass</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <caption>PV-2: a tampered outcome</caption>
+        <tbody>
+          <tr><th scope="row">Mutation</th><td>PV-1 with the successor descriptor's transition commitment changed from <code>7d04&hellip;</code> to <code>7c04&hellip;</code></td></tr>
+          <tr><th scope="row">P-7</th><td><span class="chip chip--bad">fail</span> <code>PACTS_INVALID_TRANSITION: successor descriptor does not commit to the transition</code></td></tr>
+          <tr><th scope="row">P-9</th><td><span class="chip chip--bad">fail</span> <code>PACTS_INVALID_DPC1: DPC1 commitment does not match the proof pack transition</code></td></tr>
+          <tr><th scope="row">P-1, P-2, P-3</th><td><span class="chip chip--ok">pass</span>, which is the useful part: the failure is localised to the commitment</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Further Pact record vectors</caption>
+        <thead><tr><th scope="col">Case</th><th scope="col">Construction</th><th scope="col">Expected error</th></tr></thead>
+        <tbody>
+          <tr><td>PV-3</td><td>Cell descriptor of 175 or 177 bytes</td><td><code>PACTS_INVALID_CELL_LENGTH</code></td></tr>
+          <tr><td>PV-4</td><td>Cell descriptor with magic other than <code>DPCL</code></td><td><code>PACTS_INVALID_CELL_MAGIC</code></td></tr>
+          <tr><td>PV-5</td><td>Cell descriptor with a non-zero byte at offset 4, 6 or 7</td><td><code>PACTS_INVALID_CELL_RESERVED</code></td></tr>
+          <tr><td>PV-6</td><td>Seed record of any length other than 184</td><td><code>PACTS_INVALID_SEED_LENGTH</code></td></tr>
+          <tr><td>PV-7</td><td>Seed record with magic other than <code>DPSE</code></td><td><code>PACTS_INVALID_SEED_MAGIC</code></td></tr>
+          <tr><td>PV-8</td><td>Seed record with a non-zero byte at offset 4 or 7</td><td><code>PACTS_INVALID_SEED_RESERVED</code></td></tr>
+          <tr><td>PV-9</td><td>Seed engine id with a non-zero byte after the terminating zero</td><td>The encoding-conformance error code</td></tr>
+          <tr><td>PV-10</td><td>Seed engine id failing <code>^[a-z][a-z0-9-]{0,15}$</code></td><td><code>PACTS_INVALID_ENGINE</code></td></tr>
+          <tr><td>PV-11</td><td>Successor sequence not exactly parent sequence plus one</td><td><code>PACTS_INVALID_TRANSITION: cell sequence is invalid</code></td></tr>
+          <tr><td>PV-12</td><td>Transition preimage of any length other than 245</td><td><code>PACTS_INVALID_TRANSITION_LENGTH</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="pagefoot">
+  <div class="wrap">
+    <div class="pagefoot__grid">
+      <div>
+        <h2>Specification</h2>
+        <ul>
+          <li><a href="../pages/drops-specification.html">Drops specification</a></li>
+          <li><a href="../pages/carriers.html">Carrier anatomy</a></li>
+          <li><a href="../pages/artifact.html">Artifacts</a></li>
+          <li><a href="../pages/pacts.html">Drop Pacts</a></li>
+          <li><a href="../pages/validation.html">Validation and indexing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Build</h2>
+        <ul>
+          <li><a href="../pages/create.html">Create a Drop</a></li>
+          <li><a href="../pages/integrate.html">Integration guide</a></li>
+          <li><a href="../pages/test-vectors.html">Test vectors</a></li>
+          <li><a href="../pages/conformance.html">Conformance</a></li>
+          <li><a href="../pages/api.html">API reference</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tools</h2>
+        <ul>
+          <li><a href="../pages/decoder.html">Payload decoder</a></li>
+          <li><a href="../pages/verifier.html">Pact verifier</a></li>
+          <li><a href="../pages/reference.html">Terminology</a></li>
+          <li><a href="../pages/compare.html">Protocol comparison</a></li>
+          <li><a href="../changelog.html">Version history</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs">Source repository</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/op-drop">OP_DROP carrier repository</a></li>
+          <li><a href="https://docs.bitcoinuniverse.io">docs.bitcoinuniverse.io</a></li>
+          <li><a href="../pages/security.html">Security and safety</a></li>
+          <li><a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/security/advisories/new">Report a vulnerability</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="provenance">
+      <p><b>Owning repository</b><br>bitcoinuniverseio/drops-protocol-docs</p>
+      <p><b>Source path</b><br>pages/test-vectors.html</p>
+      <p><b>Specification revision</b><br>2026-09-01 &middot; lifecycle stable</p>
+      <p><b>Chain and networks</b><br>Bitcoin: mainnet, testnet, signet, regtest</p>
+      <p><b>Last verified</b><br>2026-09-01 at commit <code>f7bd2a22</code></p>
+    </div>
+
+    <p class="colophon">
+      <a href="https://github.com/bitcoinuniverseio/drops-protocol-docs/edit/main/pages/test-vectors.html">Edit this page on GitHub</a> &middot;
+      <a href="https://docs.bitcoinuniverse.io">Bitcoin Universe documentation platform</a> &middot;
+      Drops and OP_DROP are original Bitcoin Universe protocols. Content licensed under the repository LICENSE.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
