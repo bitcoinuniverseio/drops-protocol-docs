@@ -282,8 +282,8 @@ d2b7e3d1600ad631c385a5d7cce23c7785459a75517520f9308a019258c3104934
         <tbody>
           <tr><th scope="row">Mutation</th><td>PV-1 with the successor descriptor's transition commitment changed from <code>7d04&hellip;</code> to <code>7c04&hellip;</code></td></tr>
           <tr><th scope="row">P-7</th><td><span class="chip chip--bad">fail</span> <code>PACTS_INVALID_TRANSITION: successor descriptor does not commit to the transition</code></td></tr>
-          <tr><th scope="row">P-9</th><td><span class="chip chip--bad">fail</span> <code>PACTS_INVALID_DPC1: DPC1 commitment does not match the proof pack transition</code></td></tr>
-          <tr><th scope="row">P-1, P-2, P-3</th><td><span class="chip chip--ok">pass</span>, which is the useful part: the failure is localised to the commitment</td></tr>
+          <tr><th scope="row">P-9</th><td><span class="chip chip--ok">pass</span>. The DPC1 anchor still carries the commitment the stated terms produce, which is what localises the tampering to the successor descriptor rather than to the terms.</td></tr>
+          <tr><th scope="row">P-1, P-2, P-3</th><td><span class="chip chip--ok">pass</span>. Only one check moves, which is the useful part: the failure names exactly which record was altered.</td></tr>
         </tbody>
       </table>
     </div>
