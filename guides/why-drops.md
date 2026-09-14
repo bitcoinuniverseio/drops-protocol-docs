@@ -6,8 +6,6 @@ Drops chooses a narrow set of rules to make Bitcoin artifacts easier to interpre
 
 Once a Drop is confirmed, its on-chain commitment is immutable Bitcoin history. The artifact is not a profile that an application can quietly edit, and its proof is not a promise from a single database. A verifier recomputes the exact body hash and Taproot commitment from Bitcoin data.
 
-Drops is also BIP-110 ready. The registered `bip110-op-drop` carrier is recognized through its own strict decoder, while the native `drops` carrier keeps its own authoritative grammar. This lets wallets and explorers support compatible records without blurring their meaning.
-
 ## The core difference
 
 A Drop is not defined by a broad convention plus an indexer's interpretation. It is defined by a fixed Tapscript leaf, a supplied content hash, and a proof that the leaf was committed to the P2TR output that the reveal input spends.
