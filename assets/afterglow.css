@@ -1,5 +1,0 @@
-/*
-  Compatibility entry point for the shared Drops Docs Luxe System.
-  Keep this file so existing document pages load the same tokenized surface.
-*/
-@import url("./luxe.css");
