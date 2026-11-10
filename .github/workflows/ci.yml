@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    runs-on: [self-hosted, Linux, X64, universe]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/site.js
+          node --check assets/decoder.js
+          node --check assets/verifier.js
+      - name: Check JSON syntax
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('docs.manifest.json', 'utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('search-index.json', 'utf8'))"
